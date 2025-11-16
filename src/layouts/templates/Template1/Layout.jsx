@@ -59,7 +59,7 @@ const Template1Layout = () => {
       </nav>
 
       {/* OUTLET - Pages render here */}
-      <main className="max-w-7xl mx-auto">
+      <main className="flex-grow">
         <Outlet />
       </main>
 
