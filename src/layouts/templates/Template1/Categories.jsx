@@ -232,35 +232,35 @@ const Template1Categories = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#faf5e4]">
-      <div className="max-w-7xl mx-auto ">
+    <div className="min-h-screen bg-[#faf5e4] overflow-x-hidden">
+      <div className="max-w-7xl mx-auto">
         {/* HERO SECTION */}
-        <div className="bg-gradient-to-r from-[#004445] to-[#2c786c] p-8 md:p-12 mb-12 shadow-2xl ">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
+        <div className="bg-gradient-to-r from-[#004445] to-[#2c786c] p-4 sm:p-6 md:p-8 lg:p-12 mb-8 md:mb-12 shadow-2xl">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
             {/* LEFT CONTENT */}
-            <div className="text-white">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="bg-[#f8b400] text-[#004445] px-4 py-1 rounded-full text-sm font-semibold">
+            <div className="text-white order-2 md:order-1">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <span className="bg-[#f8b400] text-[#004445] px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-semibold">
                   EXPLORE CATEGORIES
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight">
                 Shop by Category
               </h1>
-              <p className="text-lg text-[#faf5e4] mb-6 leading-relaxed">
+              <p className="text-sm sm:text-base lg:text-lg text-[#faf5e4] mb-4 sm:mb-6 leading-relaxed">
                 Discover your perfect product across our diverse range of categories.
                 From cutting-edge wellness to health supplements, we've got everything
                 organized for your convenience.
               </p>
-              <div className="flex gap-4">
-                <button className="bg-[#f8b400] text-[#004445] px-8 py-3 rounded-lg font-semibold hover:bg-[#ffa500] cursor-pointer shadow-lg flex items-center gap-2">
-                  View All <ArrowRight className="w-5 h-5" />
+              <div className="flex gap-3 sm:gap-4">
+                <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-[#ffa500] cursor-pointer shadow-lg flex items-center gap-2 text-sm sm:text-base transition-all">
+                  View All <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
             </div>
 
             {/* RIGHT FULL IMAGE */}
-            <div className="relative h-[350px] md:h-[450px] overflow-hidden shadow-lg rounded-xl">
+            <div className="relative h-[250px] sm:h-[300px] md:h-[350px] lg:h-[450px] overflow-hidden shadow-lg rounded-xl order-1 md:order-2">
               <img
                 src="https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzZ8fHByb2R1Y3R8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600"
                 alt="Wellness Product Display"
@@ -271,33 +271,33 @@ const Template1Categories = () => {
         </div>
 
         {/* HEADING */}
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-semibold text-[#004445] mb-3">
+        <div className="text-center mb-6 md:mb-8 px-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#004445] mb-2 sm:mb-3">
             Browse Our Categories
           </h2>
-          <p className="text-[#2c786c] text-lg max-w-2xl mx-auto">
+          <p className="text-[#2c786c] text-sm sm:text-base lg:text-lg max-w-2xl mx-auto">
             Find exactly what you're looking for in our organized collection
           </p>
         </div>
 
         {/* SEARCH BAR */}
-        <div className="mb-10 max-w-2xl mx-auto">
+        <div className="mb-8 md:mb-10 max-w-2xl mx-auto px-4">
           <div className="relative">
             <input
               type="text"
               placeholder="Search categories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-6 py-4 pr-12 rounded-full border-2 border-[#2c786c] focus:border-[#f8b400] focus:outline-none shadow-lg transition-all"
+              className="w-full px-4 sm:px-6 py-3 sm:py-4 pr-12 sm:pr-14 rounded-full border-2 border-[#2c786c] focus:border-[#f8b400] focus:outline-none shadow-lg transition-all text-sm sm:text-base"
             />
-            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#f8b400] text-[#004445] p-3 rounded-full hover:bg-[#2c786c] hover:text-white transition-all">
-              <Search className="w-5 h-5" />
+            <button className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 bg-[#f8b400] text-[#004445] p-2 sm:p-3 rounded-full hover:bg-[#2c786c] hover:text-white transition-all">
+              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
         {/* CATEGORIES GRID */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6 px-4">
           {filteredCategories.map((category) => {
             const IconComponent = category.icon;
             const isHovered = hoveredId === category.id;
@@ -307,22 +307,22 @@ const Template1Categories = () => {
                 key={category.id}
                 onMouseEnter={() => setHoveredId(category.id)}
                 onMouseLeave={() => setHoveredId(null)}
-                
+                className="group cursor-pointer"
               >
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative h-32 sm:h-40 md:h-48 overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all">
                   <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-20 group-hover:opacity-40 transition-opacity`}></div>
                   <img
                     src={category.image}
                     alt={category.name}
-                    className="w-full h-full object-cover  transition-transform duration-300"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                   {/* Icon Overlay */}
-                  <div className={`absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-all`}>
-                    <IconComponent className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.5} />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-all">
+                    <IconComponent className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.5} />
                   </div>
                 </div>
-                <div className="p-4 text-center">
-                  <h3 className="text-lg font-medium text-[#004445] group-hover:text-[#2c786c] transition-colors">
+                <div className="p-2 sm:p-3 md:p-4 text-center">
+                  <h3 className="text-sm sm:text-base md:text-lg font-medium text-[#004445] group-hover:text-[#2c786c] transition-colors line-clamp-2">
                     {category.name}
                   </h3>
                 </div>
@@ -333,33 +333,33 @@ const Template1Categories = () => {
 
         {/* NO RESULTS */}
         {filteredCategories.length === 0 && (
-          <div className="text-center py-16">
-            <Search className="w-16 h-16 mx-auto text-[#2c786c] mb-4" />
-            <h3 className="text-2xl font-bold text-[#004445] mb-2">
+          <div className="text-center py-12 sm:py-16 px-4">
+            <Search className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-[#2c786c] mb-4" />
+            <h3 className="text-xl sm:text-2xl font-bold text-[#004445] mb-2">
               No categories found
             </h3>
-            <p className="text-[#2c786c]">Try adjusting your search query</p>
+            <p className="text-[#2c786c] text-sm sm:text-base">Try adjusting your search query</p>
           </div>
         )}
 
         {/* FEATURED SECTION - CTA */}
-        <div className="mt-16 bg-gradient-to-r from-[#004445] to-[#2c786c] rounded-2xl p-12 md:p-16 relative overflow-hidden m-10 shadow-2xl">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#f8b400] opacity-10 rounded-full -mr-32 -mt-32"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#f8b400] opacity-10 rounded-full -ml-24 -mb-24"></div>
+        <div className="mt-12 sm:mt-16 bg-gradient-to-r from-[#004445] to-[#2c786c] rounded-2xl p-6 sm:p-8 md:p-12 lg:p-16 relative overflow-hidden mx-4 sm:mx-6 lg:mx-10 shadow-2xl mb-8 md:mb-12">
+          <div className="absolute top-0 right-0 w-48 h-48 md:w-64 md:h-64 bg-[#f8b400] opacity-10 rounded-full -mr-24 md:-mr-32 -mt-24 md:-mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 md:w-48 md:h-48 bg-[#f8b400] opacity-10 rounded-full -ml-16 md:-ml-24 -mb-16 md:-mb-24"></div>
           
           <div className="text-center max-w-3xl mx-auto relative z-10">
-            <h3 className="text-4xl md:text-5xl font-semibold text-white mb-6">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-4 sm:mb-6">
               Ready to Transform Your Health?
             </h3>
-            <p className="text-[#faf5e4] text-lg mb-8 leading-relaxed">
+            <p className="text-[#faf5e4] text-sm sm:text-base lg:text-lg mb-6 sm:mb-8 leading-relaxed px-4">
               Join thousands of satisfied customers who have found their perfect wellness solution. 
               Browse our categories and discover products that match your health goals.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button className="bg-[#f8b400] text-[#004445] px-10 py-4 rounded-full font-semibold hover:bg-white transition-all transform  cursor-pointer shadow-xl flex items-center gap-2">
-                Start Shopping <ArrowRight className="w-5 h-5" />
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+              <button className="w-full sm:w-auto bg-[#f8b400] text-[#004445] px-8 sm:px-10 py-3 sm:py-4 rounded-full font-semibold hover:bg-white transition-all transform cursor-pointer shadow-xl flex items-center justify-center gap-2 text-sm sm:text-base">
+                Start Shopping <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
-              <button className="bg-transparent border-2 border-white text-white px-10 py-4 rounded-full font-semibold hover:bg-white hover:text-[#004445] cursor-pointer transition-all transform hover:scale-105">
+              <button className="w-full sm:w-auto bg-transparent border-2 border-white text-white px-8 sm:px-10 py-3 sm:py-4 rounded-full font-semibold hover:bg-white hover:text-[#004445] cursor-pointer transition-all text-sm sm:text-base">
                 Contact Support
               </button>
             </div>
