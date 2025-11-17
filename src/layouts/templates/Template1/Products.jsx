@@ -3500,7 +3500,8 @@ const Template1Products = () => {
           {displayedProducts.map((product) => (
             <div
               key={product.id}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col"
+              onClick={() => navigate(`/template/${templateId}/products/${product.id}`)}
+              className="bg-white rounded-2xl shadow-lg cursor-pointer overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col "
             >
               {/* Product Image - Full width/height */}
               <div className="relative h-64 bg-gradient-to-br from-[#2c786c]/10 to-[#004445]/10 overflow-hidden">

@@ -69,25 +69,15 @@ const BackOfficeLayout = () => {
               {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
             <div className="flex items-center gap-2">
-              <Package className="h-8 w-8 text-blue-600" />
-              <span className="text-xl font-bold hidden sm:inline">BackOffice</span>
+        
+              <span className="text-xl font-medium hidden sm:inline">BackOffice</span>
             </div>
           </div>
 
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input placeholder="Search..." className="pl-9 w-full" />
-            </div>
-          </div>
+          
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500">
-                3
-              </Badge>
-            </Button>
+            
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

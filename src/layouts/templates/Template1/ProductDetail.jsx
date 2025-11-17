@@ -6,14 +6,13 @@ const ProductDetail = () => {
   const { productId, templateId } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
- 
-    const onBack = () => {
-        navigate(`/template/${templateId}/products`);
-    };
 
+  const onBack = () => {
+    navigate(`/template/${templateId}/products`);
+  };
 
-    // Sample product data (In real scenario, fetch this data based on product ID)
-    const products = [
+  // Sample product data (In real scenario, fetch this data based on product ID)
+  const products = [
     {
       id: 1,
       name: "Matcha Extreme",
@@ -3403,7 +3402,7 @@ const ProductDetail = () => {
   ];
 
   // Find product by ID from URL parameter
-  const product = products.find(p => p.id === parseInt(productId));
+  const product = products.find((p) => p.id === parseInt(productId));
 
   if (!product) {
     return (
@@ -3446,19 +3445,15 @@ const ProductDetail = () => {
           {/* LEFT SIDE - STICKY IMAGE */}
           <div className="lg:sticky lg:top-8 h-fit">
             <div className="bg-white rounded-2xl shadow-lg h-full flex items-center justify-center">
-             
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-contain p-4"
-                  onError={(e) => {
-                    e.target.src =
-                      "https://via.placeholder.com/500x500?text=Product";
-                  }}
-                />
-              
-
-             
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-full object-contain p-4"
+                onError={(e) => {
+                  e.target.src =
+                    "https://via.placeholder.com/500x500?text=Product";
+                }}
+              />
             </div>
           </div>
 
@@ -3477,8 +3472,6 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              
-
               <p className="text-md text-gray-700 leading-relaxed mb-4">
                 {product.fullDescription || product.description}
               </p>
@@ -3487,14 +3480,21 @@ const ProductDetail = () => {
               <div className="text-xl font-medium text-[#004445] mb-6">
                 {product.price}
               </div>
+              <div>
+                <a
+                  href={product.buyLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-[#f8b400] text-[#004445] px-6 py-3 rounded-full cursor-pointer font-medium shadow-md hover:bg-[#ffc933] transition-all "
+                >
+                  Learn More & Buy →
+                </a>
+              </div>
             </div>
-
-          
-            
 
             {/* Highlights */}
             {product.highlights && product.highlights.length > 0 && (
-              <div >
+              <div>
                 <h3 className="text-2xl font-medium text-[#004445] mb-6">
                   Key Highlights
                 </h3>
@@ -3502,7 +3502,7 @@ const ProductDetail = () => {
                   {product.highlights.map((highlight, idx) => (
                     <li key={idx} className="flex items-start gap-4">
                       <div className="flex-shrink-0 mt-1 font-bold">
-                       <Dot/>
+                        <Dot />
                       </div>
                       <span className="text-gray-700 leading-relaxed">
                         {highlight}
@@ -3515,18 +3515,15 @@ const ProductDetail = () => {
 
             {/* Benefits */}
             {product.benefits && product.benefits.length > 0 && (
-              <div >
+              <div>
                 <h3 className="text-2xl font-medium text-[#004445] mb-6">
                   Benefits
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {product.benefits.map((benefit, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-start gap-3  "
-                    >
+                    <div key={idx} className="flex items-start gap-3  ">
                       <span className=" font-bold text-lg flex-shrink-0">
-                        <Dot/>
+                        <Dot />
                       </span>
                       <span className="text-gray-700">{benefit}</span>
                     </div>
@@ -3537,7 +3534,7 @@ const ProductDetail = () => {
 
             {/* Ingredients */}
             {product.ingredients && product.ingredients.length > 0 && (
-              <div >
+              <div>
                 <h3 className="text-2xl font-medium text-[#004445] mb-6">
                   Key Ingredients
                 </h3>
@@ -3557,6 +3554,8 @@ const ProductDetail = () => {
               </div>
             )}
           </div>
+
+          
         </div>
       </div>
     </div>

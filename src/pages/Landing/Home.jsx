@@ -72,21 +72,22 @@ const Home = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+      <section className="relative bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)]
+ text-white">
         <div className="container mx-auto px-4 py-20 md:py-32">
           <div className="max-w-3xl">
-            <Badge className="mb-4 bg-white text-blue-600 hover:bg-white">New Collection 2024</Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+           
+            <h1 className="text-4xl md:text-6xl font-semibold mb-6">
               Discover Amazing Products for Your Lifestyle
             </h1>
             <p className="text-xl mb-8 text-blue-100">
               Shop the latest trends with unbeatable prices and quality guaranteed
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                Shop Now <ArrowRight className="ml-2 h-5 w-5" />
+            <div className="flex flex-col sm:flex-row gap-4 cursor-pointer">
+              <Button size="lg" className="bg-white text-black  hover:bg-gray-100 cursor-pointer">
+                Shop Now 
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
+              <Button size="lg" variant="outline" className="border-white  text-black hover:bg-white cursor-pointer">
                 Learn More
               </Button>
             </div>
@@ -192,7 +193,8 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+      <section className="py-20 bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)]
+ text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Join Our Newsletter

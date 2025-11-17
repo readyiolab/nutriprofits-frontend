@@ -9,5 +9,12 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <script>
+  // Disable React DevTools in dev (removes the error completely)
+  if (typeof window.__REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined') {
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.inject = function() {};
+  }
+</script>
   </body>
 </html>

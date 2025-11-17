@@ -9,6 +9,7 @@ export const templatesData = [
       primary: "#3B82F6",
       secondary: "#8B5CF6",
     }
+    
   },
   {
     id: "template2",
@@ -18,7 +19,8 @@ export const templatesData = [
     colors: {
       primary: "#1F2937",
       secondary: "#F59E0B",
-    }
+    },
+    comingSoon: false,
   },
   {
     id: "template3",
@@ -28,7 +30,8 @@ export const templatesData = [
     colors: {
       primary: "#000000",
       secondary: "#FF0000",
-    }
+    },
+    comingSoon: false,
   },
 ];
 

@@ -34,7 +34,7 @@ const LandingLayout = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-6 uppercase">
+            <nav className="hidden md:flex items-center space-x-6 ">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
@@ -46,13 +46,14 @@ const LandingLayout = () => {
                   {link.label}
                 </Link>
               ))}
+              <div className="hidden md:flex items-center space-x-4">
+             
+              <Button size="sm" className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] hover:bg-blue-700">Get Started</Button>
+            </div>
             </nav>
 
             {/* CTA Button */}
-            <div className="hidden md:flex items-center space-x-4">
-             
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Get Started</Button>
-            </div>
+            
 
             {/* Mobile Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -77,7 +78,7 @@ const LandingLayout = () => {
                   ))}
                   <div className="pt-4 space-y-2">
                    
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">Get Started</Button>
+                    <Button className="w-full bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] hover:bg-blue-700">Get Started</Button>
                   </div>
                 </div>
               </SheetContent>
