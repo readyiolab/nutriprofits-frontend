@@ -41,7 +41,7 @@ const Template1FAQ = () => {
             <span className="inline-block bg-[#f8b400] text-[#004445] px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
               FAQ SECTION
             </span>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium mb-3 sm:mb-4 leading-tight">
               Frequently Asked Questions
             </h1>
             <p className="text-sm sm:text-base lg:text-lg text-[#faf5e4] mb-4 sm:mb-6 leading-relaxed">
@@ -49,10 +49,10 @@ const Template1FAQ = () => {
               products, shipping, returns, and more.
             </p>
             <div className="flex gap-3 sm:gap-4 flex-wrap">
-              <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-[#ffa500] shadow-lg text-sm sm:text-base transition-all">
+              <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-medium hover:bg-[#ffa500] shadow-lg text-sm sm:text-base transition-all">
                 Browse All
               </button>
-              <button className="border-2 border-white text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-white hover:text-[#004445] transition-all text-sm sm:text-base">
+              <button className="border-2 border-white text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-medium hover:bg-white hover:text-[#004445] transition-all text-sm sm:text-base">
                 Contact Us
               </button>
             </div>
@@ -72,7 +72,7 @@ const Template1FAQ = () => {
 
       {/* SECTION HEADING */}
       <div className="text-center mb-6 md:mb-8 px-4">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#004445] mb-2 sm:mb-3">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium text-[#004445] mb-2 sm:mb-3">
           Browse FAQs
         </h2>
         <p className="text-black text-sm sm:text-base lg:text-lg max-w-2xl mx-auto">
@@ -124,7 +124,7 @@ const Template1FAQ = () => {
         <div className="absolute bottom-0 left-0 w-32 h-32 md:w-48 md:h-48 bg-[#f8b400] opacity-10 rounded-full -ml-16 md:-ml-24 -mb-16 md:-mb-24"></div>
         
         <div className="max-w-4xl mx-auto text-center text-white px-4 sm:px-6 relative z-10">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold mb-3 sm:mb-4">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium mb-3 sm:mb-4">
             Still have questions?
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-[#faf5e4] mb-6 sm:mb-8">

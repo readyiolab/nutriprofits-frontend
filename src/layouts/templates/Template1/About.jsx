@@ -51,14 +51,14 @@ const Template1About = () => {
             <span className="inline-block bg-[#f8b400] text-[#004445] px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
               ABOUT US
             </span>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium mb-3 sm:mb-4 leading-tight">
               Building Trust Through Quality & Service
             </h1>
             <p className="text-sm sm:text-base lg:text-lg text-[#faf5e4] leading-relaxed mb-4 sm:mb-6">
               Discover our journey, values, and commitment to delivering exceptional
               products and experiences to customers worldwide.
             </p>
-            <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-[#ffa500] cursor-pointer shadow-lg text-sm sm:text-base transition-all">
+            <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-medium hover:bg-[#ffa500] cursor-pointer shadow-lg text-sm sm:text-base transition-all">
               Learn More <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 inline-block ml-2" />
             </button>
           </div>
@@ -78,13 +78,13 @@ const Template1About = () => {
       {/* OUR STORY SECTION */}
       <div className="mb-8 md:mb-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-6 md:mb-8">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#004445] mb-3">Our Story</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium text-[#004445] mb-3">Our Story</h2>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center max-w-7xl mx-auto">
           {/* LEFT CONTENT */}
           <div className="p-4 sm:p-6 md:p-8 rounded-2xl">
-            <h3 className="text-xl sm:text-2xl font-semibold text-[#004445] mb-3 sm:mb-4">
+            <h3 className="text-xl sm:text-2xl font-medium text-[#004445] mb-3 sm:mb-4">
               Where It All Began
             </h3>
             <p className="text-sm sm:text-base text-black mb-3 sm:mb-4 leading-relaxed">
@@ -123,7 +123,7 @@ const Template1About = () => {
               <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
               Our Purpose
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-[#004445] mb-3 sm:mb-4 px-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium text-[#004445] mb-3 sm:mb-4 px-4">
               What Drives Us
             </h2>
             <p className="text-[#2c786c] text-sm sm:text-base md:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed px-4">
@@ -162,7 +162,7 @@ const Template1About = () => {
       <div className="bg-[#faf5e4] rounded-2xl p-4 sm:p-6 md:p-8 lg:p-12 mb-8 md:mb-12 mx-4 sm:mx-6 lg:mx-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-6 sm:mb-8">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#004445] mb-2 sm:mb-3">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium text-[#004445] mb-2 sm:mb-3">
               Why Choose Us
             </h2>
             <p className="text-[#2c786c] text-sm sm:text-base lg:text-lg">
@@ -187,7 +187,7 @@ const Template1About = () => {
         <div className="absolute bottom-0 left-0 w-32 h-32 md:w-48 md:h-48 bg-[#f8b400] opacity-10 rounded-full -ml-16 md:-ml-24 -mb-16 md:-mb-24"></div>
         
         <div className="relative z-10">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold mb-3 sm:mb-4 px-4">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium mb-3 sm:mb-4 px-4">
             Ready to Experience the Difference?
           </h2>
           <p className="text-[#faf5e4] text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 max-w-2xl mx-auto px-4">

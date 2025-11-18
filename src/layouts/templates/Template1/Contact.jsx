@@ -31,17 +31,17 @@ const Template1Contact = () => {
             <span className="inline-block bg-[#f8b400] text-[#004445] px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
               GET IN TOUCH
             </span>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium mb-3 sm:mb-4 leading-tight">
               We'd Love to Hear From You
             </h1>
             <p className="text-sm sm:text-base lg:text-lg text-[#faf5e4] mb-4 sm:mb-6 leading-relaxed">
               Whether you have a question, need support, or just want to say hi—our team is ready to help.
             </p>
             <div className="flex gap-3 sm:gap-4 flex-wrap">
-              <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-[#ffa500] transition-all transform hover:scale-105 shadow-lg text-sm sm:text-base">
+              <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-medium hover:bg-[#ffa500] transition-all transform hover:scale-105 shadow-lg text-sm sm:text-base">
                 Send Message
               </button>
-              <button className="border-2 border-white text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-white hover:text-[#004445] transition-all text-sm sm:text-base">
+              <button className="border-2 border-white text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-medium hover:bg-white hover:text-[#004445] transition-all text-sm sm:text-base">
                 View Location
               </button>
             </div>
@@ -63,7 +63,7 @@ const Template1Contact = () => {
       {/* MAIN CONTACT SECTION – Address Left, Form Right */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 md:mb-16">
         <div className="text-center mb-8 md:mb-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#004445] mb-2 sm:mb-3">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium text-[#004445] mb-2 sm:mb-3">
             Get in Touch
           </h2>
           <p className="text-black text-sm sm:text-base lg:text-lg max-w-2xl mx-auto">
@@ -74,7 +74,7 @@ const Template1Contact = () => {
         <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-start">
           {/* LEFT: Contact Info */}
           <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 h-full">
-            <h3 className="text-xl sm:text-2xl font-bold text-[#004445] mb-4 sm:mb-6">Our Office</h3>
+            <h3 className="text-xl sm:text-2xl font-medium text-[#004445] mb-4 sm:mb-6">Our Office</h3>
             <div className="space-y-4 sm:space-y-6 text-gray-700">
               <div className="flex items-start gap-3 sm:gap-4">
                 <div>
@@ -123,7 +123,7 @@ const Template1Contact = () => {
 
           {/* RIGHT: Contact Form */}
           <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-            <h3 className="text-xl sm:text-2xl font-bold text-[#004445] mb-4 sm:mb-6">
+            <h3 className="text-xl sm:text-2xl font-medium text-[#004445] mb-4 sm:mb-6">
               Send us a Message
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
@@ -209,7 +209,7 @@ const Template1Contact = () => {
         <div className="absolute bottom-0 left-0 w-32 h-32 md:w-48 md:h-48 bg-[#f8b400] opacity-10 rounded-full -ml-16 md:-ml-24 -mb-16 md:-mb-24"></div>
         
         <div className="max-w-4xl mx-auto text-center text-white px-4 sm:px-6 relative z-10">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold mb-3 sm:mb-4">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium mb-3 sm:mb-4">
             Need Immediate Help?
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-[#faf5e4] mb-6 sm:mb-8">
