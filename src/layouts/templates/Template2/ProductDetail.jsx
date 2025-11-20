@@ -1,15 +1,28 @@
+import {
+  ArrowLeft,
+  Star,
+  Check,
+  Shield,
+  Zap,
+  Heart,
+  Share2,
+  ShoppingBag,
+  Dot,
+} from "lucide-react";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-const ProductDetail = ({  onBack = () => {} }) => {
+const ProductDetailTemplate2 = () => {
   const { productId, templateId } = useParams();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("highlights");
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
 
+  const onBack = () => {
+    navigate(`/template/${templateId}/products`);
+  };
 
-    // Sample product data (In real scenario, fetch this data based on product ID)
-    const products = [
+  const products = [
     {
       id: 1,
       name: "Matcha Extreme",
@@ -3397,20 +3410,20 @@ const ProductDetail = ({  onBack = () => {} }) => {
       ],
     },
   ];
+  const product = products.find((p) => p.id === parseInt(productId));
 
-  // Find product by ID from URL parameter
-  const product = products.find(p => p.id === parseInt(productId));
+  const tabs = ["highlights", "benefits", "ingredients"];
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-[#faf5e4] flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-[#004445] mb-4">
+          <h1 className="text-4xl font-bold text-white mb-4">
             Product Not Found
           </h1>
           <button
             onClick={onBack}
-            className="bg-[#004445] text-white px-8 py-3 rounded-lg hover:bg-[#2c786c] transition-all"
+            className="bg-gradient-to-r from-blue-600 to-blue-900 text-white px-8 py-3 rounded-xl hover:shadow-xl transition-all"
           >
             Go Back
           </button>
@@ -3419,221 +3432,188 @@ const ProductDetail = ({  onBack = () => {} }) => {
     );
   }
 
-  const handleAddToCart = () => {
-    console.log(`Added ${quantity} of ${product.name} to cart`);
-  };
-
-  const handleQuantityChange = (value) => {
-    if (value >= 1) setQuantity(value);
-  };
-
   return (
-    <div className="min-h-screen bg-[#faf5e4] py-8">
-      <div className="container mx-auto px-4">
-        {/* Back Button */}
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-[#004445] hover:text-[#2c786c] font-semibold mb-8 transition-colors"
-        >
-          ← Back to Products
-        </button>
+    <div className="min-h-screen ">
+      {/* Hero Section with Gradient */}
+      <div className="relative bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] text-white py-8">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 text-white/90 hover:text-white font-medium mb-4 transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Products
+          </button>
+        </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* LEFT SIDE - STICKY IMAGE */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16 justify-center items-center space-y-8 lg:space-y-0">
+          {/* LEFT - Product Image */}
           <div className="lg:sticky lg:top-8 h-fit">
-            <div className="bg-white rounded-2xl p-8 shadow-lg overflow-hidden">
-              <div className="aspect-square bg-gradient-to-br from-[#2c786c]/10 to-[#004445]/10 rounded-xl flex items-center justify-center overflow-hidden">
+            <div className="relative  rounded-3xl p-8 ">
+              {/* Badge */}
+              <div className="absolute top-6 right-6 bg-black text-white px-4 py-2 rounded-full text-sm font-medium z-10">
+                {product.category}
+              </div>
+
+              {/* Image */}
+              <div className="aspect-square flex items-center justify-center">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-contain p-4"
-                  onError={(e) => {
-                    e.target.src =
-                      "https://via.placeholder.com/500x500?text=Product";
-                  }}
+                  className="w-full h-full object-contain "
                 />
-              </div>
-
-              {/* Quick Actions */}
-              <div className="flex gap-4 mt-6">
-                <button
-                  onClick={() => setIsWishlisted(!isWishlisted)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${
-                    isWishlisted
-                      ? "bg-red-500 text-white"
-                      : "bg-gray-100 text-[#004445] hover:bg-gray-200"
-                  }`}
-                >
-                  ♥ {isWishlisted ? "Wishlisted" : "Wishlist"}
-                </button>
-                <button className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold bg-gray-100 text-[#004445] hover:bg-gray-200 transition-all">
-                  📤 Share
-                </button>
               </div>
             </div>
           </div>
 
-          {/* RIGHT SIDE - CONTENT */}
+          {/* RIGHT - Product Info */}
           <div className="space-y-8">
-            {/* Product Header */}
+            {/* Header */}
             <div>
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <span className="inline-block bg-[#f8b400] text-[#004445] px-4 py-1 rounded-full text-sm font-bold mb-3">
-                    {product.category}
-                  </span>
-                  <h1 className="text-4xl md:text-5xl font-bold text-[#004445] mb-2">
-                    {product.name}
-                  </h1>
-                </div>
-              </div>
-
-              {/* Rating */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span
-                      key={i}
-                      className={`text-xl ${
-                        i < Math.floor(product.rating)
-                          ? "text-[#f8b400]"
-                          : "text-gray-300"
-                      }`}
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <span className="text-lg font-semibold text-[#004445]">
-                  {product.rating}
-                </span>
-                <span className="text-gray-600">
-                  ({product.reviews || 156} reviews)
-                </span>
-              </div>
-
-              <p className="text-xl text-gray-700 leading-relaxed mb-4">
+              <h1 className="text-2xl md:text-3xl font-medium text-black mb-4">
+                {product.name}
+              </h1>
+              <p className="text-lg text-black leading-relaxed mb-6">
                 {product.fullDescription || product.description}
               </p>
 
-              {/* Price */}
-              <div className="text-4xl font-bold text-[#004445] mb-6">
-                {product.price}
+              {/* Price & Actions */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="text-xl md:text-2xl font-medium  bg-black bg-clip-text text-transparent">
+                  {product.price}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-4 mb-8">
+                <button className="flex-1 min-w-[200px] bg-gradient-to-r from-blue-600 to-blue-900 text-white px-8 py-4 rounded-xl font-medium cursor-pointer  flex items-center justify-center gap-2">
+                  <ShoppingBag className="w-5 h-5" />
+                  Learn More & Buy Now
+                </button>
               </div>
             </div>
-
-            {/* Quantity & Add to Cart */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg">
-              <label className="block text-sm font-semibold text-[#004445] mb-4">
-                Quantity
-              </label>
-
-              <div className="flex items-center gap-4 mb-8">
-                <div className="flex items-center border-2 border-[#2c786c] rounded-lg">
-                  <button
-                    onClick={() => handleQuantityChange(quantity - 1)}
-                    className="p-3 hover:bg-[#f8b400]/20 transition-colors font-bold text-lg"
-                  >
-                    −
-                  </button>
-                  <input
-                    type="number"
-                    value={quantity}
-                    onChange={(e) =>
-                      handleQuantityChange(parseInt(e.target.value) || 1)
-                    }
-                    className="w-16 text-center font-semibold text-lg border-0 focus:outline-none text-[#004445]"
-                  />
-                  <button
-                    onClick={() => handleQuantityChange(quantity + 1)}
-                    className="p-3 hover:bg-[#f8b400]/20 transition-colors font-bold text-lg"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              {/* Add to Cart Button */}
-              <button
-                onClick={handleAddToCart}
-                className="w-full bg-gradient-to-r from-[#004445] to-[#2c786c] text-white py-4 px-8 rounded-xl font-bold text-lg hover:shadow-xl transition-all"
-              >
-                🛒 Add to Cart
-              </button>
-
-              <button className="w-full mt-4 bg-[#f8b400] text-[#004445] py-4 px-8 rounded-xl font-bold text-lg hover:bg-[#ffa500] transition-all">
-                Buy Now
-              </button>
-            </div>
-
-            {/* Highlights */}
-            {product.highlights && product.highlights.length > 0 && (
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h3 className="text-2xl font-bold text-[#004445] mb-6">
-                  Key Highlights
-                </h3>
-                <ul className="space-y-4">
-                  {product.highlights.map((highlight, idx) => (
-                    <li key={idx} className="flex items-start gap-4">
-                      <div className="flex-shrink-0 mt-1 text-green-500 font-bold">
-                        ✓
-                      </div>
-                      <span className="text-gray-700 leading-relaxed">
-                        {highlight}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Benefits */}
-            {product.benefits && product.benefits.length > 0 && (
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h3 className="text-2xl font-bold text-[#004445] mb-6">
-                  Benefits
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {product.benefits.map((benefit, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-start gap-3 p-4 bg-[#f8b400]/10 rounded-lg"
-                    >
-                      <span className="text-[#f8b400] font-bold text-lg flex-shrink-0">
-                        ✓
-                      </span>
-                      <span className="text-gray-700">{benefit}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Ingredients */}
-            {product.ingredients && product.ingredients.length > 0 && (
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h3 className="text-2xl font-bold text-[#004445] mb-6">
-                  Key Ingredients
-                </h3>
-                <div className="space-y-4">
-                  {product.ingredients.map((ingredient, idx) => (
-                    <div key={idx} className="pb-4 border-b last:border-b-0">
-                      <h4 className="font-bold text-[#004445] mb-2">
-                        {ingredient.name}
-                      </h4>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        {ingredient.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
+        </div>
+
+        <div className="w-full max-w-4xl h-[1px] bg-black my-12 mx-auto"></div>
+
+        {/* Tabs Section */}
+        {/* Tab Buttons - Responsive Horizontal Scroll on Mobile */}
+      <div className="overflow-x-auto scrollbar-hide mb-8 -mx-4 px-4">
+        <div className="flex justify-start sm:justify-center gap-3 min-w-max sm:min-w-0">
+          {tabs.map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`
+                px-6 py-3 font-semibold capitalize whitespace-nowrap transition-all duration-300
+                rounded-full border-2
+                ${
+                  activeTab === tab
+                    ? "bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] text-white  shadow-lg"
+                    : "bg-transparent text-black border-transparent hover:border-black/30 hover:bg-black/5"
+                }
+              `}
+              aria-selected={activeTab === tab}
+              role="tab"
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      <div className="min-h-[400px] animate-fadeIn">
+        {/* Highlights Tab */}
+        {activeTab === "highlights" && product.highlights && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 gap-5">
+            {product.highlights.map((highlight, idx) => (
+              <div
+                key={idx}
+                className="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 
+                         hover:border-green-500/50 hover:shadow-md transition-all duration-300"
+              >
+                <div className="flex items-start gap-4">
+                  <Dot className="w-7 h-7 text-black flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-800 leading-relaxed text-base">
+                    {highlight}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Benefits Tab */}
+        {activeTab === "benefits" && product.benefits && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {product.benefits.map((benefit, idx) => (
+              <div
+                key={idx}
+                className="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 
+                         hover:border-green-500/50 hover:shadow-md transition-all duration-300"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="bg-black text-white rounded-full w-9 h-9 flex items-center justify-center flex-shrink-0 font-bold text-sm">
+                    {idx + 1}
+                  </div>
+                  <p className="text-gray-800 leading-relaxed text-base">
+                    {benefit}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Ingredients Tab */}
+        {activeTab === "ingredients" && product.ingredients && (
+          <div className="space-y-5">
+            {product.ingredients.map((ingredient, idx) => (
+              <div
+                key={idx}
+                className="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 
+                         hover:border-green-500/50 hover:shadow-md transition-all duration-300"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                  <div className="text-black font-bold text-lg sm:w-12 sm:text-center">
+                    {idx + 1}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold text-black mb-2">
+                      {ingredient.name}
+                    </h4>
+                    <p className="text-gray-700 leading-relaxed">
+                      {ingredient.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+        {/* CTA Section */}
+        <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] rounded-3xl p-12 text-center mt-16">
+          <h2 className="text-4xl font-medium text-white mb-4">
+            Ready to Transform Your Health?
+          </h2>
+          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+            Join thousands of satisfied customers who achieved their wellness
+            goals
+          </p>
+          <button className="bg-white text-blue-900 px-12 py-4 rounded-xl font-medium text-lg hover:shadow-2xl hover:scale-105 transition-all">
+            Get Started Today
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default ProductDetail;
+export default ProductDetailTemplate2;

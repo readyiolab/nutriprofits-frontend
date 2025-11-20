@@ -48,7 +48,7 @@ const Template1Contact = () => {
           </div>
 
           {/* Right Image */}
-          <div className="h-[250px] sm:h-[300px] md:h-full md:min-h-[400px] bg-gradient-to-br from-[#2c786c] to-[#f8b400] flex items-center justify-center order-1 md:order-2">
+          <div className="h-[250px] sm:h-[300px] md:h-full md:min-h-[400px] bg-gradient-to-br from-[#2c786c] to-[#f8b400] flex items-center justify-center order-2 md:order-2 ">
             <div className="w-full h-full bg-[#faf5e4]/20 flex items-center justify-center backdrop-blur-sm overflow-hidden">
               <img
                 src="https://images.unsplash.com/photo-1523966211575-eb4a01e7dd51?ixlib=rb-4.1.0&auto=format&fit=crop&q=60&w=600"
@@ -215,7 +215,7 @@ const Template1Contact = () => {
           <p className="text-sm sm:text-base lg:text-lg text-[#faf5e4] mb-6 sm:mb-8">
             Call us directly or drop by our office in USA
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+          <div className="flex gap-3 sm:gap-4 justify-center flex-wrap px-4">
             <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-[#ffa500] cursor-pointer shadow-lg text-sm sm:text-base transition-all">
               Call Now <PhoneCall className="inline-block ml-2 w-4 h-4 sm:w-5 sm:h-5" />
             </button>

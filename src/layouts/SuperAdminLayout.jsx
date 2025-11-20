@@ -1,4 +1,3 @@
-// src/layouts/SuperAdminLayout.jsx
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -12,6 +11,8 @@ import {
   LogOut,
   User,
   Bell,
+  ChevronRight,
+  Home,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -29,20 +30,15 @@ const SuperAdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Optional: Protect route
-  // React.useEffect(() => {
-  //   const token = localStorage.getItem('superadmin_token');
-  //   if (!token) {
-  //     navigate('/superadmin/login');
-  //   }
-  // }, [navigate]);
+  const PRIMARY_COLOR = '#3B82F6';
+  const SECONDARY_COLOR = '#1E293B';
 
   const menuItems = [
-    { id: '', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" />, exact: true },
-    { id: 'tenants', label: 'Tenants', icon: <Users className="h-5 w-5" /> },
-    { id: 'create-user', label: 'Create Tenant', icon: <UserPlus className="h-5 w-5" /> },
-    { id: 'change-password', label: 'Change Password', icon: <KeyRound className="h-5 w-5" /> },
-    { id: 'settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
+    { id: '', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+    { id: 'tenants', label: 'Tenants', icon: Users },
+    { id: 'create-user', label: 'Create Tenant', icon: UserPlus },
+    { id: 'change-password', label: 'Change Password', icon: KeyRound },
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   const isActive = (path, exact) => {
@@ -61,54 +57,84 @@ const SuperAdminLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: '#F8FAFC' }}>
       {/* Top Header */}
-      <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b z-50 shadow-sm">
-        <div className="flex items-center justify-between h-full px-4">
+      <header 
+        className="h-16 z-50 shadow-sm border-b flex-shrink-0"
+        style={{ backgroundColor: SECONDARY_COLOR, borderColor: PRIMARY_COLOR }}
+      >
+        <div className="flex items-center justify-between h-full px-4 md:px-6">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden"
+              className="lg:hidden hover:opacity-80"
+              style={{ color: 'white' }}
             >
               {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
-            <div className="flex items-center gap-3">
+            
+            <div className="flex items-center gap-2">
+              <div 
+                className="p-2 rounded-lg"
+                style={{ backgroundColor: PRIMARY_COLOR }}
+              >
+                <Home className="h-5 w-5" style={{ color: 'white' }} />
+              </div>
               
-              <span className="text-xl font-medium text-gray-800 hidden sm:inline">SuperAdmin</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="relative">
+          <div className="flex items-center gap-2 md:gap-4">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative hover:opacity-80"
+              style={{ color: 'white' }}
+            >
               <Bell className="h-5 w-5" />
-              <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+              <span 
+                className="absolute top-1 right-1 h-2 w-2 rounded-full animate-pulse"
+                style={{ backgroundColor: PRIMARY_COLOR }}
+              ></span>
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2">
-                  <Avatar className="h-9 w-9">
+                <Button 
+                  variant="ghost" 
+                  className="flex items-center gap-2 hover:opacity-80"
+                  style={{ color: 'white' }}
+                >
+                  <Avatar className="h-9 w-9 border-2" style={{ borderColor: PRIMARY_COLOR }}>
                     <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>SA</AvatarFallback>
+                    <AvatarFallback style={{ backgroundColor: PRIMARY_COLOR, color: 'white' }}>
+                      SA
+                    </AvatarFallback>
                   </Avatar>
-                  <span className="hidden sm:inline font-medium">Super Admin</span>
+                  <span className="hidden sm:inline font-medium text-sm">Admin</span>
+                  <ChevronRight className="h-4 w-4 hidden md:inline" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuContent align="end" className="w-56 mt-2">
+                <DropdownMenuLabel style={{ color: SECONDARY_COLOR }}>
+                  My Account
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  Profile
+                <DropdownMenuItem className="cursor-pointer hover:opacity-80">
+                  <User className="mr-2 h-4 w-4" style={{ color: PRIMARY_COLOR }} />
+                  <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
+                <DropdownMenuItem className="cursor-pointer hover:opacity-80">
+                  <Settings className="mr-2 h-4 w-4" style={{ color: PRIMARY_COLOR }} />
+                  <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
+                <DropdownMenuItem 
+                  onClick={handleLogout}
+                  className="cursor-pointer text-red-600 focus:text-red-600 hover:bg-red-50"
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Logout
                 </DropdownMenuItem>
@@ -118,55 +144,89 @@ const SuperAdminLayout = () => {
         </div>
       </header>
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed top-16 left-0 bottom-0 w-64 bg-white border-r z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <nav className="p-4 space-y-1">
-          {menuItems.map((item) => {
-            const active = isActive(item.id, item.exact);
-            const toPath = item.id === '' ? '/superadmin' : `/superadmin/${item.id}`;
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <aside
+          className={`w-64 z-40 flex-shrink-0 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:relative fixed inset-y-0 left-0 ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+          style={{ backgroundColor: SECONDARY_COLOR }}
+        >
+          <div className="flex flex-col h-full">
+            <nav className="flex-1 p-3 md:p-4 space-y-2 overflow-y-auto">
+              {menuItems.map((item) => {
+                const active = isActive(item.id, item.exact);
+                const toPath = item.id === '' ? '/superadmin' : `/superadmin/${item.id}`;
+                const IconComponent = item.icon;
 
-            return (
-              <Link
-                key={item.id}
-                to={toPath}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                  active
-                    ? 'bg-blue-50 text-blue-600 font-semibold shadow-sm'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                }`}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
+                return (
+                  <Link
+                    key={item.id}
+                    to={toPath}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-lg transition-all duration-200 group ${
+                      active
+                        ? 'text-white font-semibold shadow-lg scale-105'
+                        : 'text-gray-400 hover:text-white hover:bg-opacity-10'
+                    }`}
+                    style={{
+                      backgroundColor: active ? PRIMARY_COLOR : 'transparent',
+                    }}
+                  >
+                    <IconComponent className="h-5 w-5 flex-shrink-0" />
+                    <span className="text-sm font-medium truncate">
+                      {item.label}
+                    </span>
+                    {active && (
+                      <ChevronRight className="h-4 w-4 ml-auto" />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
 
-      {/* Mobile Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+            {/* Sidebar Footer */}
+            <div 
+              className="p-3 md:p-4 border-t"
+              style={{ borderColor: PRIMARY_COLOR, opacity: 0.8 }}
+            >
+              <p className="text-xs text-gray-400 text-center truncate">
+                © 2025 SuperAdmin
+              </p>
+            </div>
+          </div>
+        </aside>
 
-      {/* Main Content Area */}
-      <main className="pt-16 lg:pl-64 min-h-screen">
-        <div className="p-6 lg:p-8">
-          <Outlet />
-        </div>
-      </main>
-      <footer className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-200 lg:left-64">
-      <div className="flex items-center justify-center h-full text-sm text-gray-500">
-        © 2025 SuperAdmin Portal • Restricted Access Only
+        {/* Mobile Overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/40 z-30 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
+            <Outlet />
+          </div>
+        </main>
       </div>
-    </footer>
+
+      {/* Footer */}
+      <footer 
+        className="h-14 border-t z-20 flex-shrink-0"
+        style={{ 
+          backgroundColor: SECONDARY_COLOR, 
+          borderColor: PRIMARY_COLOR
+        }}
+      >
+        <div className="flex items-center justify-center h-full px-4">
+          <p className="text-xs md:text-sm text-gray-400">
+            © 2025 SuperAdmin Portal • Restricted Access Only
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

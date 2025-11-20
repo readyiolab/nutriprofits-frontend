@@ -45,7 +45,7 @@ export default function SuperAdminLogin() {
     setError("");
 
     try {
-      const res = await fetch("/api/superadmin/login", {
+      const res = await fetch("http://localhost:3000/api/superadmin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -55,8 +55,9 @@ export default function SuperAdminLogin() {
 
       if (result.success) {
         localStorage.setItem("superadmin_token", result.token);
-        localStorage.setItem("superadmin_user", JSON.stringify(result.data));
-        navigate("/superadmin");
+localStorage.setItem("superadmin_user", JSON.stringify(result.data));
+navigate("/superadmin");
+;
       } else {
         setError(result.message || "Login failed. Please check your credentials.");
       }

@@ -53,16 +53,16 @@ const Template1Categories = () => {
   ];
 
   const filteredCategories = categories.filter((cat) =>
-    cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+    cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    cat.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="min-h-screen bg-[#faf5e4]">
-      {/* HERO SECTION - Fully Responsive */}
+      {/* HERO SECTION */}
       <section className="bg-gradient-to-br from-[#004445] to-[#2c786c] px-4 py-10 sm:py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Text Content */}
             <div className="text-white order-2 lg:order-1 text-center lg:text-left">
               <span className="inline-block bg-[#f8b400] text-[#004445] px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium mb-4">
                 EXPLORE CATEGORIES
@@ -78,7 +78,6 @@ const Template1Categories = () => {
               </button>
             </div>
 
-            {/* Hero Image */}
             <div className="order-1 lg:order-2">
               <img
                 src="https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?ixlib=rb-4.1.0&auto=format&fit=crop&q=80&w=800"
@@ -90,9 +89,8 @@ const Template1Categories = () => {
         </div>
       </section>
 
-      {/* Main Content */}
+      {/* MAIN CONTENT */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        {/* Heading */}
         <div className="text-center mb-10">
           <h2 className="text-3xl sm:text-4xl font-medium text-[#004445] mb-3">
             Browse Our Categories
@@ -107,51 +105,69 @@ const Template1Categories = () => {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search categories (e.g., weight loss, immunity...)"
+              placeholder="Search categories or benefits (e.g., weight loss, immunity, hair...)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-6 pr-14 py-4 rounded-full border-2 border-[#2c786c] focus:border-[#f8b400] focus:outline-none shadow-md text-base"
+              className="w-full pl-6 pr-14 py-4 rounded-full border-2 border-[#2c786c] focus:border-[#f8b400] focus:outline-none shadow-md text-base transition"
             />
-            <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#f8b400] p-3 rounded-full hover:bg-[#2c786c] transition">
-              <Search className="w-5 h-5 text-[#004445] hover:text-white" />
+            <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#f8b400] p-3 rounded-full hover:bg-[#2c786c] transition group">
+              <Search className="w-5 h-5 text-[#004445] group-hover:text-white transition" />
             </button>
           </div>
         </div>
 
-        {/* Categories Grid - Ultra Responsive */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+        {/* Categories Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
           {filteredCategories.map((category) => {
             const Icon = category.icon;
+            const isHovered = hoveredId === category.id;
+
             return (
               <div
                 key={category.id}
-                className="group cursor-pointer transform transition-all hover:-translate-y-2"
+                className="group relative"
                 onMouseEnter={() => setHoveredId(category.id)}
                 onMouseLeave={() => setHoveredId(null)}
               >
-                <div className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all h-44 sm:h-52">
-                  {/* Gradient Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-30 group-hover:opacity-50 transition`} />
-                  
-                  {/* Category Image */}
-                  <div className="relative h-32 sm:h-36 flex items-center justify-center p-4">
+                {/* Card */}
+                <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-3 cursor-pointer">
+                  {/* Gradient Banner on Hover */}
+                  <div
+                    className={`absolute inset-x-0 top-0 h-32 bg-gradient-to-br ${category.color} opacity-0 group-hover:opacity-90 transition-opacity duration-500 z-10 flex items-center justify-center flex-col text-white text-center p-4`}
+                  >
+                    <Icon className="w-10 h-10 mb-2" />
+                    <p className="text-sm font-medium leading-tight">
+                      {category.description}
+                    </p>
+                  </div>
+
+                  {/* Category Logo */}
+                  <div className="relative h-48 flex items-center justify-center p-6 bg-gray-50">
                     <img
                       src={category.image}
                       alt={category.name}
-                      className="max-w-full max-h-full object-contain transition-transform group-hover:scale-110"
+                      className={`max-w-full max-h-full object-contain transition-all duration-300 ${
+                        isHovered ? "scale-95 opacity-30" : "scale-100 opacity-100"
+                      }`}
                     />
                   </div>
 
-                  {/* Hover Icon */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
-                    <Icon className="w-12 h-12 text-white" strokeWidth={2} />
+                  {/* Name */}
+                  <div className="p-4 text-center bg-white">
+                    <h3 className="font-semibold text-[#004445] group-hover:text-[#2c786c] transition text-sm md:text-base line-clamp-2">
+                      {category.name}
+                    </h3>
                   </div>
                 </div>
 
-                {/* Category Name */}
-                <h3 className="text-center mt-3 text-sm sm:text-base font-semibold text-[#004445] group-hover:text-[#2c786c] transition line-clamp-2 px-2">
-                  {category.name}
-                </h3>
+                {/* Optional: Description Tooltip (Alternative Style) */}
+                {/* Uncomment below if you want floating tooltip instead of banner */}
+                {/* {isHovered && (
+                  <div className="absolute -top-20 left-1/2 -translate-x-1/2 bg-[#004445] text-white text-xs rounded-lg py-2 px-4 whitespace-nowrap z-20 shadow-2xl opacity-0 animate-fadeIn">
+                    {category.description}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-[#004445]" />
+                  </div>
+                )} */}
               </div>
             );
           })}
@@ -168,22 +184,20 @@ const Template1Categories = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-[#004445] to-[#2c786c] py-16 px-6 m-10 rounded-3xl relative overflow-hidden shadow-2xl">
-        <div className="max-w-4xl mx-auto text-center text-white">
-          <h3 className="text-3xl sm:text-4xl md:text-5xl font-medium mb-6">
-            Ready to Transform Your Health?
-          </h3>
-          <p className="text-lg sm:text-xl text-[#faf5e4]/90 mb-10 max-w-2xl mx-auto">
-            Join thousands who’ve already improved their wellness with science-backed supplements.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-[#f8b400] text-[#004445] font-medium px-10 py-4 rounded-full hover:bg-white transition text-lg flex items-center justify-center gap-3 mx-auto sm:mx-0">
-              Start Shopping Now <ArrowRight className="w-6 h-6" />
-            </button>
-            <button className="border-2 border-white text-white px-10 py-4 rounded-full hover:bg-white hover:text-[#004445] transition font-medium text-lg">
-              Contact Support
-            </button>
-          </div>
+      <section className="bg-gradient-to-r from-[#004445] to-[#2c786c] p-8 md:p-16 text-center text-white mx-4 sm:mx-8 lg:mx-16 my-12 rounded-3xl shadow-2xl">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-medium mb-4">
+          Ready to Transform Your Health?
+        </h2>
+        <p className="text-[#faf5e4]/90 text-base md:text-lg mb-8 max-w-2xl mx-auto">
+          Join thousands who’ve already improved their wellness with science-backed supplements.
+        </p>
+        <div className="flex gap-4 justify-center flex-wrap">
+          <button className="bg-[#f8b400] text-[#004445] px-8 py-4 rounded-full font-bold hover:bg-[#ffa500] transition shadow-lg">
+            Start Shopping Now
+          </button>
+          <button className="border-2 border-white px-8 py-4 rounded-full font-bold hover:bg-white hover:text-[#004445] transition">
+            Contact Us
+          </button>
         </div>
       </section>
     </div>

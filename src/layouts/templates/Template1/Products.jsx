@@ -3407,7 +3407,7 @@ const Template1Products = () => {
 
   // Get products to display based on displayedCount
   const displayedProducts = filteredProducts.slice(0, displayedCount);
-  
+
   // Check if there are more products to load
   const hasMoreProducts = displayedCount < filteredProducts.length;
 
@@ -3500,21 +3500,23 @@ const Template1Products = () => {
           {displayedProducts.map((product) => (
             <div
               key={product.id}
-              onClick={() => navigate(`/template/${templateId}/products/${product.id}`)}
+              onClick={() =>
+                navigate(`/template/${templateId}/products/${product.id}`)
+              }
               className="bg-white rounded-2xl shadow-lg cursor-pointer overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col "
             >
               {/* Product Image - Full width/height */}
-              <div className="relative h-64 bg-gradient-to-br from-[#2c786c]/10 to-[#004445]/10 overflow-hidden">
+              <div className="relative h-48 sm:h-64  bg-gradient-to-br from-[#2c786c]/10 to-[#004445]/10 overflow-hidden">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover transition-transform duration-500"
+                  className="w-full h-full  transition-transform duration-500 object-cover"
                   onError={(e) => {
                     e.target.src =
                       "https://via.placeholder.com/400x400.png?text=Product";
                   }}
                 />
-                {/* Optional: Add a gradient overlay for better text readability if needed */}
+
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
 
@@ -3531,11 +3533,13 @@ const Template1Products = () => {
                 </div>
 
                 {/* Button at bottom */}
-                <button 
-                  onClick={() => navigate(`/template/${templateId}/products/${product.id}`)}
-                  className="w-full bg-gradient-to-r from-[#004445] to-[#2c786c] cursor-pointer text-white py-3.5 px-6 rounded-xl font-medium  transition-all duration-300 flex items-center justify-center gap-2 group/btn">
+                <button
+                  onClick={() =>
+                    navigate(`/template/${templateId}/products/${product.id}`)
+                  }
+                  className="w-full bg-gradient-to-r from-[#004445] to-[#2c786c] cursor-pointer text-white py-3.5 px-6 rounded-xl font-medium  transition-all duration-300 flex items-center justify-center gap-2 group/btn"
+                >
                   <span>Learn More</span>
-                  
                 </button>
               </div>
             </div>
@@ -3583,7 +3587,6 @@ const Template1Products = () => {
               ) : (
                 <>
                   <span>Load More Products</span>
-                  
                 </>
               )}
             </button>
@@ -3606,24 +3609,24 @@ const Template1Products = () => {
       </div>
 
       {/* FEATURED SECTION - CTA */}
-      <div className="mt-16 bg-gradient-to-r from-[#004445] to-[#2c786c] rounded-2xl p-12 md:p-16 relative overflow-hidden m-10 shadow-2xl">
+      <div className="bg-gradient-to-r from-[#004445] to-[#2c786c] p-6 sm:p-8 md:p-12 text-center text-white shadow-2xl mx-4 sm:mx-6 lg:mx-10 mb-8 md:mb-12 rounded-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#f8b400] opacity-10 rounded-full -mr-32 -mt-32"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#f8b400] opacity-10 rounded-full -ml-24 -mb-24"></div>
 
         <div className="text-center max-w-3xl mx-auto relative z-10">
-          <h3 className="text-4xl md:text-5xl font-medium text-white mb-6">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium mb-3 sm:mb-4 px-4">
             Ready to Transform Your Health?
-          </h3>
-          <p className="text-[#faf5e4] text-lg mb-8 leading-relaxed">
+          </h2>
+          <p className="text-[#faf5e4] text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 max-w-2xl mx-auto px-4">
             Join thousands of satisfied customers who have found their perfect
             wellness solution. Browse our categories and discover products that
             match your health goals.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="bg-[#f8b400] text-[#004445] px-10 py-4 rounded-full font-semibold hover:bg-white transition-all transform  cursor-pointer shadow-xl flex items-center gap-2">
-              Start Shopping <ArrowRight className="w-5 h-5" />
+          <div className="flex gap-3 sm:gap-4 justify-center flex-wrap px-4">
+            <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-[#ffa500] cursor-pointer shadow-lg text-sm sm:text-base transition-all ">
+              Start Shopping
             </button>
-            <button className="bg-transparent border-2 border-white text-white px-10 py-4 rounded-full font-semibold hover:bg-white hover:text-[#004445] cursor-pointer transition-all transform hover:scale-105">
+            <button className="border-2 border-white text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-white hover:text-[#004445] cursor-pointer transition-all text-sm sm:text-base">
               Contact Support
             </button>
           </div>

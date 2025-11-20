@@ -119,20 +119,20 @@ const Template1FAQ = () => {
       </div>
 
       {/* CTA SECTION */}
-      <div className="mt-12 sm:mt-16 bg-gradient-to-r from-[#004445] to-[#2c786c] py-8 sm:py-10 md:py-12 mx-4 sm:mx-6 lg:mx-10 mb-8 md:mb-12 rounded-2xl relative overflow-hidden shadow-2xl">
+      <div className="bg-gradient-to-r from-[#004445] to-[#2c786c] p-6 sm:p-8 md:p-12 text-center text-white shadow-2xl mx-4 sm:mx-6 lg:mx-10 mb-8 md:mb-12 rounded-2xl relative overflow-hidden mt-12">
         <div className="absolute top-0 right-0 w-48 h-48 md:w-64 md:h-64 bg-[#f8b400] opacity-10 rounded-full -mr-24 md:-mr-32 -mt-24 md:-mt-32"></div>
         <div className="absolute bottom-0 left-0 w-32 h-32 md:w-48 md:h-48 bg-[#f8b400] opacity-10 rounded-full -ml-16 md:-ml-24 -mb-16 md:-mb-24"></div>
         
         <div className="max-w-4xl mx-auto text-center text-white px-4 sm:px-6 relative z-10">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium mb-3 sm:mb-4">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium mb-3 sm:mb-4 px-4">
             Still have questions?
           </h2>
-          <p className="text-sm sm:text-base lg:text-lg text-[#faf5e4] mb-6 sm:mb-8">
+          <p className="text-[#faf5e4] text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 max-w-2xl mx-auto px-4">
             Our support team is ready to help you 24/7.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+          <div className="flex gap-3 sm:gap-4 justify-center flex-wrap px-4">
             <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-[#ffa500] cursor-pointer shadow-lg text-sm sm:text-base transition-all">
-              Contact Support
+              Contact Us
             </button>
             <button className="border-2 border-white text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-white hover:text-[#004445] cursor-pointer transition-all text-sm sm:text-base">
               View All FAQs

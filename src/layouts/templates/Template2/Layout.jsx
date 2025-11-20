@@ -27,10 +27,10 @@ const Template2Layout = () => {
     <>
       
 
-      <div className="min-h-screen bg-first">
+      <div className="min-h-screen flex flex-col justify-between">
 
         {/* NAVBAR */}
-        <nav className="bg-first/95 backdrop-blur-md border-b border-third/20 sticky top-0 z-50 shadow-md">
+        <nav className="bg-first/95 backdrop-blur-md border-b  sticky top-0 z-50 shadow-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-5">
 
@@ -52,9 +52,7 @@ const Template2Layout = () => {
                     {link.label}
                   </Link>
                 ))}
-                <button className="bg-third text-fourth px-3 py-2 rounded-2xl font-medium tracking-wider">
-                  Get Started
-                </button>
+               
               </div>
 
               {/* Mobile Menu */}
@@ -82,12 +80,7 @@ const Template2Layout = () => {
                           {link.label}
                         </Link>
                       ))}
-                      <button
-                        onClick={() => setIsOpen(false)}
-                        className="bg-third text-white py-4 rounded-full font-bold hover:bg-fourth transition-all uppercase tracking-wider"
-                      >
-                        Get Started
-                      </button>
+                     
                     </div>
                   </SheetContent>
                 </Sheet>
@@ -97,20 +90,20 @@ const Template2Layout = () => {
         </nav>
 
         {/* MAIN CONTENT */}
-        <main className="min-h-screen py-10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <main className="min-h-screen ">
+          <div >
             <Outlet />
           </div>
         </main>
 
         {/* FOOTER */}
-        <footer className="bg-fourth text-first py-16">
+        <footer className="bg-black text-first py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
 
               {/* Company Info */}
               <div className="lg:col-span-1">
-                <h3 className="text-3xl font-bold mb-4">{template?.name}</h3>
+                <h3 className="text-3xl font-medium mb-4">{template?.name}</h3>
                 <p className="text-second text-base leading-relaxed">
                   Committed to sustainability and natural excellence in every product.
                 </p>
@@ -118,7 +111,7 @@ const Template2Layout = () => {
 
               {/* Quick Links */}
               <div>
-                <h4 className="text-xl font-bold mb-6 text-first">Quick Links</h4>
+                <h4 className="text-xl font-medium mb-6 text-first">Quick Links</h4>
                 <ul className="space-y-4 text-second">
                   {navLinks.map((link) => (
                     <li key={link.to}>
@@ -132,7 +125,7 @@ const Template2Layout = () => {
 
               {/* Contact */}
               <div>
-                <h4 className="text-xl font-bold mb-6 text-first">Contact Us</h4>
+                <h4 className="text-xl font-medium mb-6 text-first">Contact Us</h4>
                 <p className="text-second mb-2">info@example.com</p>
                 <p className="text-second mb-2">(123) 456-7890</p>
                 <p className="text-second">Nature Valley, Green City</p>
@@ -140,7 +133,7 @@ const Template2Layout = () => {
 
               {/* Social */}
               <div>
-                <h4 className="text-xl font-bold mb-6 text-first">Follow Us</h4>
+                <h4 className="text-xl font-medium mb-6 text-first">Follow Us</h4>
                 <div className="flex space-x-4">
                   <div className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer">
                     <span className="text-fourth text-2xl font-bold">f</span>
