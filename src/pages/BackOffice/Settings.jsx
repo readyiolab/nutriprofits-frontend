@@ -1,11 +1,31 @@
-import React from 'react';
-import { Save, Loader2, Globe, CheckCircle, Clock, XCircle, AlertCircle, Copy, ExternalLink, Trash2, RefreshCw, ChevronRight, Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Toaster, toast } from 'sonner';
+import React from "react";
+import {
+  Save,
+  Loader2,
+  Globe,
+  CheckCircle,
+  Clock,
+  XCircle,
+  AlertCircle,
+  Copy,
+  ExternalLink,
+  Trash2,
+  RefreshCw,
+  ChevronRight,
+  Info,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Toaster, toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -13,48 +33,49 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from '@/components/ui/alert';
-import { useFetch } from '@/hooks';
-import { useDomainVerification } from '@/contexts/DomainVerificationContext';
+} from "@/components/ui/dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useFetch } from "@/hooks";
+import { useDomainVerification } from "@/contexts/DomainVerificationContext";
 
 const Settings = () => {
   const [saving, setSaving] = React.useState(false);
   const [setupDomainOpen, setSetupDomainOpen] = React.useState(false);
   const [removeDomainOpen, setRemoveDomainOpen] = React.useState(false);
   const [checkingDomain, setCheckingDomain] = React.useState(false);
-  const [customDomainInput, setCustomDomainInput] = React.useState('');
+  const [customDomainInput, setCustomDomainInput] = React.useState("");
   const [showDetailedGuide, setShowDetailedGuide] = React.useState(false);
-  
+
   // Use global domain verification context
-  const { domainVerification, setDomainVerification, setShowBanner, refetchDomainStatus } = useDomainVerification();
-  
+  const {
+    domainVerification,
+    setDomainVerification,
+    setShowBanner,
+    refetchDomainStatus,
+  } = useDomainVerification();
+
   const [settings, setSettings] = React.useState({
-    name: '',
-    email: '',
-    store_name: '',
-    subdomain: '',
-    template_id: '',
-    subscription_plan: '',
-    status: '',
-    domain_type: 'subdomain',
-    primary_domain: '',
+    name: "",
+    email: "",
+    store_name: "",
+    subdomain: "",
+    template_id: "",
+    subscription_plan: "",
+    status: "",
+    domain_type: "subdomain",
+    primary_domain: "",
     custom_domain: null,
-    custom_domain_status: 'not_started',
-    subdomain_url: '',
+    custom_domain_status: "not_started",
+    subdomain_url: "",
     custom_domain_url: null,
-    active_url: '',
+    active_url: "",
   });
 
-  const SERVER_IP = '139.59.8.68';
-  const TARGET_DOMAIN = 'igrowbig.com';
+  const SERVER_IP = "139.59.8.68";
+  const TARGET_DOMAIN = "igrowbig.com";
 
   const backofficeId = React.useMemo(() => {
-    return localStorage.getItem('backofficeId') || '1';
+    return localStorage.getItem("backofficeId") || "1";
   }, []);
 
   // Fetch settings using custom hook
@@ -69,13 +90,13 @@ const Settings = () => {
 
   // Update settings when fetched
   React.useEffect(() => {
-    console.log('Fetched Settings:', fetchedSettings);
-    if (fetchedSettings && typeof fetchedSettings === 'object') {
+    console.log("Fetched Settings:", fetchedSettings);
+    if (fetchedSettings && typeof fetchedSettings === "object") {
       // API returns { success, message, settings: {...} }
       const settingsData = fetchedSettings.settings || fetchedSettings;
-      setSettings(prevSettings => ({
+      setSettings((prevSettings) => ({
         ...prevSettings,
-        ...settingsData
+        ...settingsData,
       }));
     }
   }, [fetchedSettings]);
@@ -83,33 +104,36 @@ const Settings = () => {
   const handleSaveSettings = async () => {
     try {
       setSaving(true);
-      
+
       const updateData = {
         name: settings.name,
         store_name: settings.store_name,
       };
 
-      const response = await fetch(`http://localhost:3001/api/backoffice/${backofficeId}/settings`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // Include cookies in request
-        body: JSON.stringify(updateData),
-      });
+      const response = await fetch(
+        `http://localhost:3001/api/backoffice/${backofficeId}/settings`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include cookies in request
+          body: JSON.stringify(updateData),
+        }
+      );
 
       const result = await response.json();
 
       if (result.success) {
-        toast.success('Settings saved successfully!');
+        toast.success("Settings saved successfully!");
         setSettings(result.settings);
         refetchSettings();
       } else {
-        toast.error(result.message || 'Failed to save settings');
+        toast.error(result.message || "Failed to save settings");
       }
     } catch (error) {
-      console.error('Error saving settings:', error);
-      toast.error('Failed to save settings');
+      console.error("Error saving settings:", error);
+      toast.error("Failed to save settings");
     } finally {
       setSaving(false);
     }
@@ -117,37 +141,42 @@ const Settings = () => {
 
   const handleSetupDomain = async () => {
     if (!customDomainInput.trim()) {
-      toast.error('Please enter a domain name');
+      toast.error("Please enter a domain name");
       return;
     }
 
     try {
       setSaving(true);
-      
-      const response = await fetch(`http://localhost:3001/api/backoffice/${backofficeId}/domain`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // Include cookies in request
-        body: JSON.stringify({ customDomain: customDomainInput }),
-      });
+
+      const response = await fetch(
+        `http://localhost:3001/api/backoffice/${backofficeId}/domain`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include cookies in request
+          body: JSON.stringify({ customDomain: customDomainInput }),
+        }
+      );
 
       const result = await response.json();
 
       if (result.success) {
-        toast.success('Domain setup initiated! Check your email for DNS instructions.');
+        toast.success(
+          "Domain setup initiated! Check your email for DNS instructions."
+        );
         setDomainVerification(result.verification);
         setShowBanner(true); // Show banner when domain is set up
         setSetupDomainOpen(false);
-        setCustomDomainInput('');
+        setCustomDomainInput("");
         refetchSettings();
       } else {
-        toast.error(result.message || 'Failed to setup domain');
+        toast.error(result.message || "Failed to setup domain");
       }
     } catch (error) {
-      console.error('Error setting up domain:', error);
-      toast.error('Failed to setup domain');
+      console.error("Error setting up domain:", error);
+      toast.error("Failed to setup domain");
     } finally {
       setSaving(false);
     }
@@ -156,27 +185,30 @@ const Settings = () => {
   const handleRemoveDomain = async () => {
     try {
       setSaving(true);
-      
-      const response = await fetch(`http://localhost:3001/api/backoffice/${backofficeId}/domain`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Include cookies in request
-      });
+
+      const response = await fetch(
+        `http://localhost:3001/api/backoffice/${backofficeId}/domain`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include", // Include cookies in request
+        }
+      );
 
       const result = await response.json();
 
       if (result.success) {
-        toast.success('Custom domain removed successfully!');
+        toast.success("Custom domain removed successfully!");
         setDomainVerification(null);
         setShowBanner(false); // Hide banner when domain is removed
         setRemoveDomainOpen(false);
         refetchSettings();
       } else {
-        toast.error(result.message || 'Failed to remove domain');
+        toast.error(result.message || "Failed to remove domain");
       }
     } catch (error) {
-      console.error('Error removing domain:', error);
-      toast.error('Failed to remove domain');
+      console.error("Error removing domain:", error);
+      toast.error("Failed to remove domain");
     } finally {
       setSaving(false);
     }
@@ -187,24 +219,44 @@ const Settings = () => {
     await refetchDomainStatus();
     await refetchSettings();
     setCheckingDomain(false);
-    toast.success('Domain status updated');
+    toast.success("Domain status updated");
   };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard!');
+    toast.success("Copied to clipboard!");
   };
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'verified':
-        return <Badge className="bg-green-100 text-green-700"><CheckCircle className="h-3 w-3 mr-1" />Verified</Badge>;
-      case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-700"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
-      case 'failed':
-        return <Badge className="bg-red-100 text-red-700"><XCircle className="h-3 w-3 mr-1" />Failed</Badge>;
+      case "verified":
+        return (
+          <Badge className="bg-green-100 text-green-700">
+            <CheckCircle className="h-3 w-3 mr-1" />
+            Verified
+          </Badge>
+        );
+      case "pending":
+        return (
+          <Badge className="bg-yellow-100 text-yellow-700">
+            <Clock className="h-3 w-3 mr-1" />
+            Pending
+          </Badge>
+        );
+      case "failed":
+        return (
+          <Badge className="bg-red-100 text-red-700">
+            <XCircle className="h-3 w-3 mr-1" />
+            Failed
+          </Badge>
+        );
       default:
-        return <Badge className="bg-gray-100 text-gray-700"><AlertCircle className="h-3 w-3 mr-1" />Not Started</Badge>;
+        return (
+          <Badge className="bg-gray-100 text-gray-700">
+            <AlertCircle className="h-3 w-3 mr-1" />
+            Not Started
+          </Badge>
+        );
     }
   };
 
@@ -219,11 +271,13 @@ const Settings = () => {
   return (
     <div className="space-y-6 pb-8">
       <Toaster position="top-right" />
-      
+
       {/* Header */}
       <div>
         <h1 className="text-xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-1">Manage your account and domain settings</p>
+        <p className="text-gray-600 mt-1">
+          Manage your account and domain settings
+        </p>
       </div>
 
       {/* Account Information */}
@@ -238,15 +292,17 @@ const Settings = () => {
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
-                value={settings.name ?? ''}
-                onChange={(e) => setSettings({ ...settings, name: e.target.value })}
+                value={settings.name ?? ""}
+                onChange={(e) =>
+                  setSettings({ ...settings, name: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
-                value={settings.email ?? ''}
+                value={settings.email ?? ""}
                 disabled
                 className="bg-gray-50"
               />
@@ -256,8 +312,10 @@ const Settings = () => {
             <Label htmlFor="store_name">Store Name</Label>
             <Input
               id="store_name"
-              value={settings.store_name ?? ''}
-              onChange={(e) => setSettings({ ...settings, store_name: e.target.value })}
+              value={settings.store_name ?? ""}
+              onChange={(e) =>
+                setSettings({ ...settings, store_name: e.target.value })
+              }
               placeholder="Enter your store name"
             />
           </div>
@@ -266,25 +324,41 @@ const Settings = () => {
               <Label>Subscription Plan</Label>
               <div className="flex items-center gap-2">
                 <Badge className="bg-blue-100 text-blue-700 text-sm py-1.5 px-3">
-                  {settings.subscription_plan || 'Free'}
+                  {settings.subscription_plan || "Free"}
                 </Badge>
               </div>
             </div>
             <div className="space-y-2">
               <Label>Account Status</Label>
               <div className="flex items-center gap-2">
-                <Badge className={settings.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+                <Badge
+                  className={
+                    settings.status === "active"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-gray-100 text-gray-700"
+                  }
+                >
                   {settings.status}
                 </Badge>
               </div>
             </div>
           </div>
           <div className="pt-4 border-t">
-            <Button onClick={handleSaveSettings} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              onClick={handleSaveSettings}
+              disabled={saving}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               {saving ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
               ) : (
-                <><Save className="h-4 w-4 mr-2" />Save Changes</>
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </>
               )}
             </Button>
           </div>
@@ -300,14 +374,27 @@ const Settings = () => {
                 <Globe className="h-5 w-5 text-blue-600" />
                 Domain Management
               </CardTitle>
-              <CardDescription>Manage your subdomain and custom domain</CardDescription>
+              <CardDescription>
+                Manage your subdomain and custom domain
+              </CardDescription>
             </div>
             {settings.custom_domain && (
-              <Button onClick={handleCheckDomain} disabled={checkingDomain} variant="outline" size="sm">
+              <Button
+                onClick={handleCheckDomain}
+                disabled={checkingDomain}
+                variant="outline"
+                size="sm"
+              >
                 {checkingDomain ? (
-                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Checking...</>
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Checking...
+                  </>
                 ) : (
-                  <><RefreshCw className="h-4 w-4 mr-2" />Check Status</>
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Check Status
+                  </>
                 )}
               </Button>
             )}
@@ -319,12 +406,16 @@ const Settings = () => {
             <div className="flex items-center justify-between">
               <Label className="text-base font-semibold">Active Domain</Label>
               <Badge className="bg-purple-100 text-purple-700">
-                {settings.domain_type === 'custom_domain' ? 'Custom Domain' : 'Subdomain'}
+                {settings.domain_type === "custom_domain"
+                  ? "Custom Domain"
+                  : "Subdomain"}
               </Badge>
             </div>
             <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
               <Globe className="h-4 w-4 text-gray-500" />
-              <code className="flex-1 text-sm font-mono">{settings.active_url}</code>
+              <code className="flex-1 text-sm font-mono">
+                {settings.active_url}
+              </code>
               <Button
                 variant="ghost"
                 size="sm"
@@ -335,7 +426,7 @@ const Settings = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => window.open(settings.active_url, '_blank')}
+                onClick={() => window.open(settings.active_url, "_blank")}
               >
                 <ExternalLink className="h-4 w-4" />
               </Button>
@@ -346,10 +437,14 @@ const Settings = () => {
           <div className="space-y-3 p-4 border rounded-lg bg-blue-50">
             <div className="flex items-center justify-between">
               <Label className="font-semibold">Your Subdomain</Label>
-              <Badge variant="outline" className="text-xs">Always Active</Badge>
+              <Badge variant="outline" className="text-xs">
+                Always Active
+              </Badge>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600">
-              <code className="bg-white px-3 py-1.5 rounded border">{settings.subdomain}</code>
+              <code className="bg-white px-3 py-1.5 rounded border">
+                {settings.subdomain}
+              </code>
             </div>
             <p className="text-xs text-gray-500">
               Your subdomain is always available even when using a custom domain
@@ -360,10 +455,18 @@ const Settings = () => {
           {!settings.custom_domain ? (
             <Alert className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
               <Globe className="h-4 w-4 text-blue-600" />
-              <AlertTitle className="text-blue-900">Ready to use your own domain?</AlertTitle>
+              <AlertTitle className="text-blue-900">
+                Ready to use your own domain?
+              </AlertTitle>
               <AlertDescription>
-                <p className="mb-3 text-blue-800">Connect your custom domain to make your store more professional and memorable.</p>
-                <Button onClick={() => setSetupDomainOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+                <p className="mb-3 text-blue-800">
+                  Connect your custom domain to make your store more
+                  professional and memorable.
+                </p>
+                <Button
+                  onClick={() => setSetupDomainOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
                   <Globe className="h-4 w-4 mr-2" />
                   Setup Custom Domain
                 </Button>
@@ -375,8 +478,12 @@ const Settings = () => {
               <div className="p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <Label className="font-semibold text-base text-blue-900">Custom Domain</Label>
-                    <p className="text-sm text-blue-700 mt-1 font-mono">{settings.custom_domain}</p>
+                    <Label className="font-semibold text-base text-blue-900">
+                      Custom Domain
+                    </Label>
+                    <p className="text-sm text-black mt-1 font-bold">
+                      {settings.custom_domain}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     {getStatusBadge(settings.custom_domain_status)}
@@ -394,202 +501,291 @@ const Settings = () => {
                 {/* Verification Status */}
                 {domainVerification && (
                   <>
-                    {domainVerification.status === 'pending' && (
-                      <Alert className="bg-yellow-50 border-yellow-300 mt-4">
-                        <Clock className="h-4 w-4 text-yellow-600" />
-                        <AlertTitle className="text-yellow-900 font-semibold">
-                          ⏳ Verification In Progress
-                        </AlertTitle>
-                        <AlertDescription className="text-yellow-800">
-                          <p className="mb-4">Follow these steps to verify and activate your domain:</p>
-                          
-                          {/* STEP 1: Verification */}
-                          <div className="bg-white rounded-lg border border-yellow-200 p-4 mb-4">
-                            <div className="flex items-center gap-2 mb-3">
-                              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-yellow-500 text-white text-xs font-bold">
-                                1
-                              </div>
-                              <h4 className="font-bold text-gray-900">Verify Domain Ownership</h4>
-                              <Badge className="bg-yellow-100 text-yellow-700 text-xs">Required First</Badge>
-                            </div>
-                            
-                            <p className="text-sm text-gray-700 mb-3">
-                              Add this TXT record to your DNS settings to prove you own the domain:
+                    {/* Show detailed instructions if custom domain exists and is NOT verified */}
+                    {settings.custom_domain &&
+                      settings.custom_domain_status !== "verified" && (
+                        <Alert className=" mt-4">
+                          <Clock className="h-4 w-4 text-yellow-600" />
+                          <AlertTitle className="text-yellow-900 font-semibold">
+                            Verification In Progress
+                          </AlertTitle>
+                          <AlertDescription className="text-yellow-800">
+                            <p className="mb-4">
+                              Your domain{" "}
+                              <strong>{settings.custom_domain}</strong> is being
+                              verified. Follow the steps below:
                             </p>
 
-                            <div className="space-y-2 bg-gray-50 p-3 rounded border">
-                              <div className="grid grid-cols-[100px_1fr] gap-2 items-center">
-                                <span className="text-xs font-semibold text-gray-600">Record Type:</span>
-                                <code className="bg-white px-2 py-1 rounded text-sm border">TXT</code>
+                            {/* STEP 1: Always show if not verified */}
+                            <div className="bg-white rounded-lg border border-yellow-200 p-4 mb-4">
+                              <div className="flex items-center gap-2 mb-3">
+                                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-yellow-500 text-white text-xs font-bold">
+                                  1
+                                </div>
+                                <h4 className="font-bold text-gray-900">
+                                  Verify Domain Ownership (Required)
+                                </h4>
+                                <Badge className="bg-yellow-100 text-yellow-700 text-xs">
+                                  {domainVerification?.token
+                                    ? "In Progress"
+                                    : "Not Started"}
+                                </Badge>
                               </div>
-                              <div className="grid grid-cols-[100px_1fr] gap-2 items-start">
-                                <span className="text-xs font-semibold text-gray-600">Host/Name:</span>
-                                <div className="flex items-center gap-2">
-                                  <code className="bg-white px-2 py-1 rounded text-xs border flex-1 break-all">
-                                    _igrowbig-verification
+
+                              <p className="text-sm text-gray-700 mb-3">
+                                Add this TXT record to your domain's DNS
+                                settings:
+                              </p>
+
+                              <div className="space-y-2 bg-gray-50 p-3 rounded border text-sm">
+                                <div className="grid grid-cols-[100px_1fr] gap-2">
+                                  <span className="font-semibold text-gray-600">
+                                    Type:
+                                  </span>
+                                  <code className="bg-white px-2 py-1 rounded border">
+                                    TXT
                                   </code>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => copyToClipboard('_igrowbig-verification')}
-                                    className="flex-shrink-0"
-                                  >
-                                    <Copy className="h-3 w-3" />
-                                  </Button>
+                                </div>
+                                <div className="grid grid-cols-[100px_1fr] gap-2 items-start">
+                                  <span className="font-semibold text-gray-600">
+                                    Host:
+                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <code className="bg-white px-2 py-1 rounded border">
+                                      _igrowbig-verification
+                                    </code>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() =>
+                                        copyToClipboard(
+                                          "_igrowbig-verification"
+                                        )
+                                      }
+                                    >
+                                      <Copy className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-[100px_1fr] gap-2 items-start">
+                                  <span className="font-semibold text-gray-600">
+                                    Value:
+                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <code className="bg-white px-2 py-1 rounded border break-all">
+                                      {domainVerification?.token ||
+                                        "Waiting for verification token..."}
+                                    </code>
+                                    {domainVerification?.token && (
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          copyToClipboard(
+                                            domainVerification.token
+                                          )
+                                        }
+                                      >
+                                        <Copy className="h-3 w-3" />
+                                      </Button>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                              <div className="grid grid-cols-[100px_1fr] gap-2 items-start">
-                                <span className="text-xs font-semibold text-gray-600">Value:</span>
-                                <div className="flex items-center gap-2">
-                                  <code className="bg-white px-2 py-1 rounded text-xs border flex-1 break-all">
-                                    {domainVerification?.token ?? 'Loading...'}
-                                  </code>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => domainVerification?.token && copyToClipboard(domainVerification.token)}
-                                    className="flex-shrink-0"
-                                  >
-                                    <Copy className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-[100px_1fr] gap-2 items-center">
-                                <span className="text-xs font-semibold text-gray-600">TTL:</span>
-                                <code className="bg-white px-2 py-1 rounded text-sm border">3600</code>
-                              </div>
+
+                              {domainVerification?.token ? (
+                                <p className="text-xs text-amber-700 mt-3">
+                                  TXT record detected! Waiting for DNS
+                                  propagation...
+                                </p>
+                              ) : (
+                                <p className="text-xs text-gray-500 mt-3">
+                                  Verification token will appear here after you
+                                  start setup.
+                                </p>
+                              )}
+
+                              <Button
+                                onClick={() => setShowDetailedGuide(true)}
+                                variant="outline"
+                                size="sm"
+                                className="mt-3 text-xs"
+                              >
+                                <Info className="h-3 w-3 mr-1" />
+                                How to add DNS records?
+                              </Button>
                             </div>
 
-                            <Button
-                              onClick={() => setShowDetailedGuide(true)}
-                              variant="outline"
-                              size="sm"
-                              className="mt-3 text-xs"
-                            >
-                              <Info className="h-3 w-3 mr-1" />
-                              How to add DNS records?
-                            </Button>
-                          </div>
+                            {/* Step 2: Show only after token exists (meaning ownership verified) */}
+                            {domainVerification?.token && (
+                              <div className="bg-white rounded-lg border border-green-200 p-4">
+                                <div className="flex items-center gap-2 mb-3">
+                                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold">
+                                    2
+                                  </div>
+                                  <h4 className="font-bold text-gray-900">
+                                    Point Your Domain to Our Server
+                                  </h4>
+                                  <Badge className="bg-green-100 text-green-700 text-xs">
+                                    Ready
+                                  </Badge>
+                                </div>
 
-                          {/* STEP 2: Point Domain */}
-                          <div className="bg-white rounded-lg border border-gray-300 p-4 opacity-60">
-                            <div className="flex items-center gap-2 mb-3">
-                              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-400 text-white text-xs font-bold">
-                                2
+                                <p className="text-sm text-gray-700 mb-3">
+                                  Now add <strong>one</strong> of these records
+                                  to make your domain live:
+                                </p>
+
+                                {/* CNAME Option */}
+                                <div className="bg-green-50 p-3 rounded border mb-3">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Badge className="bg-green-100 text-green-700 text-xs">
+                                      Recommended
+                                    </Badge>
+                                    <span className="font-semibold text-sm">
+                                      CNAME Record
+                                    </span>
+                                  </div>
+                                  <div className="text-sm space-y-1">
+                                    <div>
+                                      <strong>Host:</strong> @
+                                    </div>
+                                    <div>
+                                      <strong>Target:</strong>{" "}
+                                      <code className="bg-white px-2 py-1 rounded border font-medium">
+                                        {TARGET_DOMAIN}
+                                      </code>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* A Record Option */}
+                                <div className="bg-gray-50 p-3 rounded border">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Badge
+                                      variant="outline"
+                                      className="text-xs"
+                                    >
+                                      Alternative
+                                    </Badge>
+                                    <span className="font-semibold text-sm">
+                                      A Record
+                                    </span>
+                                  </div>
+                                  <div className="text-sm space-y-1">
+                                    <div>
+                                      <strong>Host:</strong> @
+                                    </div>
+                                    <div>
+                                      <strong>IP:</strong>{" "}
+                                      <code className="bg-white px-2 py-1 rounded border font-medium">
+                                        {SERVER_IP}
+                                      </code>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
-                              <h4 className="font-bold text-gray-900">Point Your Domain</h4>
-                              <Badge className="bg-gray-100 text-gray-600 text-xs">After Verification</Badge>
+                            )}
+
+                            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200 text-sm">
+                              <p className="font-semibold text-blue-900 mb-2">
+                                Expected Timeline:
+                              </p>
+                              <ul className="space-y-1 text-xs text-blue-800">
+                                <li>• DNS changes: 5 mins – 48 hours</li>
+                                <li>
+                                  • We check every 5 minutes automatically
+                                </li>
+                                <li>
+                                  • You’ll get an email when fully active!
+                                </li>
+                              </ul>
                             </div>
-                            
-                            <p className="text-sm text-gray-600 mb-3">
-                              Once Step 1 is verified, add ONE of these records to point your domain:
-                            </p>
 
-                            <div className="space-y-3">
-                              {/* Option A: CNAME */}
-                              <div className="bg-gray-50 p-3 rounded border">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <Badge className="bg-green-100 text-green-700 text-xs">Recommended</Badge>
-                                  <span className="font-semibold text-sm">Option A: CNAME Record</span>
-                                </div>
-                                <div className="space-y-2">
-                                  <div className="grid grid-cols-[100px_1fr] gap-2 items-center text-sm">
-                                    <span className="text-gray-600">Record Type:</span>
-                                    <code className="bg-white px-2 py-1 rounded border">CNAME</code>
-                                  </div>
-                                  <div className="grid grid-cols-[100px_1fr] gap-2 items-center text-sm">
-                                    <span className="text-gray-600">Host/Name:</span>
-                                    <code className="bg-white px-2 py-1 rounded border">@ or {settings.custom_domain?.replace(/^www\./, '')}</code>
-                                  </div>
-                                  <div className="grid grid-cols-[100px_1fr] gap-2 items-center text-sm">
-                                    <span className="text-gray-600">Target/Value:</span>
-                                    <code className="bg-white px-2 py-1 rounded border font-semibold text-blue-600">{TARGET_DOMAIN}</code>
-                                  </div>
-                                  <div className="grid grid-cols-[100px_1fr] gap-2 items-center text-sm">
-                                    <span className="text-gray-600">TTL:</span>
-                                    <code className="bg-white px-2 py-1 rounded border">3600</code>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Option B: A Record */}
-                              <div className="bg-gray-50 p-3 rounded border">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <Badge variant="outline" className="text-xs">Alternative</Badge>
-                                  <span className="font-semibold text-sm">Option B: A Record</span>
-                                </div>
-                                <div className="space-y-2">
-                                  <div className="grid grid-cols-[100px_1fr] gap-2 items-center text-sm">
-                                    <span className="text-gray-600">Record Type:</span>
-                                    <code className="bg-white px-2 py-1 rounded border">A</code>
-                                  </div>
-                                  <div className="grid grid-cols-[100px_1fr] gap-2 items-center text-sm">
-                                    <span className="text-gray-600">Host/Name:</span>
-                                    <code className="bg-white px-2 py-1 rounded border">@</code>
-                                  </div>
-                                  <div className="grid grid-cols-[100px_1fr] gap-2 items-center text-sm">
-                                    <span className="text-gray-600">IP Address:</span>
-                                    <code className="bg-white px-2 py-1 rounded border font-semibold text-blue-600">{SERVER_IP}</code>
-                                  </div>
-                                  <div className="grid grid-cols-[100px_1fr] gap-2 items-center text-sm">
-                                    <span className="text-gray-600">TTL:</span>
-                                    <code className="bg-white px-2 py-1 rounded border">3600</code>
-                                  </div>
-                                </div>
-                              </div>
+                            <div className="mt-4 flex justify-end">
+                              <Button
+                                onClick={handleCheckDomain}
+                                size="sm"
+                                disabled={checkingDomain}
+                              >
+                                {checkingDomain ? (
+                                  <>Checking...</>
+                                ) : (
+                                  <>
+                                    <RefreshCw className="h-3 w-3 mr-1" />
+                                    Check Status Now
+                                  </>
+                                )}
+                              </Button>
                             </div>
-                          </div>
+                          </AlertDescription>
+                        </Alert>
+                      )}
 
-                          {/* Timeline */}
-                          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                            <p className="font-semibold text-sm text-blue-900 mb-2">⏱️ Expected Timeline:</p>
-                            <ul className="space-y-1 text-xs text-blue-800">
-                              <li className="flex items-start gap-2">
-                                <ChevronRight className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                                <span><strong>Step 1:</strong> DNS propagation takes 5-15 minutes (up to 48 hours)</span>
-                              </li>
-                              <li className="flex items-start gap-2">
-                                <ChevronRight className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                                <span><strong>Auto-verify:</strong> We check every few minutes automatically</span>
-                              </li>
-                              <li className="flex items-start gap-2">
-                                <ChevronRight className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                                <span><strong>Step 2:</strong> Add after verification email is received</span>
-                              </li>
-                              <li className="flex items-start gap-2">
-                                <ChevronRight className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                                <span><strong>Final:</strong> Domain active within 24 hours of Step 2</span>
-                              </li>
-                            </ul>
-                          </div>
-                        </AlertDescription>
-                      </Alert>
-                    )}
-
-                    {domainVerification.status === 'verified' && (
+                    {/* Show success message only when fully verified */}
+                    {settings.custom_domain_status === "verified" && (
                       <Alert className="bg-green-50 border-green-300 mt-4">
                         <CheckCircle className="h-4 w-4 text-green-600" />
-                        <AlertTitle className="text-green-900 font-semibold">🎉 Domain Verified & Active!</AlertTitle>
+                        <AlertTitle className="text-green-900 font-semibold">
+                          Domain Active & Working!
+                        </AlertTitle>
                         <AlertDescription className="text-green-800">
-                          <p>Your custom domain is now live and working correctly.</p>
+                          <p>
+                            Your custom domain{" "}
+                            <strong>{settings.custom_domain}</strong> is now
+                            live!
+                          </p>
                           {domainVerification?.verified_at && (
-                            <p className="text-xs mt-2 text-green-700">
-                              ✓ Verified on: {new Date(domainVerification.verified_at).toLocaleString()}
+                            <p>
+                              {" "}
+                              Verified on:{" "}
+                              {new Date(
+                                domainVerification.verified_at
+                              ).toLocaleString()}
                             </p>
                           )}
                         </AlertDescription>
                       </Alert>
                     )}
 
-                    {domainVerification.status === 'failed' && (
+                    {domainVerification.status === "verified" && (
+                      <Alert className="bg-green-50 border-green-300 mt-4">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <AlertTitle className="text-green-900 font-semibold">
+                          🎉 Domain Verified & Active!
+                        </AlertTitle>
+                        <AlertDescription className="text-green-800">
+                          <p>
+                            Your custom domain is now live and working
+                            correctly.
+                          </p>
+                          {domainVerification?.verified_at && (
+                            <p className="text-xs mt-2 text-green-700">
+                              ✓ Verified on:{" "}
+                              {new Date(
+                                domainVerification.verified_at
+                              ).toLocaleString()}
+                            </p>
+                          )}
+                        </AlertDescription>
+                      </Alert>
+                    )}
+
+                    {domainVerification.status === "failed" && (
                       <Alert className="bg-red-50 border-red-300 mt-4">
                         <XCircle className="h-4 w-4 text-red-600" />
-                        <AlertTitle className="text-red-900 font-semibold">Verification Failed</AlertTitle>
+                        <AlertTitle className="text-red-900 font-semibold">
+                          Verification Failed
+                        </AlertTitle>
                         <AlertDescription className="text-red-800">
-                          <p className="mb-2">We couldn't verify your domain. Please check:</p>
+                          <p className="mb-2">
+                            We couldn't verify your domain. Please check:
+                          </p>
                           <ul className="list-disc list-inside space-y-1 text-sm">
                             <li>DNS records are added correctly</li>
-                            <li>DNS has propagated (can take up to 48 hours)</li>
+                            <li>
+                              DNS has propagated (can take up to 48 hours)
+                            </li>
                             <li>No typos in record values</li>
                           </ul>
                           <Button
@@ -649,9 +845,16 @@ const Settings = () => {
             <Button variant="outline" onClick={() => setSetupDomainOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSetupDomain} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              onClick={handleSetupDomain}
+              disabled={saving}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               {saving ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Setting up...</>
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Setting up...
+                </>
               ) : (
                 <>Continue</>
               )}
@@ -681,7 +884,10 @@ const Settings = () => {
             </AlertDescription>
           </Alert>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRemoveDomainOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setRemoveDomainOpen(false)}
+            >
               Cancel
             </Button>
             <Button
@@ -690,9 +896,15 @@ const Settings = () => {
               className="bg-red-600 hover:bg-red-700"
             >
               {saving ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Removing...</>
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Removing...
+                </>
               ) : (
-                <><Trash2 className="h-4 w-4 mr-2" />Remove Domain</>
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Remove Domain
+                </>
               )}
             </Button>
           </DialogFooter>
@@ -703,16 +915,20 @@ const Settings = () => {
       <Dialog open={showDetailedGuide} onOpenChange={setShowDetailedGuide}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-xl">📚 Complete DNS Setup Guide</DialogTitle>
+            <DialogTitle className="text-xl">
+              📚 Complete DNS Setup Guide
+            </DialogTitle>
             <DialogDescription>
               Step-by-step instructions for common domain registrars
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-6 py-4">
             {/* General Instructions */}
             <div className="space-y-3">
-              <h3 className="font-bold text-lg">🎯 General Steps (Works for most providers)</h3>
+              <h3 className="font-bold text-lg">
+                🎯 General Steps (Works for most providers)
+              </h3>
               <div className="space-y-4">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <div className="flex items-start gap-3">
@@ -720,8 +936,13 @@ const Settings = () => {
                       1
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-1">Login to Your Domain Registrar</h4>
-                      <p className="text-sm text-gray-700">Go to the website where you purchased your domain (GoDaddy, Namecheap, Google Domains, Cloudflare, etc.)</p>
+                      <h4 className="font-semibold mb-1">
+                        Login to Your Domain Registrar
+                      </h4>
+                      <p className="text-sm text-gray-700">
+                        Go to the website where you purchased your domain
+                        (GoDaddy, Namecheap, Google Domains, Cloudflare, etc.)
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -732,8 +953,12 @@ const Settings = () => {
                       2
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold mb-1">Find DNS Management</h4>
-                      <p className="text-sm text-gray-700 mb-2">Look for one of these sections:</p>
+                      <h4 className="font-semibold mb-1">
+                        Find DNS Management
+                      </h4>
+                      <p className="text-sm text-gray-700 mb-2">
+                        Look for one of these sections:
+                      </p>
                       <ul className="text-xs space-y-1 text-gray-600">
                         <li>• "DNS Management" or "DNS Settings"</li>
                         <li>• "Manage DNS" or "DNS Records"</li>
@@ -750,24 +975,37 @@ const Settings = () => {
                       3
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold mb-1">Add the TXT Record (Verification)</h4>
-                      <p className="text-sm text-gray-700 mb-2">Click "Add Record" and enter:</p>
+                      <h4 className="font-semibold mb-1">
+                        Add the TXT Record (Verification)
+                      </h4>
+                      <p className="text-sm text-gray-700 mb-2">
+                        Click "Add Record" and enter:
+                      </p>
                       <div className="bg-white p-3 rounded border space-y-2 text-sm">
                         <div className="grid grid-cols-[80px_1fr] gap-2">
                           <span className="font-semibold">Type:</span>
-                          <code className="bg-gray-100 px-2 py-1 rounded">TXT</code>
+                          <code className="bg-gray-100 px-2 py-1 rounded">
+                            TXT
+                          </code>
                         </div>
                         <div className="grid grid-cols-[80px_1fr] gap-2">
                           <span className="font-semibold">Host:</span>
-                          <code className="bg-gray-100 px-2 py-1 rounded">_igrowbig-verification</code>
+                          <code className="bg-gray-100 px-2 py-1 rounded">
+                            _igrowbig-verification
+                          </code>
                         </div>
                         <div className="grid grid-cols-[80px_1fr] gap-2">
                           <span className="font-semibold">Value:</span>
-                          <code className="bg-gray-100 px-2 py-1 rounded text-xs break-all">{domainVerification?.token || 'your-verification-token'}</code>
+                          <code className="bg-gray-100 px-2 py-1 rounded text-xs break-all">
+                            {domainVerification?.token ||
+                              "your-verification-token"}
+                          </code>
                         </div>
                         <div className="grid grid-cols-[80px_1fr] gap-2">
                           <span className="font-semibold">TTL:</span>
-                          <code className="bg-gray-100 px-2 py-1 rounded">3600 (or 1 hour)</code>
+                          <code className="bg-gray-100 px-2 py-1 rounded">
+                            3600 (or 1 hour)
+                          </code>
                         </div>
                       </div>
                     </div>
@@ -780,8 +1018,13 @@ const Settings = () => {
                       4
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-1">Save & Wait for Verification</h4>
-                      <p className="text-sm text-gray-700">Click "Save" or "Add Record". Wait 5-60 minutes for verification. We'll email you when verified!</p>
+                      <h4 className="font-semibold mb-1">
+                        Save & Wait for Verification
+                      </h4>
+                      <p className="text-sm text-gray-700">
+                        Click "Save" or "Add Record". Wait 5-60 minutes for
+                        verification. We'll email you when verified!
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -792,42 +1035,62 @@ const Settings = () => {
                       5
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold mb-1">Add Pointing Record (After Verification)</h4>
-                      <p className="text-sm text-gray-700 mb-2">Once verified, add ONE of these:</p>
-                      
+                      <h4 className="font-semibold mb-1">
+                        Add Pointing Record (After Verification)
+                      </h4>
+                      <p className="text-sm text-gray-700 mb-2">
+                        Once verified, add ONE of these:
+                      </p>
+
                       <div className="space-y-3">
                         <div className="bg-white p-3 rounded border">
-                          <div className="font-semibold text-sm mb-2 text-green-700">✓ Option A: CNAME (Easier)</div>
+                          <div className="font-semibold text-sm mb-2 text-green-700">
+                            ✓ Option A: CNAME (Easier)
+                          </div>
                           <div className="space-y-2 text-sm">
                             <div className="grid grid-cols-[80px_1fr] gap-2">
                               <span className="font-semibold">Type:</span>
-                              <code className="bg-gray-100 px-2 py-1 rounded">CNAME</code>
+                              <code className="bg-gray-100 px-2 py-1 rounded">
+                                CNAME
+                              </code>
                             </div>
                             <div className="grid grid-cols-[80px_1fr] gap-2">
                               <span className="font-semibold">Host:</span>
-                              <code className="bg-gray-100 px-2 py-1 rounded">@ (or leave blank)</code>
+                              <code className="bg-gray-100 px-2 py-1 rounded">
+                                @ (or leave blank)
+                              </code>
                             </div>
                             <div className="grid grid-cols-[80px_1fr] gap-2">
                               <span className="font-semibold">Target:</span>
-                              <code className="bg-blue-100 px-2 py-1 rounded font-semibold text-blue-700">{TARGET_DOMAIN}</code>
+                              <code className="bg-blue-100 px-2 py-1 rounded font-semibold text-blue-700">
+                                {TARGET_DOMAIN}
+                              </code>
                             </div>
                           </div>
                         </div>
 
                         <div className="bg-white p-3 rounded border">
-                          <div className="font-semibold text-sm mb-2">Option B: A Record</div>
+                          <div className="font-semibold text-sm mb-2">
+                            Option B: A Record
+                          </div>
                           <div className="space-y-2 text-sm">
                             <div className="grid grid-cols-[80px_1fr] gap-2">
                               <span className="font-semibold">Type:</span>
-                              <code className="bg-gray-100 px-2 py-1 rounded">A</code>
+                              <code className="bg-gray-100 px-2 py-1 rounded">
+                                A
+                              </code>
                             </div>
                             <div className="grid grid-cols-[80px_1fr] gap-2">
                               <span className="font-semibold">Host:</span>
-                              <code className="bg-gray-100 px-2 py-1 rounded">@</code>
+                              <code className="bg-gray-100 px-2 py-1 rounded">
+                                @
+                              </code>
                             </div>
                             <div className="grid grid-cols-[80px_1fr] gap-2">
                               <span className="font-semibold">IP:</span>
-                              <code className="bg-blue-100 px-2 py-1 rounded font-semibold text-blue-700">{SERVER_IP}</code>
+                              <code className="bg-blue-100 px-2 py-1 rounded font-semibold text-blue-700">
+                                {SERVER_IP}
+                              </code>
                             </div>
                           </div>
                         </div>
@@ -840,8 +1103,10 @@ const Settings = () => {
 
             {/* Provider-Specific Guides */}
             <div className="border-t pt-6">
-              <h3 className="font-bold text-lg mb-4">🏢 Provider-Specific Instructions</h3>
-              
+              <h3 className="font-bold text-lg mb-4">
+                🏢 Provider-Specific Instructions
+              </h3>
+
               <div className="space-y-4">
                 {/* GoDaddy */}
                 <details className="bg-gray-50 border rounded-lg">
@@ -925,30 +1190,41 @@ const Settings = () => {
 
             {/* Common Issues */}
             <div className="border-t pt-6">
-              <h3 className="font-bold text-lg mb-4">⚠️ Common Issues & Solutions</h3>
-              
+              <h3 className="font-bold text-lg mb-4">
+                ⚠️ Common Issues & Solutions
+              </h3>
+
               <div className="space-y-3">
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
-                  <AlertTitle className="text-sm font-semibold">DNS not propagating?</AlertTitle>
+                  <AlertTitle className="text-sm font-semibold">
+                    DNS not propagating?
+                  </AlertTitle>
                   <AlertDescription className="text-xs">
-                    DNS changes can take 5 minutes to 48 hours. Check status at <code className="bg-gray-100 px-1">whatsmydns.net</code>
+                    DNS changes can take 5 minutes to 48 hours. Check status at{" "}
+                    <code className="bg-gray-100 px-1">whatsmydns.net</code>
                   </AlertDescription>
                 </Alert>
 
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
-                  <AlertTitle className="text-sm font-semibold">Record not saving?</AlertTitle>
+                  <AlertTitle className="text-sm font-semibold">
+                    Record not saving?
+                  </AlertTitle>
                   <AlertDescription className="text-xs">
-                    Make sure to click "Save" or green checkmark. Some providers auto-save, others require explicit save.
+                    Make sure to click "Save" or green checkmark. Some providers
+                    auto-save, others require explicit save.
                   </AlertDescription>
                 </Alert>
 
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
-                  <AlertTitle className="text-sm font-semibold">Wrong format error?</AlertTitle>
+                  <AlertTitle className="text-sm font-semibold">
+                    Wrong format error?
+                  </AlertTitle>
                   <AlertDescription className="text-xs">
-                    Remove quotes around values. Some providers add them automatically, others reject them.
+                    Remove quotes around values. Some providers add them
+                    automatically, others reject them.
                   </AlertDescription>
                 </Alert>
               </div>
@@ -956,7 +1232,10 @@ const Settings = () => {
           </div>
 
           <DialogFooter>
-            <Button onClick={() => setShowDetailedGuide(false)} className="w-full sm:w-auto">
+            <Button
+              onClick={() => setShowDetailedGuide(false)}
+              className="w-full sm:w-auto"
+            >
               Got it, thanks!
             </Button>
           </DialogFooter>

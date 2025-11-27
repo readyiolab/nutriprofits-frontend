@@ -6,21 +6,6 @@ const Template2FAQ = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [loading, setLoading] = useState(true);
-
-  // Page content from tbl_faq_page_content (you can later fetch this)
-  const [pageContent] = useState({
-    hero_title: "Frequently Asked Questions",
-    hero_subtitle: "Got questions? We've got answers",
-    hero_description: "Browse through our most commonly asked questions below",
-    cta_title: "Still Have Questions?",
-    cta_description: "Our support team is here 24/7 to help you",
-    cta_button_text: "Contact Support",
-    cta_button_link: "/contact",
-    cta_secondary_button_text: "Start Live Chat",
-    cta_secondary_button_link: "/chat",
-  });
-
-  // Real dummy FAQs from your tbl_faq_items (backoffice_id = 1)
   const [faqs] = useState([
     {
       question: "What is your shipping policy?",
@@ -53,14 +38,52 @@ const Template2FAQ = () => {
       display_order: 5
     }
   ]);
+  const [pageContent, setPageContent] = useState({
+    hero_title: "Frequently Asked Questions",
+    hero_subtitle: "Got questions? We've got answers",
+    hero_description: "Browse through our most commonly asked questions below",
+    hero_image: "https://plus.unsplash.com/premium_photo-1678216285963-253d94232eb7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZmFxc3xlbnwwfHwwfHx8MA%3D%3D",
+    cta_title: "Still Have Questions?",
+    cta_description: "Our support team is here 24/7 to help you",
+    cta_button_text: "Contact Support",
+    cta_button_link: "/contact",
+    cta_secondary_button_text: "Start Live Chat",
+    cta_secondary_button_link: "/chat"
+  });
 
+  // Fetch page content and FAQs from backend
   useEffect(() => {
-    // Simulate loading
-    setTimeout(() => setLoading(false), 600);
+    const fetchData = async () => {
+      try {
+        // Fetch page content
+        const contentResponse = await fetch('/api/faq-page-content');
+        const contentData = await contentResponse.json();
+        if (contentData.success) {
+          setPageContent(contentData.data);
+        }
+
+        // Fetch FAQ items
+        const faqsResponse = await fetch('/api/faq-items');
+        const faqsData = await faqsResponse.json();
+        if (faqsData.success) {
+          setFaqs(faqsData.data.filter(faq => faq.is_active === 1));
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Get unique categories
   const categories = ["All", ...new Set(faqs.map(f => f.category))];
+  
+
+
 
   // Filter FAQs
   const filteredFaqs = faqs
@@ -72,6 +95,8 @@ const Template2FAQ = () => {
     })
     .sort((a, b) => a.display_order - b.display_order);
 
+
+    
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
@@ -85,29 +110,64 @@ const Template2FAQ = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      {/* Hero Section - Exact Same Style */}
-      <div className="relative overflow-hidden bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] text-white">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Sparkles className="w-4 h-4 text-yellow-300" />
-              <span className="text-sm font-medium">Help Center</span>
+      {/* Hero Section with Image Support */}
+      <div className="relative overflow-hidden">
+        {pageContent.hero_image ? (
+          <>
+            <div className="relative h-[400px] md:h-[500px]">
+              <img 
+                src={pageContent.hero_image} 
+                alt="FAQ Hero" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/40"></div>
+              
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="container mx-auto px-4">
+                  <div className="max-w-4xl mx-auto text-center text-white">
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                      <Sparkles className="w-4 h-4 text-yellow-300" />
+                      <span className="text-sm font-medium">Help Center</span>
+                    </div>
+                    <h1 className="text-5xl md:text-6xl font-medium mb-6 leading-tight">
+                      {pageContent.hero_title}
+                    </h1>
+                    <p className="text-xl text-white/90 mb-6 max-w-2xl mx-auto">
+                      {pageContent.hero_subtitle}
+                    </p>
+                    <p className="text-lg text-white/80 max-w-3xl mx-auto">
+                      {pageContent.hero_description}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h1 className="text-5xl md:text-6xl font-medium mb-6 leading-tight">
-              {pageContent.hero_title}
-            </h1>
-            <p className="text-xl text-white/90 mb-6 max-w-2xl mx-auto">
-              {pageContent.hero_subtitle}
-            </p>
-            <p className="text-lg text-white/80 max-w-3xl mx-auto">
-              {pageContent.hero_description}
-            </p>
+          </>
+        ) : (
+          <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] text-white">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+
+            <div className="relative container mx-auto px-4 py-20">
+              <div className="max-w-4xl mx-auto text-center">
+                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                  <Sparkles className="w-4 h-4 text-yellow-300" />
+                  <span className="text-sm font-medium">Help Center</span>
+                </div>
+                <h1 className="text-5xl md:text-6xl font-medium mb-6 leading-tight">
+                  {pageContent.hero_title}
+                </h1>
+                <p className="text-xl text-white/90 mb-6 max-w-2xl mx-auto">
+                  {pageContent.hero_subtitle}
+                </p>
+                <p className="text-lg text-white/80 max-w-3xl mx-auto">
+                  {pageContent.hero_description}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Search + Category Filter */}
@@ -128,21 +188,23 @@ const Template2FAQ = () => {
           </div>
 
           {/* Category Pills */}
-          <div className="flex flex-wrap justify-center gap-3 mb-10">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-6 py-3 rounded-full font-medium transition-all ${
-                  selectedCategory === cat
-                    ? "bg-black text-white shadow-lg"
-                    : "bg-white text-gray-700 hover:bg-gray-100 shadow-md"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+          {categories.length > 1 && (
+            <div className="flex flex-wrap justify-center gap-3 mb-10">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-6 py-3 rounded-full font-medium transition-all ${
+                    selectedCategory === cat
+                      ? "bg-black text-white shadow-lg"
+                      : "bg-white text-gray-700 hover:bg-gray-100 shadow-md"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* FAQ Accordion */}
           <div className="space-y-5">
@@ -154,7 +216,7 @@ const Template2FAQ = () => {
             ) : (
               filteredFaqs.map((faq, index) => (
                 <div
-                  key={index}
+                  key={faq.faq_id || index}
                   className="bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100 hover:border-black transition-all"
                 >
                   <button
@@ -163,7 +225,7 @@ const Template2FAQ = () => {
                   >
                     <div className="flex items-start gap-4">
                       <ChevronDown
-                        className={`w-6 h-6 mt-1 text-blue-600 transition-transform duration-300 ${
+                        className={`w-6 h-6 mt-1 text-blue-600 transition-transform duration-300 flex-shrink-0 ${
                           openIndex === index ? "rotate-180" : ""
                         }`}
                       />
@@ -194,54 +256,37 @@ const Template2FAQ = () => {
         </div>
       </div>
 
-      {/* CTA Section  */}
-      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)]
-     py-12 sm:py-20 mb-10 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl 
-     shadow-2xl overflow-hidden">
+      {/* CTA Section */}
+      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] py-12 sm:py-20 mb-10 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
+        <div className="container mx-auto px-3 sm:px-4 text-center text-white">
+          <h3 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tight">
+            {pageContent.cta_title}
+          </h3>
 
-  <div className="container mx-auto px-3 sm:px-4 text-center text-white">
+          <p className="text-base sm:text-xl text-white/90 mb-8 sm:mb-12 max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
+            {pageContent.cta_description}
+          </p>
 
-    <h3 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tigh">
-      {pageContent.cta_title}
-    </h3>
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
+            {/* Primary button */}
+            <a
+              href={pageContent.cta_button_link}
+              className="bg-white text-black font-medium px-6 py-3 sm:px-10 sm:py-5 rounded-full hover:shadow-2xl transition text-base sm:text-lg flex items-center justify-center gap-3 w-full sm:w-auto"
+            >
+              {pageContent.cta_button_text} 
+              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+            </a>
 
-    <p className="text-base sm:text-xl text-white/90 mb-8 sm:mb-12 
-                  max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
-      {pageContent.cta_description}
-    </p>
-
-    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
-
-      {/* Primary button */}
-      <a
-        href={pageContent.cta_button_link}
-        className="bg-white text-black font-medium 
-                   px-6 py-3 sm:px-10 sm:py-5 rounded-full 
-                   hover:shadow-2xl transition 
-                   text-base sm:text-lg 
-                   flex items-center justify-center gap-3 
-                   w-full sm:w-auto"
-      >
-        {pageContent.cta_button_text} 
-        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-      </a>
-
-      {/* Secondary button */}
-      <a
-        href={pageContent.cta_secondary_button_link}
-        className="border-2 border-white text-white 
-                   px-6 py-3 sm:px-10 sm:py-5 rounded-full 
-                   hover:bg-white hover:text-black transition 
-                   font-medium text-base sm:text-lg 
-                   flex items-center justify-center gap-3 
-                   w-full sm:w-auto"
-      >
-        {pageContent.cta_secondary_button_text}
-      </a>
-    </div>
-  </div>
-</div>
-
+            {/* Secondary button */}
+            <a
+              href={pageContent.cta_secondary_button_link}
+              className="border-2 border-white text-white px-6 py-3 sm:px-10 sm:py-5 rounded-full hover:bg-white hover:text-black transition font-medium text-base sm:text-lg flex items-center justify-center gap-3 w-full sm:w-auto"
+            >
+              {pageContent.cta_secondary_button_text}
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

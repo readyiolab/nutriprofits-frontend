@@ -27,6 +27,8 @@ import {
 import { useFetch } from "@/hooks";
 import { toast } from "sonner";
 
+const API_BASE_URL = "http://localhost:3001/api/backoffice/product-categories";
+
 const FORM_INITIAL_STATE = {
   name: "",
   categoryId: "",
@@ -44,7 +46,6 @@ const FORM_INITIAL_STATE = {
 };
 
 const Products = () => {
-  // View state: 'list' | 'form'
   const [view, setView] = React.useState("list");
   const [editingProduct, setEditingProduct] = React.useState(null);
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -53,30 +54,40 @@ const Products = () => {
   const [formData, setFormData] = React.useState(FORM_INITIAL_STATE);
   const [submitting, setSubmitting] = React.useState(false);
 
-  // Fetch products & categories
+  // Fetch products
   const {
     data: productsData,
     loading,
     error,
     refetch: refetchProducts,
-  } = useFetch("http://localhost:3001/api/backoffice/product-categories/products", {
+  } = useFetch(`${API_BASE_URL}/products`, {
     immediate: true,
     showToast: false,
+    credentials: "include",
   });
 
-  const { data: categoriesData } = useFetch(
-    "http://localhost:3001/api/backoffice/product-categories/categories",
-    { immediate: true, showToast: false }
+  // Fetch categories
+  const { data: categoriesData, loading: categoriesLoading } = useFetch(
+    `${API_BASE_URL}/categories`,
+    { immediate: true, showToast: false, credentials: "include" }
   );
 
   const products = Array.isArray(productsData)
     ? productsData
     : productsData?.data || [];
+
   const categories = Array.isArray(categoriesData)
     ? categoriesData
     : categoriesData?.data || [];
 
-  // Go to Form (Add or Edit)
+  // Create a map for quick category lookup
+  const categoryMap = React.useMemo(() => {
+    return categories.reduce((map, cat) => {
+      map[cat.id] = cat.category_name;
+      return map;
+    }, {});
+  }, [categories]);
+
   const goToForm = (product = null) => {
     if (product) {
       setEditingProduct(product);
@@ -129,15 +140,12 @@ const Products = () => {
     if (formData.logo_url) form.append("logo_url", formData.logo_url);
 
     const url = editingProduct
-      ? `http://localhost:3001/api/backoffice/product-categories/products/${editingProduct.id}`
-      : "http://localhost:3001/api/backoffice/product-categories/products";
+      ? `${API_BASE_URL}/products/${editingProduct.id}`
+      : `${API_BASE_URL}/products`;
 
     try {
       const res = await fetch(url, {
         method: editingProduct ? "PUT" : "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
         credentials: "include",
         body: form,
       });
@@ -152,6 +160,7 @@ const Products = () => {
       }
     } catch (err) {
       toast.error("Something went wrong");
+      console.error(err);
     } finally {
       setSubmitting(false);
     }
@@ -160,10 +169,10 @@ const Products = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this product?")) return;
     try {
-      const res = await fetch(
-        `http://localhost:3001/api/backoffice/product-categories/products/${id}`,
-        { method: "DELETE", credentials: "include" }
-      );
+      const res = await fetch(`${API_BASE_URL}/products/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
       const result = await res.json();
       if (result.success) {
         toast.success("Product deleted");
@@ -205,7 +214,6 @@ const Products = () => {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  // ====== FULL PAGE FORM VIEW ======
   if (view === "form") {
     return (
       <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
@@ -272,11 +280,17 @@ const Products = () => {
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id.toString()}>
-                            {cat.category_name}
-                          </SelectItem>
-                        ))}
+                        {categoriesLoading ? (
+                          <div className="p-2 text-sm">Loading...</div>
+                        ) : categories.length === 0 ? (
+                          <div className="p-2 text-sm">No categories available</div>
+                        ) : (
+                          categories.map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id.toString()}>
+                              {cat.category_name}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -377,7 +391,6 @@ const Products = () => {
             </Card>
           </div>
 
-          {/* Right Sidebar - Images */}
           <div className="space-y-6">
             <Card>
               <CardHeader>
@@ -450,10 +463,8 @@ const Products = () => {
     );
   }
 
-  // ====== LIST VIEW (Default) ======
   return (
     <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Products</h1>
@@ -461,13 +472,15 @@ const Products = () => {
             Manage {products.length} products across all categories
           </p>
         </div>
-        <Button onClick={() => goToForm()} className="bg-blue-600 hover:bg-blue-700">
+        <Button
+          onClick={() => goToForm()}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add New Product
         </Button>
       </div>
 
-      {/* Error */}
       {error && (
         <Card className="border-red-200 bg-red-50">
           <CardContent className="pt-6 flex items-center justify-between">
@@ -487,7 +500,6 @@ const Products = () => {
         </Card>
       )}
 
-      {/* Filters */}
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -528,7 +540,6 @@ const Products = () => {
         </CardContent>
       </Card>
 
-      {/* Table */}
       <Card>
         <CardHeader>
           <CardTitle>All Products ({filteredProducts.length})</CardTitle>
@@ -555,9 +566,11 @@ const Products = () => {
                 </thead>
                 <tbody>
                   {filteredProducts.map((p) => {
+                    // FIX: Use categoryMap for lookup
                     const catName =
-                      categories.find((c) => c.id === p.category_id)
-                        ?.category_name || "Uncategorized";
+                      (p.category_id && categoryMap[p.category_id]) ||
+                      "Uncategorized";
+
                     return (
                       <tr key={p.id} className="border-b hover:bg-gray-50">
                         <td className="py-4 px-4">
@@ -579,7 +592,7 @@ const Products = () => {
                           <Badge variant="outline">{catName}</Badge>
                         </td>
                         <td className="py-4 px-4 font-medium">
-                          ${parseFloat(p.product_price).toFixed(2)}
+                          ₹{parseFloat(p.product_price).toFixed(2)}
                         </td>
                         <td className="py-4 px-4">{p.stock_quantity}</td>
                         <td className="py-4 px-4">

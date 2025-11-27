@@ -30,8 +30,16 @@ const DynamicTemplateLoader = ({ children }) => {
 
         console.log(`🔍 Loading backoffice data for: ${hostname}`);
 
-        // Call the new API endpoint that returns backoffice + full site data
-        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+        // Smart API URL detection
+        let apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+        
+        if (!apiBaseUrl) {
+          // In production, use the current origin (same domain as frontend)
+          apiBaseUrl = window.location.origin;
+        }
+
+        console.log(`📡 API Base URL: ${apiBaseUrl}`);
+
         const response = await fetch(
           `${apiBaseUrl}/api/backoffice-public/domain-with-data`,
           {

@@ -12,14 +12,17 @@ const Template2Contact = () => {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Dynamic content from your tbl_contact_page_content
   const [pageContent, setPageContent] = useState({
     hero_title: "Get In Touch",
     hero_subtitle: "We'd love to hear from you",
     hero_description: "Have a question about our products? Need help with an order? Our team is here to help 24/7.",
+    hero_button_text: "Send Message",
+    hero_button_link: "#form",
+    hero_image_url: "https://images.unsplash.com/photo-1528747045269-390fe33c19f2?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Y29udGFjdHxlbnwwfHwwfHx8MA%3D%3D",
     
     office_title: "Visit Our Office",
     office_subtitle: "We're here to help in person too",
+    office_image_url: "https://images.unsplash.com/photo-1606857521015-7f9fcf423740?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8b2ZmaWNlfGVufDB8fDB8fHww",
     
     address_title: "Address",
     address: "123 Wellness Avenue, Suite 500<br/>Los Angeles, CA 90210<br/>United States",
@@ -43,23 +46,48 @@ const Template2Contact = () => {
     cta_secondary_button_text: "Live Chat",
     cta_secondary_button_link: "/chat",
     
-    map_embed_url: "https://www.google.com/maps/embed?pb=..."
+    map_embed_url: null
   });
 
   useEffect(() => {
-    // Simulate loading (replace with real API call later)
-    setTimeout(() => setLoading(false), 600);
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/contact-page-content');
+        const data = await response.json();
+        if (data.success) {
+          setPageContent(data.data);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching contact data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setSuccess(true);
+    
+    try {
+      const response = await fetch('/api/contact-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      if (response.ok) {
+        setSuccess(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        setTimeout(() => setSuccess(false), 5000);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+    
     setSubmitting(false);
-    setTimeout(() => setSuccess(false), 5000);
-    setFormData({ name: "", email: "", subject: "", message: "" });
   };
 
   if (loading) {
@@ -75,49 +103,83 @@ const Template2Contact = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      {/* Hero Section - Same as All Other Pages */}
-      <div className="relative overflow-hidden bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] text-white">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Sparkles className="w-4 h-4 text-yellow-300" />
-              <span className="text-sm font-medium">Contact Us</span>
+      {/* Hero Section with Image Support */}
+      <div className="relative overflow-hidden">
+        {pageContent.hero_image_url ? (
+          <>
+            <div className="relative h-[400px] md:h-[500px]">
+              <img 
+                src={pageContent.hero_image_url} 
+                alt="Contact Hero" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/40"></div>
+              
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="container mx-auto px-4">
+                  <div className="max-w-4xl mx-auto text-center text-white">
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                      <Sparkles className="w-4 h-4 text-yellow-300" />
+                      <span className="text-sm font-medium">Contact Us</span>
+                    </div>
+                    <h1 className="text-5xl md:text-6xl font-medium mb-6 leading-tight">
+                      {pageContent.hero_title}
+                    </h1>
+                    <p className="text-xl text-white/90 mb-6 max-w-2xl mx-auto">
+                      {pageContent.hero_subtitle}
+                    </p>
+                    <p className="text-lg text-white/80 max-w-3xl mx-auto">
+                      {pageContent.hero_description}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h1 className="text-5xl md:text-6xl font-medium mb-6 leading-tight">
-              {pageContent.hero_title}
-            </h1>
-            <p className="text-xl text-white/90 mb-6 max-w-2xl mx-auto">
-              {pageContent.hero_subtitle}
-            </p>
-            <p className="text-lg text-white/80 max-w-3xl mx-auto">
-              {pageContent.hero_description}
-            </p>
+          </>
+        ) : (
+          <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] text-white">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+
+            <div className="relative container mx-auto px-4 py-20">
+              <div className="max-w-4xl mx-auto text-center">
+                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                  <Sparkles className="w-4 h-4 text-yellow-300" />
+                  <span className="text-sm font-medium">Contact Us</span>
+                </div>
+                <h1 className="text-5xl md:text-6xl font-medium mb-6 leading-tight">
+                  {pageContent.hero_title}
+                </h1>
+                <p className="text-xl text-white/90 mb-6 max-w-2xl mx-auto">
+                  {pageContent.hero_subtitle}
+                </p>
+                <p className="text-lg text-white/80 max-w-3xl mx-auto">
+                  {pageContent.hero_description}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Main Contact Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
           {/* Contact Form */}
-          <div className="bg-white rounded-3xl shadow-2xl p-10 border border-purple-100">
+          <div className="bg-white rounded-3xl shadow-2xl p-10 border border-purple-100" id="form">
             <h2 className="text-3xl font-bold text-gray-800 mb-3">
               {pageContent.form_title}
             </h2>
             <p className="text-gray-600 mb-8">{pageContent.form_description}</p>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <input
                   type="text"
                   placeholder="Your Name"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  required
                   className="w-full px-6 py-4 rounded-xl border border-gray-300 focus:border-black focus:outline-none transition text-base"
                 />
                 <input
@@ -125,7 +187,6 @@ const Template2Contact = () => {
                   placeholder="Your Email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  required
                   className="w-full px-6 py-4 rounded-xl border border-gray-300 focus:border-black focus:outline-none transition text-base"
                 />
               </div>
@@ -135,7 +196,6 @@ const Template2Contact = () => {
                 placeholder="Subject"
                 value={formData.subject}
                 onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                required
                 className="w-full px-6 py-4 rounded-xl border border-gray-300 focus:border-black focus:outline-none transition text-base"
               />
 
@@ -144,12 +204,11 @@ const Template2Contact = () => {
                 placeholder="Your Message..."
                 value={formData.message}
                 onChange={(e) => setFormData({...formData, message: e.target.value})}
-                required
                 className="w-full px-6 py-4 rounded-xl border border-gray-300 focus:border-black focus:outline-none transition text-base resize-none"
               ></textarea>
 
               <button
-                type="submit"
+                onClick={handleSubmit}
                 disabled={submitting}
                 className="w-full bg-black text-white py-5 rounded-xl font-bold text-lg hover:shadow-2xl hover:bg-gray-900 transition flex items-center justify-center gap-3 disabled:opacity-70"
               >
@@ -163,10 +222,9 @@ const Template2Contact = () => {
                   </>
                 )}
               </button>
-            </form>
+            </div>
           </div>
 
- 
           <div className="space-y-8">
             {/* Office Info Card */}
             <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] rounded-3xl shadow-2xl p-10 text-white">
@@ -240,53 +298,34 @@ const Template2Contact = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)]
-     py-12 sm:py-20 mb-10 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl 
-     shadow-2xl overflow-hidden">
+      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] py-12 sm:py-20 mb-10 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
+        <div className="container mx-auto px-3 sm:px-4 text-center text-white">
+          <h3 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tight">
+            {pageContent.cta_title}
+          </h3>
 
-  <div className="container mx-auto px-3 sm:px-4 text-center text-white">
+          <p className="text-base sm:text-xl text-white/90 mb-8 sm:mb-12 max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
+            {pageContent.cta_description}
+          </p>
 
-    <h3 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tigh">
-      {pageContent.cta_title}
-    </h3>
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
+            <a
+              href={pageContent.cta_button_link}
+              className="bg-white text-black font-medium px-6 py-3 sm:px-10 sm:py-5 rounded-full hover:shadow-2xl transition text-base sm:text-lg flex items-center justify-center gap-3 w-full sm:w-auto mx-auto sm:mx-0"
+            >
+              {pageContent.cta_button_text} 
+              <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
+            </a>
 
-    <p className="text-base sm:text-xl text-white/90 mb-8 sm:mb-12 
-                  max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
-      {pageContent.cta_description}
-    </p>
-
-    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
-
-      {/* Primary button */}
-      <a
-        href={pageContent.cta_button_link}
-        className="bg-white text-black font-medium 
-                   px-6 py-3 sm:px-10 sm:py-5 rounded-full 
-                   hover:shadow-2xl transition 
-                   text-base sm:text-lg 
-                   flex items-center justify-center gap-3 
-                   w-full sm:w-auto mx-auto sm:mx-0"
-      >
-        {pageContent.cta_button_text} 
-        <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
-      </a>
-
-      {/* Secondary button */}
-      <a
-        href={pageContent.cta_secondary_button_link}
-        className="border-2 border-white text-white 
-                   px-6 py-3 sm:px-10 sm:py-5 rounded-full 
-                   hover:bg-white hover:text-black transition 
-                   font-medium text-base sm:text-lg 
-                   flex items-center justify-center gap-3 
-                   w-full sm:w-auto mx-auto sm:mx-0"
-      >
-        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" /> {pageContent.cta_secondary_button_text}
-      </a>
-    </div>
-  </div>
-</div>
-
+            <a
+              href={pageContent.cta_secondary_button_link}
+              className="border-2 border-white text-white px-6 py-3 sm:px-10 sm:py-5 rounded-full hover:bg-white hover:text-black transition font-medium text-base sm:text-lg flex items-center justify-center gap-3 w-full sm:w-auto mx-auto sm:mx-0"
+            >
+              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" /> {pageContent.cta_secondary_button_text}
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

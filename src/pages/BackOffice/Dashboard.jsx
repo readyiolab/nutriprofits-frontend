@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Package, ShoppingCart, Users, DollarSign, TrendingUp, TrendingDown, MoreVertical } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -23,6 +23,12 @@ const Dashboard = () => {
     
   ];
 
+  const [categories,setCategories] = useState(0)
+  const [product,setProduct] =useState(0)
+
+
+  const API_BASE_URL = "http://localhost:3001/api/backoffice/product-categories";
+
  
 
   return (
@@ -41,21 +47,11 @@ const Dashboard = () => {
               <CardTitle className="text-sm font-medium text-gray-600">
                 {stat.title}
               </CardTitle>
-              {stat.icon}
+            
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
-              <div className="flex items-center mt-1">
-                {stat.trend === 'up' ? (
-                  <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-600 mr-1" />
-                )}
-                <span className={`text-sm ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                  {stat.change}
-                </span>
-                <span className="text-sm text-gray-600 ml-1">from last month</span>
-              </div>
+              
             </CardContent>
           </Card>
         ))}

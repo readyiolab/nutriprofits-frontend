@@ -11,11 +11,12 @@ import {
   Menu,
   X,
   LogOut,
-  User,
-  Bell,
+  Palette ,
+  Layout ,
   ChevronRight,
   Home,
   Section,
+  KeyRound
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -38,38 +39,45 @@ const BackOfficeLayout = () => {
   const PRIMARY_COLOR = "#3B82F6";
   const SECONDARY_COLOR = "#1E293B";
 
-  const menuGroups = [
-    {
-      title: null,
-      items: [{ id: "", label: "Dashboard", icon: LayoutDashboard, exact: true }],
-    },
-    {
-      title: "Products",
-      items: [
-        { id: "product/page-content", label: "Page Content", icon: Section },
-        { id: "products", label: "All Products", icon: Package },
-      ],
-    },
-    {
-      title: "Categories",
-      items: [
-        { id: "categories/page-content", label: "Page Content", icon: Section },
-        { id: "categories", label: "All Categories", icon: FolderTree },
-      ],
-    },
-    {
-      title: "Pages",
-      items: [
-        { id: "about", label: "About Us", icon: Info },
-        { id: "contact", label: "Contact", icon: MessageSquare },
-        { id: "faqs", label: "FAQ's", icon: HelpCircle },
-      ],
-    },
-    {
-      title: "System",
-      items: [{ id: "settings", label: "Settings", icon: Settings }],
-    },
-  ];
+const menuGroups = [
+  {
+    title: null,
+    items: [
+      { id: "", label: "Dashboard", icon: LayoutDashboard, exact: true }
+    ],
+  },
+  {
+    title: "Products",
+    items: [
+      { id: "product/page-content", label: "Page Content", icon: Section },
+      { id: "products", label: "All Products", icon: Package },
+    ],
+  },
+  {
+    title: "Categories",
+    items: [
+      { id: "categories/page-content", label: "Page Content", icon: Section },
+      { id: "categories", label: "All Categories", icon: FolderTree },
+    ],
+  },
+  {
+    title: "Pages",
+    items: [
+      { id: "about", label: "About Us", icon: Info },
+      { id: "contact", label: "Contact", icon: MessageSquare },
+      { id: "faqs", label: "FAQ's", icon: HelpCircle },
+    ],
+  },
+  {
+    title: "Site Settings",
+    items: [
+      { id: "site-branding", label: "Site Branding", icon: Palette },
+      { id: "footer-content", label: "Footer Content", icon: Layout },
+      { id: "settings", label: "Settings", icon: Settings },
+      { id: "change-password", label: "Change Password", icon: KeyRound } // Better icon for password
+    ],
+  },
+];
 
   const isActive = (path, exact) => {
     const currentPath = location.pathname;
