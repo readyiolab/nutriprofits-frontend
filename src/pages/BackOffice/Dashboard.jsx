@@ -1,14 +1,6 @@
 import React from 'react';
 import { Package, ShoppingCart, Users, DollarSign, TrendingUp, TrendingDown, MoreVertical } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 const Dashboard = () => {
   const stats = [

@@ -13,6 +13,6 @@ export default defineConfig({
   },
   server: {
     host: "0.0.0.0",   // expose to LAN / VM / cloud server
-    port: 5173,        // default Vite port
+    port: 5174,        // default Vite port
   },
 })

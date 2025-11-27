@@ -51,9 +51,35 @@ const SuperAdminLayout = () => {
     return currentPath.startsWith(fullPath);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('superadmin_token');
-    navigate('/superadmin/login');
+  const handleLogout = async () => {
+    try {
+      // Call logout endpoint to clear cookie on backend
+      const response = await fetch('http://localhost:3001/api/superadmin/logout', {
+        method: 'POST',
+        credentials: 'include', // Important: Send cookies
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // Clear localStorage
+        localStorage.removeItem('superadmin_user');
+        localStorage.removeItem('superadminId');
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('userRole');
+        
+        console.log('✅ Logged out successfully');
+        // Redirect to login
+        navigate('/superadmin/login');
+      } else {
+        console.error('Logout failed');
+        alert('Logout failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      alert('Logout error. Please try again.');
+    }
   };
 
   return (
@@ -87,18 +113,7 @@ const SuperAdminLayout = () => {
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="relative hover:opacity-80"
-              style={{ color: 'white' }}
-            >
-              <Bell className="h-5 w-5" />
-              <span 
-                className="absolute top-1 right-1 h-2 w-2 rounded-full animate-pulse"
-                style={{ backgroundColor: PRIMARY_COLOR }}
-              ></span>
-            </Button>
+            
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -118,19 +133,8 @@ const SuperAdminLayout = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 mt-2">
-                <DropdownMenuLabel style={{ color: SECONDARY_COLOR }}>
-                  My Account
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer hover:opacity-80">
-                  <User className="mr-2 h-4 w-4" style={{ color: PRIMARY_COLOR }} />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:opacity-80">
-                  <Settings className="mr-2 h-4 w-4" style={{ color: PRIMARY_COLOR }} />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
+               
+                
                 <DropdownMenuItem 
                   onClick={handleLogout}
                   className="cursor-pointer text-red-600 focus:text-red-600 hover:bg-red-50"

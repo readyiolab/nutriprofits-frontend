@@ -9,15 +9,14 @@ const LandingLayout = () => {
   const location = useLocation();
 
   const navLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/products', label: ' Products' },
-    { path: '/categories', label: ' Category' },
-    { path: '/about', label: 'About Us' },
-    {path: '/templates', label: 'Templates' },
-    { path: '/faq', label: "FAQ's" },
-    { path: '/contact', label: 'Contact' },
-    
-  ];
+  { path: '/landing', label: 'Home' },           
+  { path: '/landing/products', label: 'Products' },  
+  { path: '/landing/categories', label: 'Category' },
+  { path: '/landing/about', label: 'About Us' },
+  { path: '/landing/templates', label: 'Templates' },
+  { path: '/landing/faq', label: "FAQ's" },
+  { path: '/landing/contact', label: 'Contact' },
+];
 
   const isActive = (path) => location.pathname === path;
 

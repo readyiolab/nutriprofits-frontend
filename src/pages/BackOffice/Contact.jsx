@@ -1,434 +1,338 @@
-import React from 'react';
-import { Save, Loader2, Phone, Mail, MapPin, Clock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Toaster } from 'sonner';
-import { useFetch, useForm } from '@/hooks';
+import React from "react";
+import {
+  ArrowLeft,
+  Save,
+  Loader2,
+  Upload,
+  X,
+  MapPin,
+  Mail,
+  Phone,
+  Clock,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { toast, Toaster } from "sonner";
 
 const INITIAL_FORM_STATE = {
-  hero_title: '',
-  hero_subtitle: '',
-  hero_description: '',
-  hero_button_text: '',
-  hero_button_link: '',
-  office_title: '',
-  office_subtitle: '',
-  address_title: '',
-  address: '',
-  email_title: '',
-  email: '',
-  phone_title: '',
-  phone: '',
-  business_hours_title: '',
-  business_hours: '',
-  form_title: '',
-  form_description: '',
-  cta_title: '',
-  cta_description: '',
-  cta_button_text: '',
-  cta_button_link: '',
-  cta_secondary_button_text: '',
-  cta_secondary_button_link: '',
-  map_embed_url: '',
+  hero_title: "",
+  hero_subtitle: "",
+  hero_description: "",
+  hero_button_text: "",
+  hero_button_link: "",
+  hero_image_url: "",
+  office_title: "",
+  office_subtitle: "",
+  office_image_url: "",
+  address_title: "",
+  address: "",
+  email_title: "",
+  email: "",
+  phone_title: "",
+  phone: "",
+  business_hours_title: "",
+  business_hours: "",
+  form_title: "",
+  form_description: "",
+  cta_title: "",
+  cta_description: "",
+  cta_button_text: "",
+  cta_button_link: "",
+  cta_secondary_button_text: "",
+  cta_secondary_button_link: "",
+  map_embed_url: "",
 };
 
 const Contact = () => {
-  const backofficeId = React.useMemo(() => {
-    return localStorage.getItem('backofficeId') || '1';
-  }, []);
+  const backofficeId = React.useMemo(() => localStorage.getItem("backofficeId") || "1", []);
 
-  // Fetch existing content using custom hook
-  const { data: fetchedContent, loading } = useFetch(
-    `http://localhost:3000/api/contact/${backofficeId}/page-content`,
-    { immediate: true, showToast: false }
-  );
+  const [formData, setFormData] = React.useState(INITIAL_FORM_STATE);
+  const [loading, setLoading] = React.useState(true);
+  const [saving, setSaving] = React.useState(false);
+  const [heroImageFile, setHeroImageFile] = React.useState(null);
+  const [officeImageFile, setOfficeImageFile] = React.useState(null);
+  const [heroImagePreview, setHeroImagePreview] = React.useState("");
+  const [officeImagePreview, setOfficeImagePreview] = React.useState("");
 
-  // Initialize form data with fetched content
-  const initialFormData = React.useMemo(() => {
-    if (fetchedContent && typeof fetchedContent === 'object') {
-      return { ...INITIAL_FORM_STATE, ...fetchedContent };
-    }
-    return INITIAL_FORM_STATE;
-  }, [fetchedContent]);
-
-  // Handle form submission using custom hook
-  const { formData, handleChange, handleSubmit, loading: saving } = useForm(
-    initialFormData,
-    async (data) => {
-      const response = await fetch(
-        `http://localhost:3000/api/contact/${backofficeId}/page-content/upsert`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: JSON.stringify(data),
+  React.useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const res = await fetch(`http://localhost:3001/api/contact/${backofficeId}/page-content`, {
+          credentials: "include",
+        });
+        const result = await res.json();
+        if (result.success && result.data) {
+          setFormData({ ...INITIAL_FORM_STATE, ...result.data });
+          setHeroImagePreview(result.data.hero_image_url || "");
+          setOfficeImagePreview(result.data.office_image_url || "");
         }
-      );
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.message || 'Failed to save');
+      } catch (err) {
+        toast.error("Failed to load contact page");
+      } finally {
+        setLoading(false);
       }
-      return result;
-    },
-    { showToast: true }
-  );
+    };
+    fetchContent();
+  }, [backofficeId]);
+
+  const handleChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleImage = (file, setFile, setPreview) => {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) return toast.error("Image must be under 5MB");
+    if (!file.type.startsWith("image/")) return toast.error("Only images allowed");
+    setFile(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = (setFile, setPreview, field) => {
+    setFile(null);
+    setPreview("");
+    handleChange(field, "");
+  };
+
+  const handleSubmit = async () => {
+    setSaving(true);
+    const data = new FormData();
+    data.append("data", JSON.stringify(formData));
+    if (heroImageFile) data.append("hero_image", heroImageFile);
+    if (officeImageFile) data.append("office_image", officeImageFile);
+
+    try {
+      const res = await fetch(
+        `http://localhost:3001/api/contact/${backofficeId}/page-content/upsert`,
+        { method: "POST", credentials: "include", body: data }
+      );
+      const result = await res.json();
+
+      if (result.success) {
+        toast.success("Contact page saved successfully!");
+        setHeroImageFile(null);
+        setOfficeImageFile(null);
+        const refresh = await fetch(`http://localhost:3001/api/contact/${backofficeId}/page-content`, {
+          credentials: "include",
+        });
+        const fresh = await refresh.json();
+        if (fresh.success) {
+          setFormData({ ...INITIAL_FORM_STATE, ...fresh.data });
+          setHeroImagePreview(fresh.data.hero_image_url || "");
+          setOfficeImagePreview(fresh.data.office_image_url || "");
+        }
+      } else {
+        toast.error(result.message || "Save failed");
+      }
+    } catch (err) {
+      toast.error("Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <Toaster />
-      
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Contact Page Content</h1>
-          <p className="text-gray-600 mt-1">Manage your contact page information</p>
+    <div className="min-h-screen bg-gray-50">
+      <Toaster position="top-right" />
+
+      {/* Sticky Top Bar */}
+      <div className="sticky top-0 z-50 bg-white border-b shadow-sm rounded-xl">
+        <div className="flex items-center justify-between px-6 py-5">
+          <div className="flex items-center gap-4">
+            
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Contact Page</h1>
+              <p className="text-gray-600">Customize your contact page content</p>
+            </div>
+          </div>
+          <Button onClick={handleSubmit} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+            {saving ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Save Changes
+              </>
+            )}
+          </Button>
         </div>
-        <Button onClick={handleSubmit} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
-          {saving ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="h-4 w-4 mr-2" />
-              Save Changes
-            </>
-          )}
-        </Button>
       </div>
 
-      {/* Hero Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Hero Section</CardTitle>
-          <CardDescription>The main banner section at the top of your contact page</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="hero_title">Title</Label>
-            <Input
-              id="hero_title"
-              value={formData.hero_title}
-              onChange={(e) => handleChange('hero_title', e.target.value)}
-              placeholder="e.g., Get in Touch"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="hero_subtitle">Subtitle</Label>
-            <Input
-              id="hero_subtitle"
-              value={formData.hero_subtitle}
-              onChange={(e) => handleChange('hero_subtitle', e.target.value)}
-              placeholder="e.g., We'd Love to Hear From You"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="hero_description">Description</Label>
-            <Textarea
-              id="hero_description"
-              rows={3}
-              value={formData.hero_description}
-              onChange={(e) => handleChange('hero_description', e.target.value)}
-              placeholder="Brief description for hero section"
-            />
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="hero_button_text">Button Text</Label>
-              <Input
-                id="hero_button_text"
-                value={formData.hero_button_text}
-                onChange={(e) => handleChange('hero_button_text', e.target.value)}
-                placeholder="e.g., Contact Us Now"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="hero_button_link">Button Link</Label>
-              <Input
-                id="hero_button_link"
-                value={formData.hero_button_link}
-                onChange={(e) => handleChange('hero_button_link', e.target.value)}
-                placeholder="e.g., #contact-form"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Content */}
+      <div className="p-6 max-w-6xl mx-auto space-y-8">
 
-      {/* Office Information Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Office Information Section</CardTitle>
-          <CardDescription>Section header for office details</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="office_title">Section Title</Label>
-            <Input
-              id="office_title"
-              value={formData.office_title}
-              onChange={(e) => handleChange('office_title', e.target.value)}
-              placeholder="e.g., Our Office"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="office_subtitle">Section Subtitle</Label>
-            <Input
-              id="office_subtitle"
-              value={formData.office_subtitle}
-              onChange={(e) => handleChange('office_subtitle', e.target.value)}
-              placeholder="e.g., Visit Us or Reach Out"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Contact Details */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Contact Details</CardTitle>
-          <CardDescription>Primary contact information</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="address_title">Address Title</Label>
-              <Input
-                id="address_title"
-                value={formData.address_title}
-                onChange={(e) => handleChange('address_title', e.target.value)}
-                placeholder="e.g., Address"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Textarea
-                  id="address"
-                  rows={3}
-                  className="pl-9"
-                  value={formData.address}
-                  onChange={(e) => handleChange('address', e.target.value)}
-                  placeholder="e.g., 123 Business Street, Suite 100, New York, NY 10001"
-                />
+        {/* Hero Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Hero Section</CardTitle>
+            <CardDescription>Main banner at the top of the page</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid lg:grid-cols-2 gap-8">
+              <div className="space-y-5">
+                <div><Label>Title</Label><Input value={formData.hero_title} onChange={e => handleChange("hero_title", e.target.value)} placeholder="Get in Touch" /></div>
+                <div><Label>Subtitle</Label><Input value={formData.hero_subtitle} onChange={e => handleChange("hero_subtitle", e.target.value)} placeholder="We're here to help" /></div>
+                <div><Label>Description</Label><Textarea rows={4} value={formData.hero_description} onChange={e => handleChange("hero_description", e.target.value)} placeholder="Brief intro message..." /></div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><Label>Button Text</Label><Input value={formData.hero_button_text} onChange={e => handleChange("hero_button_text", e.target.value)} placeholder="Contact Us" /></div>
+                  <div><Label>Button Link</Label><Input value={formData.hero_button_link} onChange={e => handleChange("hero_button_link", e.target.value)} placeholder="#contact-form" /></div>
+                </div>
+              </div>
+              <div>
+                <Label>Hero Image</Label>
+                {heroImagePreview ? (
+                  <div className="relative group mt-3">
+                    <img src={heroImagePreview} alt="Hero" className="w-full h-80 object-cover rounded-xl border shadow-sm" />
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition"
+                      onClick={() => removeImage(setHeroImageFile, setHeroImagePreview, "hero_image_url")}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="mt-3 flex flex-col items-center justify-center w-full h-80 border-2 border-dashed border-gray-300 rounded-xl hover:border-gray-400 cursor-pointer bg-gray-50 transition">
+                    <Upload className="h-16 w-16 text-gray-400 mb-4" />
+                    <p className="text-lg font-medium text-gray-600">Upload Hero Image</p>
+                    <p className="text-sm text-gray-500">Max 5MB • Recommended: 1920×800</p>
+                    <input type="file" accept="image/*" className="hidden" onChange={e => handleImage(e.target.files[0], setHeroImageFile, setHeroImagePreview)} />
+                  </label>
+                )}
               </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="email_title">Email Title</Label>
-              <Input
-                id="email_title"
-                value={formData.email_title}
-                onChange={(e) => handleChange('email_title', e.target.value)}
-                placeholder="e.g., Email Us"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  id="email"
-                  type="email"
-                  className="pl-9"
-                  value={formData.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  placeholder="support@example.com"
-                />
+        {/* Office Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Office Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid lg:grid-cols-2 gap-8">
+              <div className="space-y-5">
+                <Input label="Section Title" value={formData.office_title} onChange={e => handleChange("office_title", e.target.value)} placeholder="Our Office" />
+                <Input label="Section Subtitle" value={formData.office_subtitle} onChange={e => handleChange("office_subtitle", e.target.value)} placeholder="Visit us or get in touch" />
+              </div>
+              <div>
+                <Label>Office Image</Label>
+                {officeImagePreview ? (
+                  <div className="relative group mt-3">
+                    <img src={officeImagePreview} alt="Office" className="w-full h-64 object-cover rounded-xl border shadow-sm" />
+                    <Button size="icon" variant="destructive" className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition" onClick={() => removeImage(setOfficeImageFile, setOfficeImagePreview, "office_image_url")}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="mt-3 flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-xl hover:border-gray-400 cursor-pointer bg-gray-50">
+                    <Upload className="h-14 w-14 text-gray-400 mb-3" />
+                    <p className="text-lg font-medium text-gray-600">Upload Office Image</p>
+                    <input type="file" accept="image/*" className="hidden" onChange={e => handleImage(e.target.files[0], setOfficeImageFile, setOfficeImagePreview)} />
+                  </label>
+                )}
               </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="phone_title">Phone Title</Label>
-              <Input
-                id="phone_title"
-                value={formData.phone_title}
-                onChange={(e) => handleChange('phone_title', e.target.value)}
-                placeholder="e.g., Call Us"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
+        {/* Contact Details */}
+        <Card>
+          <CardHeader><CardTitle>Contact Details</CardTitle></CardHeader>
+          <CardContent className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <Input label="Address Title" value={formData.address_title} onChange={e => handleChange("address_title", e.target.value)} />
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  id="phone"
-                  className="pl-9"
-                  value={formData.phone}
-                  onChange={(e) => handleChange('phone', e.target.value)}
-                  placeholder="+1 (555) 123-4567"
-                />
+                <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-500" />
+                <Textarea rows={4} className="pl-11" value={formData.address} onChange={e => handleChange("address", e.target.value)} placeholder="123 Business Ave, Suite 100..." />
               </div>
             </div>
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="business_hours_title">Business Hours Title</Label>
-              <Input
-                id="business_hours_title"
-                value={formData.business_hours_title}
-                onChange={(e) => handleChange('business_hours_title', e.target.value)}
-                placeholder="e.g., Business Hours"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="business_hours">Business Hours</Label>
-              <div className="relative">
-                <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  id="business_hours"
-                  className="pl-9"
-                  value={formData.business_hours}
-                  onChange={(e) => handleChange('business_hours', e.target.value)}
-                  placeholder="Monday - Friday: 9:00 AM - 6:00 PM"
-                />
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <Input label="Email Title" value={formData.email_title} onChange={e => handleChange("email_title", e.target.value)} />
+                <div className="relative">
+                  <Mail className="absolute left-3 top-10 h-5 w-5 text-gray-500" />
+                  <Input className="pl-11" value={formData.email} onChange={e => handleChange("email", e.target.value)} placeholder="hello@company.com" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Input label="Phone Title" value={formData.phone_title} onChange={e => handleChange("phone_title", e.target.value)} />
+                <div className="relative">
+                  <Phone className="absolute left-3 top-10 h-5 w-5 text-gray-500" />
+                  <Input className="pl-11" value={formData.phone} onChange={e => handleChange("phone", e.target.value)} placeholder="+1 (555) 000-0000" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Input label="Hours Title" value={formData.business_hours_title} onChange={e => handleChange("business_hours_title", e.target.value)} />
+                <div className="relative">
+                  <Clock className="absolute left-3 top-10 h-5 w-5 text-gray-500" />
+                  <Input className="pl-11" value={formData.business_hours} onChange={e => handleChange("business_hours", e.target.value)} placeholder="Mon-Fri 9AM-6PM" />
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Contact Form Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Contact Form Section</CardTitle>
-          <CardDescription>Information about the contact form</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="form_title">Form Title</Label>
-            <Input
-              id="form_title"
-              value={formData.form_title}
-              onChange={(e) => handleChange('form_title', e.target.value)}
-              placeholder="e.g., Send Us a Message"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="form_description">Form Description</Label>
-            <Textarea
-              id="form_description"
-              rows={3}
-              value={formData.form_description}
-              onChange={(e) => handleChange('form_description', e.target.value)}
-              placeholder="Description that appears above the contact form"
-            />
-          </div>
-        </CardContent>
-      </Card>
+        {/* Contact Form */}
+        <Card>
+          <CardHeader><CardTitle>Contact Form</CardTitle></CardHeader>
+          <CardContent className="space-y-5">
+            <Input label="Form Title" value={formData.form_title} onChange={e => handleChange("form_title", e.target.value)} placeholder="Send Us a Message" />
+            <Textarea rows={4} label="Form Description" value={formData.form_description} onChange={e => handleChange("form_description", e.target.value)} placeholder="We typically reply within 24 hours..." />
+          </CardContent>
+        </Card>
 
-      {/* Map Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Map Embed</CardTitle>
-          <CardDescription>Google Maps or other map embed URL</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="map_embed_url">Map Embed URL</Label>
-            <Input
-              id="map_embed_url"
-              value={formData.map_embed_url}
-              onChange={(e) => handleChange('map_embed_url', e.target.value)}
-              placeholder="e.g., https://www.google.com/maps/embed?pb=..."
-            />
-            <p className="text-sm text-gray-500">
-              Get the embed URL from Google Maps by clicking Share → Embed a map
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Map */}
+        <Card>
+          <CardHeader><CardTitle>Google Maps Embed</CardTitle></CardHeader>
+          <CardContent>
+            <Input label="Embed URL" value={formData.map_embed_url} onChange={e => handleChange("map_embed_url", e.target.value)} placeholder="https://www.google.com/maps/embed?pb=..." />
+            <p className="text-sm text-gray-500 mt-2">Get from Google Maps → Share → Embed a map → Copy iframe src</p>
+          </CardContent>
+        </Card>
 
-      {/* CTA Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Call-to-Action Section</CardTitle>
-          <CardDescription>Encourage visitors to take action</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="cta_title">Title</Label>
-            <Input
-              id="cta_title"
-              value={formData.cta_title}
-              onChange={(e) => handleChange('cta_title', e.target.value)}
-              placeholder="e.g., Ready to Start Your Project?"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="cta_description">Description</Label>
-            <Textarea
-              id="cta_description"
-              rows={3}
-              value={formData.cta_description}
-              onChange={(e) => handleChange('cta_description', e.target.value)}
-              placeholder="Compelling message to encourage action"
-            />
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="cta_button_text">Primary Button Text</Label>
-              <Input
-                id="cta_button_text"
-                value={formData.cta_button_text}
-                onChange={(e) => handleChange('cta_button_text', e.target.value)}
-                placeholder="e.g., Get Started"
-              />
+        {/* CTA */}
+        <Card>
+          <CardHeader><CardTitle>Call-to-Action</CardTitle></CardHeader>
+          <CardContent className="space-y-5">
+            <Input label="Title" value={formData.cta_title} onChange={e => handleChange("cta_title", e.target.value)} placeholder="Ready to Start?" />
+            <Textarea rows={3} label="Description" value={formData.cta_description} onChange={e => handleChange("cta_description", e.target.value)} />
+            <div className="grid md:grid-cols-2 gap-6">
+              <Input label="Primary Button" value={formData.cta_button_text} onChange={e => handleChange("cta_button_text", e.target.value)} />
+              <Input label="Primary Link" value={formData.cta_button_link} onChange={e => handleChange("cta_button_link", e.target.value)} />
+              <Input label="Secondary Button" value={formData.cta_secondary_button_text} onChange={e => handleChange("cta_secondary_button_text", e.target.value)} />
+              <Input label="Secondary Link" value={formData.cta_secondary_button_link} onChange={e => handleChange("cta_secondary_button_link", e.target.value)} />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="cta_button_link">Primary Button Link</Label>
-              <Input
-                id="cta_button_link"
-                value={formData.cta_button_link}
-                onChange={(e) => handleChange('cta_button_link', e.target.value)}
-                placeholder="e.g., /signup"
-              />
-            </div>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="cta_secondary_button_text">Secondary Button Text (Optional)</Label>
-              <Input
-                id="cta_secondary_button_text"
-                value={formData.cta_secondary_button_text}
-                onChange={(e) => handleChange('cta_secondary_button_text', e.target.value)}
-                placeholder="e.g., Learn More"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="cta_secondary_button_link">Secondary Button Link</Label>
-              <Input
-                id="cta_secondary_button_link"
-                value={formData.cta_secondary_button_link}
-                onChange={(e) => handleChange('cta_secondary_button_link', e.target.value)}
-                placeholder="e.g., /about"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
+
+// Reusable Input with Label
+const InputField = ({ label, icon: Icon, ...props }) => (
+  <div className="space-y-2">
+    <Label>{label}</Label>
+    <div className="relative">
+      {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />}
+      <Input className={Icon ? "pl-10" : ""} {...props} />
+    </div>
+  </div>
+);
 
 export default Contact;

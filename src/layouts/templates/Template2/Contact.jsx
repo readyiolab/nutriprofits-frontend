@@ -239,31 +239,54 @@ const Template2Contact = () => {
         </div>
       </div>
 
-      {/* CTA Section - Same as All Other Pages */}
-      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] py-20 m-12 rounded-3xl shadow-2xl overflow-hidden">
-        <div className="container mx-auto px-4 text-center text-white">
-          <h3 className="text-4xl sm:text-5xl font-medium mb-6">
-            {pageContent.cta_title}
-          </h3>
-          <p className="text-xl text-white/90 mb-12 max-w-2xl mx-auto">
-            {pageContent.cta_description}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <a
-              href={pageContent.cta_button_link}
-              className="bg-white text-black font-medium px-10 py-5 rounded-full hover:shadow-2xl transition text-lg flex items-center justify-center gap-3 mx-auto sm:mx-0"
-            >
-              {pageContent.cta_button_text} <ShoppingBag className="w-6 h-6" />
-            </a>
-            <a
-              href={pageContent.cta_secondary_button_link}
-              className="border-2 border-white text-white px-10 py-5 rounded-full hover:bg-white hover:text-black transition font-medium text-lg flex items-center justify-center gap-3"
-            >
-              <MessageCircle className="w-6 h-6" /> {pageContent.cta_secondary_button_text}
-            </a>
-          </div>
-        </div>
-      </div>
+      {/* CTA Section */}
+      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)]
+     py-12 sm:py-20 mb-10 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl 
+     shadow-2xl overflow-hidden">
+
+  <div className="container mx-auto px-3 sm:px-4 text-center text-white">
+
+    <h3 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tigh">
+      {pageContent.cta_title}
+    </h3>
+
+    <p className="text-base sm:text-xl text-white/90 mb-8 sm:mb-12 
+                  max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
+      {pageContent.cta_description}
+    </p>
+
+    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
+
+      {/* Primary button */}
+      <a
+        href={pageContent.cta_button_link}
+        className="bg-white text-black font-medium 
+                   px-6 py-3 sm:px-10 sm:py-5 rounded-full 
+                   hover:shadow-2xl transition 
+                   text-base sm:text-lg 
+                   flex items-center justify-center gap-3 
+                   w-full sm:w-auto mx-auto sm:mx-0"
+      >
+        {pageContent.cta_button_text} 
+        <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
+      </a>
+
+      {/* Secondary button */}
+      <a
+        href={pageContent.cta_secondary_button_link}
+        className="border-2 border-white text-white 
+                   px-6 py-3 sm:px-10 sm:py-5 rounded-full 
+                   hover:bg-white hover:text-black transition 
+                   font-medium text-base sm:text-lg 
+                   flex items-center justify-center gap-3 
+                   w-full sm:w-auto mx-auto sm:mx-0"
+      >
+        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" /> {pageContent.cta_secondary_button_text}
+      </a>
+    </div>
+  </div>
+</div>
+
     </div>
   );
 };

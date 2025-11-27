@@ -95,11 +95,10 @@ const ChangePassword = () => {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem('superadmin_token');
-      const response = await fetch('http://localhost:3000/api/superadmin/change-password', {
+      const response = await fetch('http://localhost:3001/api/superadmin/change-password', {
         method: 'POST',
+        credentials: 'include', // ✅ Send cookies with request
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -178,7 +177,7 @@ const ChangePassword = () => {
 
   return (
     <div className="min-h-screen " style={{ backgroundColor: '#F8FAFC' }}>
-      <div className="max-w-3xl mx-auto">
+      <div >
         {/* Header Section */}
         <div className="mb-6 md:mb-8">
           

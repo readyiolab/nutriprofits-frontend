@@ -20,6 +20,7 @@ import {
   AlertTitle,
 } from '@/components/ui/alert';
 import { useFetch } from '@/hooks';
+import { useDomainVerification } from '@/contexts/DomainVerificationContext';
 
 const Settings = () => {
   const [saving, setSaving] = React.useState(false);
@@ -28,6 +29,9 @@ const Settings = () => {
   const [checkingDomain, setCheckingDomain] = React.useState(false);
   const [customDomainInput, setCustomDomainInput] = React.useState('');
   const [showDetailedGuide, setShowDetailedGuide] = React.useState(false);
+  
+  // Use global domain verification context
+  const { domainVerification, setDomainVerification, setShowBanner, refetchDomainStatus } = useDomainVerification();
   
   const [settings, setSettings] = React.useState({
     name: '',
@@ -46,8 +50,6 @@ const Settings = () => {
     active_url: '',
   });
 
-  const [domainVerification, setDomainVerification] = React.useState(null);
-
   const SERVER_IP = '139.59.8.68';
   const TARGET_DOMAIN = 'igrowbig.com';
 
@@ -55,24 +57,13 @@ const Settings = () => {
     return localStorage.getItem('backofficeId') || '1';
   }, []);
 
-  const token = localStorage.getItem('token');
-
   // Fetch settings using custom hook
   const {
     data: fetchedSettings,
     loading,
     refetch: refetchSettings,
   } = useFetch(
-    `http://localhost:3000/api/backoffice/${backofficeId}/settings`,
-    { immediate: true, showToast: false }
-  );
-
-  // Fetch domain status using custom hook
-  const {
-    data: fetchedDomainVerification,
-    refetch: refetchDomainStatus,
-  } = useFetch(
-    `http://localhost:3000/api/backoffice/${backofficeId}/domain`,
+    `http://localhost:3001/api/backoffice/${backofficeId}/settings`,
     { immediate: true, showToast: false }
   );
 
@@ -89,14 +80,6 @@ const Settings = () => {
     }
   }, [fetchedSettings]);
 
-  // Update domain verification when fetched
-  React.useEffect(() => {
-    console.log('Fetched Domain Verification:', fetchedDomainVerification);
-    if (fetchedDomainVerification && typeof fetchedDomainVerification === 'object') {
-      setDomainVerification(fetchedDomainVerification);
-    }
-  }, [fetchedDomainVerification]);
-
   const handleSaveSettings = async () => {
     try {
       setSaving(true);
@@ -106,12 +89,12 @@ const Settings = () => {
         store_name: settings.store_name,
       };
 
-      const response = await fetch(`http://localhost:3000/api/backoffice/${backofficeId}/settings`, {
+      const response = await fetch(`http://localhost:3001/api/backoffice/${backofficeId}/settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
+        credentials: 'include', // Include cookies in request
         body: JSON.stringify(updateData),
       });
 
@@ -141,12 +124,12 @@ const Settings = () => {
     try {
       setSaving(true);
       
-      const response = await fetch(`http://localhost:3000/api/backoffice/${backofficeId}/domain`, {
+      const response = await fetch(`http://localhost:3001/api/backoffice/${backofficeId}/domain`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
+        credentials: 'include', // Include cookies in request
         body: JSON.stringify({ customDomain: customDomainInput }),
       });
 
@@ -155,6 +138,7 @@ const Settings = () => {
       if (result.success) {
         toast.success('Domain setup initiated! Check your email for DNS instructions.');
         setDomainVerification(result.verification);
+        setShowBanner(true); // Show banner when domain is set up
         setSetupDomainOpen(false);
         setCustomDomainInput('');
         refetchSettings();
@@ -173,9 +157,10 @@ const Settings = () => {
     try {
       setSaving(true);
       
-      const response = await fetch(`http://localhost:3000/api/backoffice/${backofficeId}/domain`, {
+      const response = await fetch(`http://localhost:3001/api/backoffice/${backofficeId}/domain`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Include cookies in request
       });
 
       const result = await response.json();
@@ -183,6 +168,7 @@ const Settings = () => {
       if (result.success) {
         toast.success('Custom domain removed successfully!');
         setDomainVerification(null);
+        setShowBanner(false); // Hide banner when domain is removed
         setRemoveDomainOpen(false);
         refetchSettings();
       } else {
@@ -236,7 +222,7 @@ const Settings = () => {
       
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+        <h1 className="text-xl font-bold text-gray-900">Settings</h1>
         <p className="text-gray-600 mt-1">Manage your account and domain settings</p>
       </div>
 

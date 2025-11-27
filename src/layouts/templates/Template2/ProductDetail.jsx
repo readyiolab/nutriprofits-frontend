@@ -3600,7 +3600,7 @@ const ProductDetailTemplate2 = () => {
 
         {/* CTA Section */}
         <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] rounded-3xl p-12 text-center mt-16">
-          <h2 className="text-4xl font-medium text-white mb-4">
+          <h2 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tigh">
             Ready to Transform Your Health?
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">

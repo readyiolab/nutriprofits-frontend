@@ -22,19 +22,16 @@ export const useFetch = (url, options = {}) => {
       setLoading(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
+      // Cookies are automatically sent with requests, no manual token handling needed
       const requestHeaders = {
         'Content-Type': 'application/json',
         ...headers,
       };
 
-      if (token) {
-        requestHeaders['Authorization'] = `Bearer ${token}`;
-      }
-
       const fetchOptions = {
         method,
         headers: requestHeaders,
+        credentials: 'include', // Include cookies in request
       };
 
       if (customBody && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {

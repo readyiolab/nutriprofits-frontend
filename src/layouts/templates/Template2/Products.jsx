@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Search, Filter, Grid, List, Star, TrendingUp, Zap, Heart, ShoppingBag } from "lucide-react";
+import {
+  Search,
+  Filter,
+  Grid,
+  List,
+  Star,
+  TrendingUp,
+  Zap,
+  Heart,
+  ShoppingBag,
+} from "lucide-react";
 
 const Template2Products = () => {
   const navigate = useNavigate();
@@ -12,7 +22,7 @@ const Template2Products = () => {
   const [displayedCount, setDisplayedCount] = useState(9);
 
   // PASTE YOUR PRODUCTS ARRAY HERE (copy from Template1Products)
- const products = [
+  const products = [
     {
       id: 1,
       name: "Matcha Extreme",
@@ -3401,21 +3411,31 @@ const Template2Products = () => {
     },
   ];
   // Extract unique categories
-  const categories = ["All", ...new Set(products.map(p => p.category))];
+  const categories = ["All", ...new Set(products.map((p) => p.category))];
 
   // Filter and sort products
-  let filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.category.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
+  let filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "All" || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   // Sort products
   if (sortBy === "price-low") {
-    filteredProducts.sort((a, b) => parseFloat(a.price.replace('$', '')) - parseFloat(b.price.replace('$', '')));
+    filteredProducts.sort(
+      (a, b) =>
+        parseFloat(a.price.replace("$", "")) -
+        parseFloat(b.price.replace("$", ""))
+    );
   } else if (sortBy === "price-high") {
-    filteredProducts.sort((a, b) => parseFloat(b.price.replace('$', '')) - parseFloat(a.price.replace('$', '')));
+    filteredProducts.sort(
+      (a, b) =>
+        parseFloat(b.price.replace("$", "")) -
+        parseFloat(a.price.replace("$", ""))
+    );
   } else if (sortBy === "rating") {
     filteredProducts.sort((a, b) => b.rating - a.rating);
   }
@@ -3426,31 +3446,50 @@ const Template2Products = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       {/* Modern Hero Section */}
-      <div className="relative overflow-hidden bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] min-h-screen  text-white">
+      {/* Modern Hero Section */}
+      <div
+        className="relative overflow-hidden 
+    bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] 
+    min-h-[80vh] md:min-h-screen text-white flex items-center"
+      >
+        {/* Glow Effects */}
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Zap className="w-4 h-4 text-yellow-300" />
-              <span className="text-sm font-medium">Premium Health Solutions</span>
+        <div className="absolute top-0 right-0 w-60 h-60 md:w-96 md:h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-60 h-60 md:w-96 md:h-96 bg-white/10 rounded-full blur-3xl"></div>
+
+        {/* Content */}
+        <div className="relative container mx-auto px-4 py-16 md:py-24">
+          <div className="max-w-xl md:max-w-3xl mx-auto text-center">
+            {/* Badge */}
+            <div
+              className="inline-flex items-center gap-2 
+          bg-white/20 backdrop-blur-sm 
+          px-3 py-1.5 md:px-4 md:py-2 
+          rounded-full mb-5 md:mb-6"
+            >
+              <Zap className="w-4 h-4 md:w-5 md:h-5 text-yellow-300" />
+              <span className="text-sm md:text-base font-medium">
+                Premium Health Solutions
+              </span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-medium mb-6 leading-tight">
+
+            {/* Heading */}
+            <h1 className="text-4xl md:text-6xl font-semibold mb-4 md:mb-6 leading-tight">
               Transform Your Wellness Journey
             </h1>
-            <p className="text-xl text-white/90 mb-8">
+
+            {/* Sub Heading */}
+            <p className="text-lg md:text-xl text-white/90 mb-6 md:mb-8 px-2">
               Discover science-backed supplements that deliver real results
             </p>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-8 md:py-12">
         {/* Filter Bar */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-purple-100">
-          <div className="grid md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 border border-purple-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="md:col-span-2 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -3459,18 +3498,22 @@ const Template2Products = () => {
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:outline-none transition"
+                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 
+          rounded-xl focus:border-blue-600 focus:outline-none transition text-sm md:text-base"
               />
             </div>
 
-            {/* Category Filter */}
+            {/* Category */}
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:outline-none transition"
+              className="px-4 py-3 border-2 border-gray-200 rounded-xl 
+        focus:border-blue-600 focus:outline-none transition text-sm md:text-base"
             >
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
 
@@ -3478,7 +3521,8 @@ const Template2Products = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-600 focus:outline-none transition"
+              className="px-4 py-3 border-2 border-gray-200 rounded-xl 
+        focus:border-blue-600 focus:outline-none transition text-sm md:text-base"
             >
               <option value="featured">Featured</option>
               <option value="price-low">Price: Low to High</option>
@@ -3491,66 +3535,76 @@ const Template2Products = () => {
           <div className="flex items-center gap-2 mt-4 justify-end">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-lg transition ${viewMode === "grid" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+              className={`p-2 rounded-lg transition ${
+                viewMode === "grid"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
             >
               <Grid className="w-5 h-5" />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`p-2 rounded-lg transition ${viewMode === "list" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+              className={`p-2 rounded-lg transition ${
+                viewMode === "list"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
             >
               <List className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Products Grid/List */}
+        {/* GRID VIEW */}
         {viewMode === "grid" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {displayedProducts.map((product) => (
               <div
                 key={product.id}
-                onClick={() => navigate(`/template/${templateId}/products/${product.id}`)}
-                className="group bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 border border-purple-100 hover:border-black"
+                onClick={() =>
+                  navigate(`/template/${templateId}/products/${product.id}`)
+                }
+                className="group bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer 
+          hover:shadow-2xl transition-all duration-300 border border-purple-100 hover:border-black"
               >
-                {/* Image Container */}
-                <div className="relative h-64 bg-gradient-to-br from-purple-50 to-pink-50 overflow-hidden">
+                {/* Image */}
+                <div className="relative h-52 sm:h-64 bg-gradient-to-br from-purple-50 to-pink-50 overflow-hidden">
                   <img
                     src={product.image}
                     alt={product.name}
                     className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
                   />
-                 
                   {product.badge && (
-                    <div className="absolute top-4 left-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                    <div
+                      className="absolute top-3 left-3 bg-gradient-to-r 
+              from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold"
+                    >
                       {product.badge}
                     </div>
                   )}
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-semibold text-black bg-purple-50 px-2 py-1 rounded-full">
-                      {product.category}
-                    </span>
-                    
-                  </div>
+                <div className="p-4 sm:p-6">
+                  <span className="text-xs font-semibold text-black bg-purple-50 px-2 py-1 rounded-full">
+                    {product.category}
+                  </span>
 
-                  <h3 className="text-xl font-bold text-gray-800 mb-2  transition line-clamp-1">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mt-2 line-clamp-1">
                     {product.name}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+
+                  <p className="text-sm text-gray-600 mt-1 mb-4 line-clamp-2">
                     {product.description}
                   </p>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-xl font-medium bg-black bg-clip-text text-transparent">
+                    <span className="text-lg sm:text-xl font-medium bg-black bg-clip-text text-transparent">
                       {product.price}
                     </span>
-                    <button className="bg-black text-white px-4 py-2 rounded-xl hover:shadow-lg transition flex items-center gap-2">
+                    <button className="bg-black text-white px-4 py-2 rounded-xl text-sm hover:shadow-lg transition">
                       <ShoppingBag className="w-4 h-4" />
-                      <span className="text-sm font-medium">View</span>
                     </button>
                   </div>
                 </div>
@@ -3558,44 +3612,53 @@ const Template2Products = () => {
             ))}
           </div>
         ) : (
+          /* LIST VIEW */
           <div className="space-y-4 mb-12">
             {displayedProducts.map((product) => (
               <div
                 key={product.id}
-                onClick={() => navigate(`/template/${templateId}/products/${product.id}`)}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 border border-purple-100 hover:border-purple-300 p-6"
+                onClick={() =>
+                  navigate(`/template/${templateId}/products/${product.id}`)
+                }
+                className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer
+          hover:shadow-2xl transition-all duration-300 border border-purple-100 p-4 sm:p-6"
               >
-                <div className="flex gap-6">
-                  <div className="w-48 h-48 flex-shrink-0 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl overflow-hidden">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                  {/* Image */}
+                  <div className="w-full sm:w-48 h-48 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl overflow-hidden mx-auto sm:mx-0">
                     <img
                       src={product.image}
                       alt={product.name}
                       className="w-full h-full object-contain p-4"
                     />
                   </div>
-                  <div className="flex-1 flex flex-col">
-                    <div className="flex items-start justify-between mb-3">
+
+                  {/* Content */}
+                  <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row justify-between">
                       <div>
-                        <span className="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
+                        <span className="text-xs font-semibold text-black bg-purple-50 px-2 py-1 rounded-full">
                           {product.category}
                         </span>
-                        <h3 className="text-2xl font-bold text-gray-800 mt-2 hover:text-purple-600 transition">
+                        <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mt-2">
                           {product.name}
                         </h3>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">{product.rating}</span>
-                      </div>
+
+                      
                     </div>
-                    <p className="text-gray-600 mb-4 flex-1">{product.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+
+                    <p className="text-gray-600 mt-3 mb-4 text-sm sm:text-base">
+                      {product.description}
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <span className="text-xl sm:text-2xl font-semibold bg-black bg-clip-text text-transparent">
                         {product.price}
                       </span>
-                      <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl hover:shadow-lg transition flex items-center gap-2">
-                        <ShoppingBag className="w-5 h-5" />
-                        <span className="font-medium">View Details</span>
+
+                      <button className="bg-black text-white px-6 py-3 rounded-xl text-sm sm:text-base hover:shadow-lg">
+                        View Details
                       </button>
                     </div>
                   </div>
@@ -3605,14 +3668,14 @@ const Template2Products = () => {
           </div>
         )}
 
-        {/* Load More Button */}
+        {/* Load More */}
         {hasMore && (
-          <div className="text-center">
+          <div className="text-center mt-6">
             <button
-              onClick={() => setDisplayedCount(prev => prev + 9)}
-              className="bg-black text-white px-8 py-4 rounded-xl font-semibold hover:shadow-lg transition-all transform hover:scale-105"
+              onClick={() => setDisplayedCount((prev) => prev + 9)}
+              className="bg-black text-white px-8 py-4 rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition"
             >
-              Load More Products
+              Load More
             </button>
           </div>
         )}
@@ -3620,23 +3683,41 @@ const Template2Products = () => {
         {/* No Results */}
         {filteredProducts.length === 0 && (
           <div className="text-center py-20">
-            <div className="text-7xl mb-4">🔍</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">No products found</h3>
-            <p className="text-gray-600">Try adjusting your search or filters</p>
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+              No products found
+            </h3>
+            <p className="text-gray-600 text-sm sm:text-base">
+              Try adjusting your search or filters
+            </p>
           </div>
         )}
       </div>
 
       {/* CTA Section */}
-      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] py-16 m-12 rounded-3xl shadow-xl text-center">
-        <div className="container mx-auto px-4 text-center text-white">
-          <h2 className="text-4xl font-medium mb-4">Ready to Start Your Transformation?</h2>
-          <p className="text-xl mb-8 text-white/90">Join thousands who trust our products</p>
-          <button className="bg-white text-black px-8 py-4 rounded-xl font-medium cursor-pointer hover:shadow-lg transition flex items-center justify-center mx-auto">
-            Shop Now <ShoppingBag className="w-5 h-5 inline-block ml-2" />
-          </button>
-        </div>
-      </div>
+<div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] 
+     py-10 sm:py-16 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl shadow-xl text-center mb-10">
+
+  <div className="container mx-auto px-3 sm:px-4 text-white">
+    
+    <h2 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tight">
+      Ready to Start Your Transformation?
+    </h2>
+
+    <p className="text-base sm:text-xl mb-6 sm:mb-8 text-white/90 max-w-xl mx-auto leading-relaxed">
+      Join thousands who trust our products
+    </p>
+
+    <button className="bg-white text-black px-6 py-3 sm:px-8 sm:py-4 rounded-xl
+                       font-medium cursor-pointer hover:shadow-lg transition
+                       flex items-center justify-center mx-auto text-base sm:text-lg">
+      Shop Now 
+      <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 inline-block ml-2" />
+    </button>
+
+  </div>
+</div>
+
     </div>
   );
 };

@@ -32,7 +32,13 @@ const Template1Layout = () => {
             {/* Logo */}
             <div className="flex items-center">
               <span className="text-lg sm:text-xl font-semibold text-[#004445]">
-                {template?.name}
+                {template?.logoUrl ? (
+                  <img
+                    src={template.logoUrl}
+                    alt={`${template?.name} Logo`}
+                    className="h-8 sm:h-10 object-contain"
+                  />
+                ) : (template?.name) }
               </span>
             </div>
 

@@ -8,16 +8,37 @@ import Contact from "../pages/Landing/Contact";
 import Templates from "../pages/Landing/Templates";
 
 const LandingRoutes = {
-  path: "/",
+  path: "/landing",
   element: <LandingLayout />,
   children: [
-    { index: true, element: <Home /> },
-    { path: "products", element: <Products /> },
-    { path: "categories", element: <Categories /> },
-    { path: "about", element: <About /> },
-    { path: "faq", element: <FAQ /> },
-    { path: "contact", element: <Contact /> },
-    {path: "templates", element: <Templates /> },
+    { 
+      index: true, 
+      element: <Home /> 
+    },
+    { 
+      path: "products", 
+      element: <Products /> 
+    },
+    { 
+      path: "categories", 
+      element: <Categories /> 
+    },
+    { 
+      path: "about", 
+      element: <About /> 
+    },
+    { 
+      path: "faq", 
+      element: <FAQ /> 
+    },
+    { 
+      path: "contact", 
+      element: <Contact /> 
+    },
+    {
+      path: "templates", 
+      element: <Templates /> 
+    },
   ],
 };
 

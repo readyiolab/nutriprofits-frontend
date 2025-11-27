@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../config/apiConfig";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,9 +12,10 @@ const BACKGROUND_IMAGE =
   "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=2340&auto=format&fit=crop";
 
 const Login = () => {
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [loading,setLoading] = useState(false)
-  const [formData, setFormData] = React.useState({
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
     remember: false,
@@ -22,44 +23,49 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  // Fetch CSRF token on mount
-  useEffect(() => {
-    const fetchCsrfToken = async () => {
-      try {
-        const res = await axios.get("http://localhost:3000/api/csrf-token");
-        axios.defaults.headers.common["X-CSRF-Token"] = res.data.csrfToken;
-      } catch (err) {
-        console.error("Error fetching CSRF token:", err);
-      }
-    };
-    fetchCsrfToken();
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); 
+    setLoading(true);
+    setError("");
 
     try {
-      const response = await axios.post("http://localhost:3000/api/backoffice/login", {
+      const response = await api.post("/backoffice/login", {
         email: formData.email,
         password: formData.password,
       });
 
       if (response.data.success) {
-        console.log("Login successful:", response.data);
-        // Optionally save token in localStorage
-        localStorage.setItem("token", response.data.token);
+        console.log("✅ Login successful:", response.data);
 
-        // Redirect to dashboard
-        navigate("/backoffice/");
+        // Store user data in localStorage (not the token - that's in HttpOnly cookie)
+        const userData = response.data.data;
+        localStorage.setItem("backofficeId", userData.backoffice_id);
+        localStorage.setItem("userName", userData.name);
+        localStorage.setItem("userEmail", userData.email);
+        localStorage.setItem("userRole", userData.role);
+        localStorage.setItem("isAuthenticated", "true");
+
+        console.log("📦 Stored in localStorage:", {
+          backofficeId: userData.backoffice_id,
+          userName: userData.name,
+          userEmail: userData.email,
+          userRole: userData.role,
+          isAuthenticated: "true",
+        });
+
+        // Add small delay to ensure localStorage is updated before navigation
+        setTimeout(() => {
+          console.log("🚀 Navigating to dashboard...");
+          navigate("/backoffice/");
+        }, 100);
       } else {
-        alert(response.data.message || "Login failed");
+        setError(response.data.message || "Login failed");
       }
     } catch (error) {
-      console.error("Login error:", error);
-      alert(error.response?.data?.message || "Internal server error");
-    }finally {
-      setLoading(false); // Stop loader
+      console.error("❌ Login error:", error);
+      setError(error.response?.data?.message || "Internal server error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,6 +105,13 @@ const Login = () => {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <div className="relative">
@@ -110,9 +123,11 @@ const Login = () => {
                     className="pl-10"
                     required
                     value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value });
+                      setError("");
+                    }}
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -128,14 +143,17 @@ const Login = () => {
                     className="pl-10 pr-10"
                     required
                     value={formData.password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setFormData({ ...formData, password: e.target.value });
+                      setError("");
+                    }}
+                    disabled={loading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    disabled={loading}
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -150,6 +168,7 @@ const Login = () => {
                     onCheckedChange={(checked) =>
                       setFormData({ ...formData, remember: checked })
                     }
+                    disabled={loading}
                   />
                   <label htmlFor="remember" className="text-sm text-gray-600">
                     Remember me
@@ -165,12 +184,11 @@ const Login = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-black cursor-pointer h-12 text-lg font-medium "
+                className="w-full bg-black cursor-pointer h-12 text-lg font-medium"
                 disabled={loading}
-
               >
-               {loading ? (
-                <svg
+                {loading ? (
+                  <svg
                     className="animate-spin h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -190,9 +208,9 @@ const Login = () => {
                       d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                     ></path>
                   </svg>
-               ) : (
-                "Sign In"
-               )}
+                ) : (
+                  "Sign In"
+                )}
               </Button>
 
               <p className="text-center text-sm text-gray-600 mt-6">

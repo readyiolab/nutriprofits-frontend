@@ -1,12 +1,11 @@
 import React from 'react';
-import { Save, Loader2 } from 'lucide-react';
+import { Save, Loader2, Image, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Toaster } from 'sonner';
-import { useFetch, useForm } from '@/hooks';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const INITIAL_FORM_STATE = {
   hero_title: '',
@@ -14,9 +13,11 @@ const INITIAL_FORM_STATE = {
   hero_description: '',
   hero_button_text: '',
   hero_button_link: '',
+  hero_image_url: '',
   story_title: '',
   story_subtitle: '',
   story_description: '',
+  story_image_url: '',
   purpose_title: '',
   purpose_subtitle: '',
   mission_title: '',
@@ -34,47 +35,133 @@ const INITIAL_FORM_STATE = {
 };
 
 const About = () => {
+  const [formData, setFormData] = React.useState(INITIAL_FORM_STATE);
+  const [loading, setLoading] = React.useState(true);
+  const [saving, setSaving] = React.useState(false);
+  const [message, setMessage] = React.useState({ type: '', text: '' });
+  const [heroImageFile, setHeroImageFile] = React.useState(null);
+  const [heroImagePreview, setHeroImagePreview] = React.useState('');
+  const [storyImageFile, setStoryImageFile] = React.useState(null);
+  const [storyImagePreview, setStoryImagePreview] = React.useState('');
+
   const backofficeId = React.useMemo(() => {
     return localStorage.getItem('backofficeId') || '1';
   }, []);
 
-  // Fetch existing content using custom hook
-  const { data: fetchedContent, loading } = useFetch(
-    `http://localhost:3000/api/about-page-content/${backofficeId}/content`,
-    { immediate: true, showToast: false }
-  );
+  React.useEffect(() => {
+    fetchContent();
+  }, []);
 
-  // Initialize form data with fetched content
-  const initialFormData = React.useMemo(() => {
-    if (fetchedContent && typeof fetchedContent === 'object') {
-      return { ...INITIAL_FORM_STATE, ...fetchedContent };
-    }
-    return INITIAL_FORM_STATE;
-  }, [fetchedContent]);
-
-  // Handle form submission using custom hook
-  const { formData, handleChange, handleSubmit, loading: saving } = useForm(
-    initialFormData,
-    async (data) => {
+  const fetchContent = async () => {
+    try {
+      setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/api/about-page-content/${backofficeId}/content/upsert`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: JSON.stringify(data),
-        }
+        `http://localhost:3001/api/about-page-content/${backofficeId}/content`,
+        { credentials: 'include' }
       );
       const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.message || 'Failed to save');
+      
+      if (result.success && result.data) {
+        setFormData({ ...INITIAL_FORM_STATE, ...result.data });
+        if (result.data.hero_image_url) {
+          setHeroImagePreview(result.data.hero_image_url);
+        }
+        if (result.data.story_image_url) {
+          setStoryImagePreview(result.data.story_image_url);
+        }
       }
-      return result;
-    },
-    { showToast: true }
-  );
+    } catch (error) {
+      showMessage('error', 'Failed to fetch content');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showMessage = (type, text) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage({ type: '', text: '' }), 4000);
+  };
+
+  const handleChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleHeroImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        showMessage('error', 'Image must be less than 5MB');
+        return;
+      }
+      setHeroImageFile(file);
+      setHeroImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const removeHeroImage = () => {
+    setHeroImageFile(null);
+    setHeroImagePreview('');
+    handleChange('hero_image_url', '');
+  };
+
+  const handleStoryImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        showMessage('error', 'Image must be less than 5MB');
+        return;
+      }
+      setStoryImageFile(file);
+      setStoryImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const removeStoryImage = () => {
+    setStoryImageFile(null);
+    setStoryImagePreview('');
+    handleChange('story_image_url', '');
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setSaving(true);
+      const formDataToSend = new FormData();
+
+      if (heroImageFile) {
+        formDataToSend.append('hero_image', heroImageFile);
+      }
+
+      if (storyImageFile) {
+        formDataToSend.append('story_image', storyImageFile);
+      }
+
+      formDataToSend.append('data', JSON.stringify(formData));
+
+      const response = await fetch(
+        `http://localhost:3001/api/about-page-content/${backofficeId}/content/upsert`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          body: formDataToSend,
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        showMessage('success', 'Content saved successfully!');
+        setHeroImageFile(null);
+        setStoryImageFile(null);
+        fetchContent();
+      } else {
+        showMessage('error', result.message || 'Failed to save content');
+      }
+    } catch (error) {
+      showMessage('error', 'Error saving content');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -85,13 +172,18 @@ const About = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <Toaster />
+    <div className="space-y-6 max-w-6xl mx-auto p-6">
+      {message.text && (
+        <Alert className={message.type === 'error' ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'}>
+          <AlertDescription className={message.type === 'error' ? 'text-red-800' : 'text-green-800'}>
+            {message.text}
+          </AlertDescription>
+        </Alert>
+      )}
       
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">About Page Content</h1>
+          <h1 className="text-xl font-bold text-gray-900">About Page Content</h1>
           <p className="text-gray-600 mt-1">Manage your about page sections</p>
         </div>
         <Button onClick={handleSubmit} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
@@ -109,7 +201,6 @@ const About = () => {
         </Button>
       </div>
 
-      {/* Hero Section */}
       <Card>
         <CardHeader>
           <CardTitle>Hero Section</CardTitle>
@@ -164,10 +255,46 @@ const About = () => {
               />
             </div>
           </div>
+          <div className="space-y-2">
+            <Label>Hero Image</Label>
+            <div className="flex items-start gap-4">
+              {heroImagePreview ? (
+                <div className="relative">
+                  <img
+                    src={heroImagePreview}
+                    alt="Hero preview"
+                    className="w-40 h-40 object-cover rounded-lg border"
+                  />
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="absolute -top-2 -right-2"
+                    onClick={removeHeroImage}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="w-40 h-40 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                  <Image className="h-12 w-12 text-gray-400" />
+                </div>
+              )}
+              <div className="flex-1 space-y-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleHeroImageChange}
+                  className="cursor-pointer"
+                />
+                <p className="text-sm text-gray-500">
+                  Upload a hero image (max 5MB). Recommended: 1920x600px
+                </p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Story Section */}
       <Card>
         <CardHeader>
           <CardTitle>Our Story Section</CardTitle>
@@ -202,10 +329,46 @@ const About = () => {
               placeholder="Share your company's journey and story"
             />
           </div>
+          <div className="space-y-2">
+            <Label>Story Image</Label>
+            <div className="flex items-start gap-4">
+              {storyImagePreview ? (
+                <div className="relative">
+                  <img
+                    src={storyImagePreview}
+                    alt="Story preview"
+                    className="w-40 h-40 object-cover rounded-lg border"
+                  />
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="absolute -top-2 -right-2"
+                    onClick={removeStoryImage}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="w-40 h-40 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                  <Image className="h-12 w-12 text-gray-400" />
+                </div>
+              )}
+              <div className="flex-1 space-y-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleStoryImageChange}
+                  className="cursor-pointer"
+                />
+                <p className="text-sm text-gray-500">
+                  Upload a story image (max 5MB)
+                </p>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Purpose Section */}
       <Card>
         <CardHeader>
           <CardTitle>Purpose Section</CardTitle>
@@ -301,7 +464,6 @@ const About = () => {
         </CardContent>
       </Card>
 
-      {/* Why Choose Us Section */}
       <Card>
         <CardHeader>
           <CardTitle>Why Choose Us Section</CardTitle>
@@ -329,7 +491,6 @@ const About = () => {
         </CardContent>
       </Card>
 
-      {/* CTA Section */}
       <Card>
         <CardHeader>
           <CardTitle>Call-to-Action Section</CardTitle>

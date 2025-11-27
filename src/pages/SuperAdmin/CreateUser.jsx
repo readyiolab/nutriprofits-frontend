@@ -1,9 +1,15 @@
 import { useState } from 'react';
-import { User, Mail, Globe, Store, CreditCard, ArrowLeft, CheckCircle, AlertCircle, Loader } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { User, Mail, Globe, Store, CreditCard, ArrowLeft, CheckCircle, AlertCircle, Loader, ExternalLink } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 
 const CreateUser = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [createdUser, setCreatedUser] = useState(null);
@@ -11,20 +17,12 @@ const CreateUser = () => {
     name: '',
     email: '',
     subdomain: '',
-    template_id: 1,
+    template_id: '1',
     subscription_plan: 'monthly'
   });
   const [errors, setErrors] = useState({});
 
-  // Color Scheme
-  const PRIMARY = '#3B82F6'; // Blue
-  const SECONDARY = '#1E293B'; // Dark Slate
-  const SUCCESS = '#10B981';
-  const WARNING = '#F59E0B';
-  const ERROR = '#EF4444';
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (name, value) => {
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -74,14 +72,16 @@ const CreateUser = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('superadmin_token');
-      const response = await fetch('http://localhost:3000/api/superadmin/backoffice-users', {
+      const response = await fetch('http://localhost:3001/api/superadmin/backoffice-users', {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          template_id: parseInt(formData.template_id)
+        })
       });
 
       const result = await response.json();
@@ -93,7 +93,7 @@ const CreateUser = () => {
           name: '',
           email: '',
           subdomain: '',
-          template_id: 1,
+          template_id: '1',
           subscription_plan: 'monthly'
         });
       } else {
@@ -107,328 +107,338 @@ const CreateUser = () => {
     }
   };
 
-  const handleNavigateToTenants = () => {
-    navigate('/superadmin/tenants');
-  };
-
-  const FormField = ({ icon: Icon, label, name, type = 'text', placeholder, error, required = false }) => (
-    <div className="space-y-2">
-      <label className="flex items-center gap-2 text-sm md:text-base font-semibold" 
-        style={{ color: SECONDARY }}>
-        <Icon className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" style={{ color: PRIMARY }} />
-        <span>{label}</span>
-        {required && <span style={{ color: ERROR }}>*</span>}
-      </label>
-      <input
-        type={type}
-        name={name}
-        value={formData[name]}
-        onChange={handleChange}
-        placeholder={placeholder}
-        className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-lg border-2 transition-all focus:outline-none text-sm md:text-base"
-        style={{ 
-          borderColor: error ? ERROR : '#E5E7EB',
-          backgroundColor: error ? '#FEF2F2' : '#FFFFFF'
-        }}
-      />
-      {error && (
-        <p className="text-xs md:text-sm flex items-center gap-1.5 font-medium" style={{ color: ERROR }}>
-          <AlertCircle className="w-4 h-4" /> {error}
-        </p>
-      )}
-    </div>
-  );
-
-  const SuccessModal = () => (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-      <div 
-        className="bg-white rounded-xl max-w-2xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in"
-        style={{ borderTop: `4px solid ${PRIMARY}` }}
-      >
-        {/* Modal Header */}
-        <div className="px-4 md:px-8 py-6 md:py-8 text-center border-b border-gray-200">
-          <div 
-            className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-4"
-            style={{ backgroundColor: `${SUCCESS}15` }}
-          >
-            <CheckCircle className="w-8 h-8 md:w-10 md:h-10" style={{ color: SUCCESS }} />
+  // Success View (Full Screen)
+  if (success && createdUser) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8">
+        <div className="max-w-5xl mx-auto">
+          {/* Success Header */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-4">
+              <CheckCircle className="w-10 h-10 text-green-600" />
+            </div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">User Created Successfully!</h1>
+            <p className="text-slate-600">The backoffice user has been created and notified via email.</p>
           </div>
-          <h2 className="text-xl md:text-3xl font-bold mb-2" style={{ color: SECONDARY }}>
-            User Created Successfully!
-          </h2>
-          <p className="text-gray-600 text-sm md:text-base">
-            The backoffice user has been created and notified via email.
-          </p>
-        </div>
 
-        {/* Modal Content */}
-        <div className="px-4 md:px-8 py-6 md:py-8 space-y-4 md:space-y-6 max-h-[60vh] overflow-y-auto">
-          {/* User Details Grid */}
-          <div 
-            className="rounded-lg p-4 md:p-6 space-y-4"
-            style={{ backgroundColor: `${PRIMARY}08` }}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="text-left">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Name</p>
-                <p className="text-gray-900 font-semibold mt-2 break-words">{createdUser?.name}</p>
-              </div>
-              <div className="text-left">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Email</p>
-                <p className="text-gray-900 font-semibold mt-2 break-all">{createdUser?.email}</p>
-              </div>
-              <div className="text-left">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Store Name</p>
-                <p className="text-gray-900 font-semibold mt-2 break-words">{createdUser?.store_name}</p>
-              </div>
-              <div className="text-left">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Plan</p>
-                <span 
-                  className="inline-block px-3 py-1 rounded-full text-xs font-semibold mt-2 capitalize"
-                  style={{ backgroundColor: `${PRIMARY}20`, color: PRIMARY }}
-                >
-                  {createdUser?.subscription_plan}
-                </span>
-              </div>
-            </div>
+          {/* User Details Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            {/* Main Info Card */}
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>User Details</CardTitle>
+                <CardDescription>Account information and credentials</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Basic Info Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-slate-500 text-xs">Full Name</Label>
+                    <p className="text-slate-900 font-semibold mt-1">{createdUser.name}</p>
+                  </div>
+                  <div>
+                    <Label className="text-slate-500 text-xs">Email Address</Label>
+                    <p className="text-slate-900 font-semibold mt-1 break-all">{createdUser.email}</p>
+                  </div>
+                  <div>
+                    <Label className="text-slate-500 text-xs">Store Name</Label>
+                    <p className="text-slate-900 font-semibold mt-1">{createdUser.store_name}</p>
+                  </div>
+                  <div>
+                    <Label className="text-slate-500 text-xs">Subscription Plan</Label>
+                    <div className="mt-1">
+                      <Badge variant="secondary" className="capitalize">
+                        {createdUser.subscription_plan}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
 
-            {/* Store URL */}
-            <div className="border-t pt-4">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Store URL</p>
-              <a 
-                href={createdUser?.store_url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline break-all text-sm font-medium"
-              >
-                {createdUser?.store_url}
-              </a>
-            </div>
+                <Separator />
 
-            {/* Temporary Password Box */}
-            <div 
-              className="border-l-4 p-4 rounded space-y-2"
-              style={{ borderColor: WARNING, backgroundColor: '#FFFBEB' }}
+                {/* Store URL */}
+                <div>
+                  <Label className="text-slate-500 text-xs mb-2 block">Store URL</Label>
+                  <a
+                    href={createdUser.store_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline break-all"
+                  >
+                    {createdUser.store_url}
+                    <ExternalLink className="w-4 h-4 flex-shrink-0" />
+                  </a>
+                </div>
+
+                <Separator />
+
+                {/* Temporary Password */}
+                <Alert className="border-amber-200 bg-amber-50">
+                  <AlertCircle className="h-4 w-4 text-amber-600" />
+                  <AlertDescription>
+                    <div className="space-y-2">
+                      <p className="font-semibold text-amber-900">Temporary Password</p>
+                      <p className="font-mono text-lg font-bold text-slate-900 select-all bg-white px-3 py-2 rounded border">
+                        {createdUser.temporary_password}
+                      </p>
+                      <p className="text-sm text-amber-800">
+                        This password has been sent via email. User should change it after first login.
+                      </p>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+
+            {/* Setup Status Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Setup Status</CardTitle>
+                <CardDescription>What's been configured</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">Subdomain Created</p>
+                      <p className="text-sm text-slate-500">DNS configured on Cloudflare</p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">Welcome Email Sent</p>
+                      <p className="text-sm text-slate-500">Credentials delivered</p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">Store Template Applied</p>
+                      <p className="text-sm text-slate-500">Ready to customize</p>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-slate-900">Subscription Activated</p>
+                      <p className="text-sm text-slate-500">Billing cycle started</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col md:flex-row gap-3">
+            <Button
+              size="lg"
+              className="flex-1"
+              onClick={() => {
+                setSuccess(false);
+                setCreatedUser(null);
+              }}
             >
-              <p className="text-xs font-medium" style={{ color: '#92400E' }}>Temporary Password</p>
-              <p className="font-mono font-bold text-base md:text-lg select-all" style={{ color: SECONDARY }}>
-                {createdUser?.temporary_password}
-              </p>
-              <p className="text-xs" style={{ color: '#B45309' }}>
-                ⚠️ This password has been sent via email. User should change it after first login.
-              </p>
-            </div>
+              Create Another User
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="flex-1"
+              onClick={() => window.location.href = '/superadmin/tenants'}
+            >
+              View All Users
+            </Button>
           </div>
-
-          {/* Additional Info */}
-          <div 
-            className="p-3 md:p-4 rounded-lg border-l-4 space-y-2"
-            style={{ backgroundColor: `${SUCCESS}08`, borderColor: SUCCESS }}
-          >
-            <p className="text-xs md:text-sm font-semibold" style={{ color: SECONDARY }}>
-              ✓ What's been set up:
-            </p>
-            <ul className="space-y-1.5 text-xs md:text-sm text-gray-700">
-              <li>✓ Subdomain created on Cloudflare</li>
-              <li>✓ Welcome email sent with credentials</li>
-              <li>✓ Store template applied</li>
-              <li>✓ Subscription plan activated</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Modal Footer */}
-        <div className="px-4 md:px-8 py-4 md:py-6 border-t bg-gray-50 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
-          <button
-            onClick={() => { 
-              setSuccess(false); 
-              setCreatedUser(null); 
-            }}
-            className="order-2 md:order-1 px-4 md:px-6 py-2.5 md:py-3 rounded-lg font-semibold text-white transition-all duration-200 text-sm md:text-base hover:shadow-lg active:scale-95"
-            style={{ 
-              backgroundColor: PRIMARY,
-              opacity: 0.9 
-            }}
-            onMouseEnter={(e) => e.target.style.opacity = '1'}
-            onMouseLeave={(e) => e.target.style.opacity = '0.9'}
-          >
-            Create Another User
-          </button>
-          <button
-            onClick={handleNavigateToTenants}
-            className="order-1 md:order-2 px-4 md:px-6 py-2.5 md:py-3 rounded-lg font-semibold text-white transition-all duration-200 text-sm md:text-base hover:shadow-lg active:scale-95"
-            style={{ backgroundColor: SECONDARY }}
-          >
-            View All Users
-          </button>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 
+  // Create Form View
   return (
-    <div className="min-h-screen p-3 md:p-6 lg:p-8" style={{ backgroundColor: '#F8FAFC' }}>
-      <div className="max-w-5xl mx-auto">
-        {/* Header Section */}
-        <div className="mb-6 md:mb-8">
-          
-          <h1 className="text-xl md:text-2xl font-semibold mb-1 md:mb-2" style={{ color: SECONDARY }}>
-            Create Backoffice User
-          </h1>
-          
+    <div className="min-h-screen bg-slate-50  ">
+      <div >
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-xl font-bold text-slate-900 mb-2">Create Backoffice User</h1>
+          <p className="text-slate-600">Add a new user to the system</p>
         </div>
 
         {/* Form Card */}
-        <div 
-          className="bg-white  shadow-lg overflow-hidden "
-          
-        >
-          {/* Form Header */}
-          <div 
-            className="px-4 md:px-8 py-4 md:py-6"
-            style={{ backgroundColor: `${PRIMARY}08`, borderBottom: `1px solid #E5E7EB` }}
-          >
-            <h2 className="text-lg md:text-xl font-semibold" style={{ color: SECONDARY }}>
-              User Information
-            </h2>
-            <p className="text-xs md:text-sm text-gray-600 mt-1">
-              Fill in the details below to create a new user
-            </p>
-          </div>
-
-          {/* Form Content */}
-          <form onSubmit={handleSubmit} className="p-4 md:p-8 space-y-6">
-            {/* Row 1: Name & Email (2 fields) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              <FormField 
-                icon={User} 
-                label="Full Name" 
-                name="name" 
-                placeholder="John Doe" 
-                error={errors.name}
-                required
-              />
-              <FormField 
-                icon={Mail} 
-                label="Email Address" 
-                name="email" 
-                type="email" 
-                placeholder="john@example.com" 
-                error={errors.email}
-                required
-              />
-            </div>
-
-            {/* Row 2: Subdomain & Template (2 fields) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              {/* Subdomain Field */}
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm md:text-base font-semibold" 
-                  style={{ color: SECONDARY }}>
-                  <Globe className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" style={{ color: PRIMARY }} />
-                  <span>Subdomain</span>
-                  <span style={{ color: ERROR }}>*</span>
-                </label>
-                <div className="flex gap-0 rounded-lg overflow-hidden border-2" 
-                  style={{ borderColor: errors.subdomain ? ERROR : '#E5E7EB' }}>
-                  <input
-                    type="text"
-                    name="subdomain"
-                    value={formData.subdomain}
-                    onChange={handleChange}
-                    placeholder="mystore"
-                    className="flex-1 px-3 md:px-4  focus:outline-none text-sm md:text-base"
-                    style={{ backgroundColor: errors.subdomain ? '#FEF2F2' : '#FFFFFF' }}
+        <Card>
+          <CardHeader className="bg-slate-50">
+            <CardTitle>User Information</CardTitle>
+            <CardDescription>Fill in the details below to create a new user</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Name & Email Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Name Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-blue-600" />
+                    Full Name
+                    <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={(e) => handleChange('name', e.target.value)}
+                    placeholder="John Doe"
+                    className={errors.name ? 'border-red-500' : ''}
                   />
-                  <div className="px-3 md:px-4 py-2.5 md:py-3 bg-gray-100 text-gray-600 font-medium whitespace-nowrap text-xs md:text-base">
-                    .igrowbig.com
-                  </div>
+                  {errors.name && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />
+                      {errors.name}
+                    </p>
+                  )}
                 </div>
-                {errors.subdomain && (
-                  <p className="text-xs md:text-sm flex items-center gap-1.5 font-medium" style={{ color: ERROR }}>
-                    <AlertCircle className="w-4 h-4" /> {errors.subdomain}
-                  </p>
-                )}
+
+                {/* Email Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-blue-600" />
+                    Email Address
+                    <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={(e) => handleChange('email', e.target.value)}
+                    placeholder="john@example.com"
+                    className={errors.email ? 'border-red-500' : ''}
+                  />
+                  {errors.email && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
               </div>
 
-              {/* Store Template Select */}
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm md:text-base font-semibold" 
-                  style={{ color: SECONDARY }}>
-                  <Store className="w-4 h-4 md:w-5 md:h-5" style={{ color: PRIMARY }} />
-                  <span>Store Template</span>
-                </label>
-                <select
-                  name="template_id"
-                  value={formData.template_id}
-                  onChange={handleChange}
-                  className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:outline-none text-sm md:text-base"
+              {/* Subdomain & Template Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Subdomain Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="subdomain" className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-blue-600" />
+                    Subdomain
+                    <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="flex rounded-lg border border-input overflow-hidden">
+                    <Input
+                      id="subdomain"
+                      name="subdomain"
+                      value={formData.subdomain}
+                      onChange={(e) => handleChange('subdomain', e.target.value)}
+                      placeholder="mystore"
+                      className={`border-0 rounded-none ${errors.subdomain ? 'border-red-500' : ''}`}
+                    />
+                    <div className="px-4 bg-slate-100 text-slate-600 font-medium flex items-center text-sm whitespace-nowrap">
+                      .igrowbig.com
+                    </div>
+                  </div>
+                  {errors.subdomain && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />
+                      {errors.subdomain}
+                    </p>
+                  )}
+                </div>
+
+                {/* Template Select */}
+                <div className="space-y-2">
+                  <Label htmlFor="template" className="flex items-center gap-2">
+                    <Store className="w-4 h-4 text-blue-600" />
+                    Store Template
+                  </Label>
+                  <Select
+                    value={formData.template_id}
+                    onValueChange={(value) => handleChange('template_id', value)}
+                  >
+                    <SelectTrigger id="template">
+                      <SelectValue placeholder="Select template" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Template 1 - Modern Minimal</SelectItem>
+                      <SelectItem value="2">Template 2 - Classic</SelectItem>
+                      <SelectItem value="3">Template 3 - Bold & Colorful</SelectItem>
+                      <SelectItem value="4">Template 4 - Professional</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-slate-500">Choose the default template for the store</p>
+                </div>
+              </div>
+
+              {/* Subscription Plan */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="plan" className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-blue-600" />
+                    Subscription Plan
+                  </Label>
+                  <Select
+                    value={formData.subscription_plan}
+                    onValueChange={(value) => handleChange('subscription_plan', value)}
+                  >
+                    <SelectTrigger id="plan">
+                      <SelectValue placeholder="Select plan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="monthly">Monthly - $99/month</SelectItem>
+                      <SelectItem value="yearly">Yearly - $999/year (Save 16%)</SelectItem>
+                      <SelectItem value="trial">Free Trial - 14 days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-slate-500">Select the subscription plan for this user</p>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Form Actions */}
+              <div className="flex flex-col-reverse md:flex-row gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  className="flex-1"
+                  onClick={() => window.location.href = '/superadmin/tenants'}
                 >
-                  <option value={1}>Template 1 - Modern Minimal</option>
-                  <option value={2}>Template 2 - Classic</option>
-                  <option value={3}>Template 3 - Bold & Colorful</option>
-                  <option value={4}>Template 4 - Professional</option>
-                </select>
-                <p className="text-xs md:text-sm text-gray-500">Choose the default template for the store</p>
-              </div>
-            </div>
-
-            {/* Row 3: Subscription Plan (1 field) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm md:text-base font-semibold" 
-                  style={{ color: SECONDARY }}>
-                  <CreditCard className="w-4 h-4 md:w-5 md:h-5" style={{ color: PRIMARY }} />
-                  <span>Subscription Plan</span>
-                </label>
-                <select
-                  name="subscription_plan"
-                  value={formData.subscription_plan}
-                  onChange={handleChange}
-                  className="w-full px-3 md:px-4 py-2.5 md:py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:outline-none text-sm md:text-base"
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="flex-1"
+                  disabled={loading}
                 >
-                  <option value="monthly">Monthly - $99/month</option>
-                  <option value="yearly">Yearly - $999/year (Save 16%)</option>
-                  <option value="trial">Free Trial - 14 days</option>
-                </select>
-                <p className="text-xs md:text-sm text-gray-500">Select the subscription plan for this user</p>
+                  {loading ? (
+                    <>
+                      <Loader className="w-4 h-4 mr-2 animate-spin" />
+                      Creating User...
+                    </>
+                  ) : (
+                    'Create User'
+                  )}
+                </Button>
               </div>
-            </div>
-
-           
-
-            {/* Form Actions */}
-            <div className="flex flex-col-reverse md:flex-row gap-2 md:gap-3 pt-4 md:pt-6 border-t">
-              <button
-                type="button"
-                onClick={handleNavigateToTenants}
-                className="flex-1 px-4 md:px-6 py-2.5 md:py-3 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200 text-sm md:text-base active:scale-95"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-1 px-4 md:px-6 py-2.5 md:py-3 rounded-lg font-semibold text-white transition-all duration-200 text-sm md:text-base hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                style={{ backgroundColor: PRIMARY }}
-              >
-                {loading ? (
-                  <>
-                    <Loader className="w-4 h-4 animate-spin" />
-                    <span>Creating User...</span>
-                  </>
-                ) : (
-                  'Create User'
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        
+            </form>
+          </CardContent>
+        </Card>
       </div>
-
-      {success && createdUser && <SuccessModal />}
     </div>
   );
 };

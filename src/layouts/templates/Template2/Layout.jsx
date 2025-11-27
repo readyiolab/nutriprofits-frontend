@@ -30,14 +30,20 @@ const Template2Layout = () => {
       <div className="min-h-screen flex flex-col justify-between">
 
         {/* NAVBAR */}
-        <nav className="bg-first/95 backdrop-blur-md border-b  sticky top-0 z-50 shadow-md">
+        <nav className="bg-first/95 backdrop-blur-md   sticky top-0 z-50 shadow-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-5">
 
               {/* Brand Name */}
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-fourth">
-                  {template?.name}
+                  {template?.logoUrl ? (
+                  <img
+                    src={template.logoUrl}
+                    alt={`${template?.name} Logo`}
+                    className="h-8 sm:h-10 object-contain"
+                  />
+                ) : (template?.name) }
                 </h1>
               </div>
 
@@ -47,7 +53,7 @@ const Template2Layout = () => {
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="text-fourth hover:text-third font-medium text-base transition-colors duration-200"
+                    className="text-fourth hover:text-third font-normal text-normal transition-colors duration-200"
                   >
                     {link.label}
                   </Link>

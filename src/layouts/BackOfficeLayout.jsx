@@ -27,6 +27,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { DomainVerificationProvider } from "@/contexts/DomainVerificationContext";
+import DomainVerificationBanner from "@/components/DomainVerificationBanner";
 
 const BackOfficeLayout = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
@@ -80,17 +82,26 @@ const BackOfficeLayout = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    // Clear user data from localStorage
+    localStorage.removeItem("backofficeId");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("isAuthenticated");
     navigate("/backoffice/login");
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: "#F8FAFC" }}>
-      {/* Top Header */}
-      <header
-        className="h-16 z-50 shadow-sm border-b flex-shrink-0"
-        style={{ backgroundColor: SECONDARY_COLOR, borderColor: PRIMARY_COLOR }}
-      >
+    <DomainVerificationProvider>
+      <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: "#F8FAFC" }}>
+        {/* Domain Verification Banner */}
+        <DomainVerificationBanner />
+        
+        {/* Top Header */}
+        <header
+          className="h-16 z-50 shadow-sm border-b flex-shrink-0"
+          style={{ backgroundColor: SECONDARY_COLOR, borderColor: PRIMARY_COLOR }}
+        >
         <div className="flex items-center justify-between h-full px-4 md:px-6">
           <div className="flex items-center gap-4">
             <Button
@@ -112,13 +123,7 @@ const BackOfficeLayout = () => {
           </div>
 
           <div className="flex items-center gap-2 md:gap-4">
-            <Button variant="ghost" size="icon" className="relative hover:opacity-80" style={{ color: "white" }}>
-              <Bell className="h-5 w-5" />
-              <span
-                className="absolute top-1 right-1 h-2 w-2 rounded-full animate-pulse"
-                style={{ backgroundColor: PRIMARY_COLOR }}
-              />
-            </Button>
+            
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -134,17 +139,8 @@ const BackOfficeLayout = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 mt-2">
-                <DropdownMenuLabel style={{ color: SECONDARY_COLOR }}>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer hover:opacity-80">
-                  <User className="mr-2 h-4 w-4" style={{ color: PRIMARY_COLOR }} />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:opacity-80">
-                  <Settings className="mr-2 h-4 w-4" style={{ color: PRIMARY_COLOR }} />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
+               
+                
                 <DropdownMenuItem
                   onClick={handleLogout}
                   className="cursor-pointer text-red-600 focus:text-red-600 hover:bg-red-50"
@@ -239,7 +235,8 @@ const BackOfficeLayout = () => {
           </p>
         </div>
       </footer>
-    </div>
+      </div>
+    </DomainVerificationProvider>
   );
 };
 

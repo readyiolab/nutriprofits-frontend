@@ -1,27 +1,30 @@
 import { useState, useEffect } from 'react';
-import { Search, ExternalLink, Eye, MoreVertical, X, Plus, Filter, Loader } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Search, ExternalLink, ArrowLeft, Plus, Filter, Loader, AlertCircle, Check, X } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 
 const Tenants = () => {
-  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedUser, setSelectedUser] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [showDomainModal, setShowDomainModal] = useState(false);
+  const [showDomainSetup, setShowDomainSetup] = useState(false);
   const [customDomain, setCustomDomain] = useState('');
   const [domainLoading, setDomainLoading] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [alert, setAlert] = useState(null);
 
-  // Color Scheme
-  const PRIMARY = '#3B82F6'; // Blue
-  const SECONDARY = '#1E293B'; // Dark Slate
-  const SUCCESS = '#10B981';
-  const WARNING = '#F59E0B';
-  const ERROR = '#EF4444';
+  const showAlert = (message, type = 'info') => {
+    setAlert({ message, type });
+    setTimeout(() => setAlert(null), 5000);
+  };
 
   useEffect(() => {
     fetchBackofficeUsers();
@@ -29,11 +32,10 @@ const Tenants = () => {
 
   const fetchBackofficeUsers = async () => {
     try {
-      const token = localStorage.getItem('superadmin_token');
-      const response = await fetch('http://localhost:3000/api/superadmin/backoffice-users', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await fetch('http://localhost:3001/api/superadmin/backoffice-users', {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
       });
 
       if (response.ok) {
@@ -42,6 +44,7 @@ const Tenants = () => {
       }
     } catch (error) {
       console.error('Failed to fetch users:', error);
+      showAlert('Failed to load users', 'error');
     } finally {
       setLoading(false);
     }
@@ -49,23 +52,22 @@ const Tenants = () => {
 
   const viewUserDetails = async (backofficeId) => {
     try {
-      const token = localStorage.getItem('superadmin_token');
       const response = await fetch(
-        `http://localhost:3000/api/superadmin/backoffice-users/${backofficeId}`,
+        `http://localhost:3001/api/superadmin/backoffice-users/${backofficeId}`,
         {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          method: 'GET',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
         }
       );
 
       if (response.ok) {
         const result = await response.json();
         setSelectedUser(result.data);
-        setShowModal(true);
       }
     } catch (error) {
       console.error('Failed to fetch user details:', error);
+      showAlert('Failed to load user details', 'error');
     }
   };
 
@@ -75,65 +77,60 @@ const Tenants = () => {
     }
 
     try {
-      const token = localStorage.getItem('superadmin_token');
       const response = await fetch(
-        `http://localhost:3000/api/superadmin/backoffice-users/${backofficeId}/settings`,
+        `http://localhost:3001/api/superadmin/backoffice-users/${backofficeId}/settings`,
         {
           method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: newStatus })
         }
       );
 
       if (response.ok) {
         fetchBackofficeUsers();
-        alert(`User status updated to ${newStatus}`);
+        viewUserDetails(backofficeId);
+        showAlert(`User status updated to ${newStatus}`, 'success');
       } else {
-        alert('Failed to update status');
+        showAlert('Failed to update status', 'error');
       }
     } catch (error) {
       console.error('Failed to update status:', error);
-      alert('Error updating status');
+      showAlert('Error updating status', 'error');
     }
   };
 
   const setupCustomDomain = async () => {
     if (!customDomain.trim()) {
-      alert('Please enter a domain');
+      showAlert('Please enter a domain', 'error');
       return;
     }
 
     setDomainLoading(true);
     try {
-      const token = localStorage.getItem('superadmin_token');
       const response = await fetch(
-        `http://localhost:3000/api/superadmin/backoffice-users/${selectedUser.backoffice_id}/domain`,
+        `http://localhost:3001/api/superadmin/backoffice-users/${selectedUser.backoffice_id}/domain`,
         {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ customDomain: customDomain.trim() })
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ custom_domain: customDomain.trim() })
         }
       );
 
       const result = await response.json();
 
       if (response.ok) {
-        alert('Custom domain setup initiated! Check user email for DNS instructions.');
-        setShowDomainModal(false);
+        showAlert('Custom domain setup initiated! Check user email for DNS instructions.', 'success');
+        setShowDomainSetup(false);
         setCustomDomain('');
         viewUserDetails(selectedUser.backoffice_id);
       } else {
-        alert(result.message || 'Failed to setup domain');
+        showAlert(result.message || 'Failed to setup domain', 'error');
       }
     } catch (error) {
       console.error('Failed to setup domain:', error);
-      alert('Error setting up domain');
+      showAlert('Error setting up domain', 'error');
     } finally {
       setDomainLoading(false);
     }
@@ -145,30 +142,28 @@ const Tenants = () => {
     }
 
     try {
-      const token = localStorage.getItem('superadmin_token');
       const response = await fetch(
-        `http://localhost:3000/api/superadmin/backoffice-users/${backofficeId}/domain`,
+        `http://localhost:3001/api/superadmin/backoffice-users/${backofficeId}/domain`,
         {
           method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
         }
       );
 
       if (response.ok) {
-        alert('Custom domain removed successfully');
+        showAlert('Custom domain removed successfully', 'success');
         viewUserDetails(backofficeId);
         fetchBackofficeUsers();
       } else {
-        alert('Failed to remove domain');
+        showAlert('Failed to remove domain', 'error');
       }
     } catch (error) {
       console.error('Failed to remove domain:', error);
+      showAlert('Error removing domain', 'error');
     }
   };
 
-  // Filter and search logic
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -179,282 +174,317 @@ const Tenants = () => {
     return matchesSearch && matchesFilter;
   });
 
-  // Pagination
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  const StatusBadge = ({ status }) => (
-    <span 
-      className="px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap"
-      style={{
-        backgroundColor: status === 'active' ? '#D1FAE5' : '#FEE2E2',
-        color: status === 'active' ? '#065F46' : '#7F1D1D'
-      }}
-    >
-      {status === 'active' ? '● Active' : '● Inactive'}
-    </span>
-  );
-
-  const PlanBadge = ({ plan }) => (
-    <span 
-      className="px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap"
-      style={{
-        backgroundColor: `${PRIMARY}15`,
-        color: PRIMARY
-      }}
-    >
-      {plan.charAt(0).toUpperCase() + plan.slice(1)}
-    </span>
-  );
-
-  // User Details Modal
-  const UserDetailsModal = () => {
-    if (!selectedUser) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-        <div 
-          className="bg-white rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden"
-          style={{ borderTop: `4px solid ${PRIMARY}` }}
-        >
-          {/* Modal Header */}
-          <div className="p-4 md:p-6 flex justify-between items-center border-b border-gray-200">
-            <h2 className="text-xl md:text-2xl font-bold" style={{ color: SECONDARY }}>
-              User Details
-            </h2>
-            <button 
-              onClick={() => setShowModal(false)}
-              className="p-1 hover:bg-gray-100 rounded-lg transition"
-            >
-              <X className="w-5 h-5 md:w-6 md:h-6 text-gray-400" />
-            </button>
-          </div>
-
-          {/* Modal Content */}
-          <div className="p-4 md:p-6 space-y-6 max-h-[60vh] overflow-y-auto">
-            {/* Basic Info Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Name</p>
-                <p className="text-gray-900 font-semibold mt-2 break-words">{selectedUser.name}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Email</p>
-                <p className="text-gray-900 font-semibold mt-2 break-all">{selectedUser.email}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Store Name</p>
-                <p className="text-gray-900 font-semibold mt-2 break-words">{selectedUser.store_name}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Status</p>
-                <div className="mt-2">
-                  <StatusBadge status={selectedUser.status} />
-                </div>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Domain Type</p>
-                <p className="text-gray-900 font-semibold mt-2 capitalize">{selectedUser.domain_type.replace('_', ' ')}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Subscription Plan</p>
-                <div className="mt-2">
-                  <PlanBadge plan={selectedUser.subscription_plan} />
-                </div>
-              </div>
-            </div>
-
-            {/* Active URL */}
-            <div className="border-t pt-4">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Active URL</p>
-              <a
-                href={selectedUser.active_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 break-all"
-              >
-                <span className="text-sm">{selectedUser.active_url}</span>
-                <ExternalLink className="w-4 h-4 flex-shrink-0" />
-              </a>
-            </div>
-
-            {/* Custom Domain Section */}
-            {selectedUser.custom_domain && (
-              <div className="border-t pt-4">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Custom Domain</p>
-                <p className="text-gray-900 font-semibold mb-2 break-all">{selectedUser.custom_domain}</p>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className={`text-xs px-3 py-1 rounded-full font-semibold ${
-                    selectedUser.custom_domain_status === 'verified'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {selectedUser.custom_domain_status === 'verified' ? '✓ Verified' : '⏳ Pending'}
-                  </span>
-                  <button 
-                    onClick={() => removeCustomDomain(selectedUser.backoffice_id)}
-                    className="text-xs text-red-600 hover:text-red-700 font-medium hover:underline"
-                  >
-                    Remove Domain
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Timestamps */}
-            <div className="border-t pt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
-              <div>
-                <p className="font-medium text-gray-500 uppercase tracking-wide">Created At</p>
-                <p className="text-gray-900 mt-1">{new Date(selectedUser.created_at).toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="font-medium text-gray-500 uppercase tracking-wide">Updated At</p>
-                <p className="text-gray-900 mt-1">{new Date(selectedUser.updated_at).toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Modal Footer */}
-          <div className="p-4 md:p-6 border-t flex flex-col md:flex-row gap-2 md:gap-3">
-            {!selectedUser.custom_domain && (
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setShowDomainModal(true);
-                }}
-                className="flex-1 px-4 py-2.5 rounded-lg font-semibold text-white transition-all text-sm md:text-base hover:shadow-lg"
-                style={{ backgroundColor: PRIMARY }}
-              >
-                Setup Custom Domain
-              </button>
-            )}
-            <button
-              onClick={() => updateUserStatus(
-                selectedUser.backoffice_id,
-                selectedUser.status === 'active' ? 'inactive' : 'active'
-              )}
-              className="flex-1 px-4 py-2.5 rounded-lg font-semibold text-white transition-all text-sm md:text-base hover:shadow-lg"
-              style={{ 
-                backgroundColor: selectedUser.status === 'active' ? ERROR : SUCCESS
-              }}
-            >
-              {selectedUser.status === 'active' ? 'Deactivate User' : 'Activate User'}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Domain Setup Modal
-  const DomainSetupModal = () => (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-      <div 
-        className="bg-white rounded-xl w-full max-w-md shadow-2xl"
-        style={{ borderTop: `4px solid ${PRIMARY}` }}
-      >
-        <div className="p-4 md:p-6 flex justify-between items-center border-b border-gray-200">
-          <h2 className="text-lg md:text-xl font-bold" style={{ color: SECONDARY }}>
-            Setup Custom Domain
-          </h2>
-          <button 
-            onClick={() => {
-              setShowDomainModal(false);
-              setCustomDomain('');
-            }}
-            className="p-1 hover:bg-gray-100 rounded-lg transition"
-          >
-            <X className="w-5 h-5 text-gray-400" />
-          </button>
-        </div>
-
-        <div className="p-4 md:p-6 space-y-4">
-          <div>
-            <label className="block text-sm md:text-base font-semibold mb-2" style={{ color: SECONDARY }}>
-              Custom Domain
-            </label>
-            <input
-              type="text"
-              value={customDomain}
-              onChange={(e) => setCustomDomain(e.target.value)}
-              placeholder="example.com"
-              className="w-full px-3 md:px-4 py-2.5 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:outline-none text-sm md:text-base"
-            />
-            <p className="text-xs md:text-sm text-gray-500 mt-2">
-              Enter the domain you want to use for this store
-            </p>
-          </div>
-
-          <button
-            onClick={setupCustomDomain}
-            disabled={domainLoading}
-            className="w-full px-4 py-2.5 md:py-3 rounded-lg text-white font-semibold transition-all text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ backgroundColor: PRIMARY }}
-          >
-            {domainLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <Loader className="w-4 h-4 animate-spin" />
-                Setting up...
-              </span>
-            ) : (
-              'Setup Domain'
-            )}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
   // Loading State
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: '#F8FAFC' }}>
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
         <div className="flex flex-col items-center gap-4">
-          <div 
-            className="animate-spin rounded-full h-12 w-12 border-4"
-            style={{ 
-              borderColor: `${PRIMARY}30`,
-              borderTopColor: PRIMARY
-            }}
-          ></div>
-          <p className="text-gray-600 text-sm md:text-base">Loading tenants...</p>
+          <Loader className="w-12 h-12 animate-spin text-blue-600" />
+          <p className="text-slate-600">Loading tenants...</p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen p-3 md:p-6 lg:p-8" style={{ backgroundColor: '#F8FAFC' }}>
-      <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 md:mb-8">
-          <div className="flex-1">
-            <h1 className="text-2xl md:text-4xl font-bold mb-1 md:mb-2" style={{ color: SECONDARY }}>
-              Tenants Management
-            </h1>
-            <p className="text-gray-600 text-sm md:text-base">
-              Manage all backoffice users and their stores
-            </p>
-          </div>
-          <button
-            onClick={() => navigate('/superadmin/create-user')}
-            className="flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 md:py-3 rounded-lg text-white font-semibold transition-all text-sm md:text-base hover:shadow-lg active:scale-95 w-full md:w-auto"
-            style={{ backgroundColor: PRIMARY }}
+  // User Detail View (Full Screen)
+  if (selectedUser) {
+    return (
+      <div className="min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Alert */}
+          {alert && (
+            <Alert className={`mb-6 ${alert.type === 'error' ? 'border-red-500' : 'border-green-500'}`}>
+              {alert.type === 'error' ? <AlertCircle className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+              <AlertDescription>{alert.message}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Back Button */}
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setSelectedUser(null);
+              setShowDomainSetup(false);
+            }}
+            className="mb-6"
           >
-            <Plus className="w-4 h-4 md:w-5 md:h-5" />
-            <span>New User</span>
-          </button>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Users
+          </Button>
+
+          {/* Header */}
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">{selectedUser.name}</h1>
+            <p className="text-slate-600">{selectedUser.email}</p>
+          </div>
+
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column - Main Info */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Basic Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Basic Information</CardTitle>
+                  <CardDescription>Core user and store details</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-slate-500">Name</label>
+                      <p className="text-slate-900 font-semibold mt-1">{selectedUser.name}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-500">Email</label>
+                      <p className="text-slate-900 font-semibold mt-1 break-all">{selectedUser.email}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-500">Store Name</label>
+                      <p className="text-slate-900 font-semibold mt-1">{selectedUser.store_name}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-500">Subscription Plan</label>
+                      <div className="mt-1">
+                        <Badge variant="secondary" className="capitalize">
+                          {selectedUser.subscription_plan}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Domain Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Domain Configuration</CardTitle>
+                  <CardDescription>Active URLs and domain settings</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-500">Domain Type</label>
+                    <p className="text-slate-900 font-semibold mt-1 capitalize">
+                      {selectedUser.domain_type.replace('_', ' ')}
+                    </p>
+                  </div>
+
+                  <Separator />
+
+                  <div>
+                    <label className="text-sm font-medium text-slate-500 mb-2 block">Active URL</label>
+                    <a
+                      href={selectedUser.active_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:underline"
+                    >
+                      {selectedUser.active_url}
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+
+                  {selectedUser.custom_domain && (
+                    <>
+                      <Separator />
+                      <div>
+                        <label className="text-sm font-medium text-slate-500 mb-2 block">Custom Domain</label>
+                        <div className="space-y-3">
+                          <p className="text-slate-900 font-semibold break-all">{selectedUser.custom_domain}</p>
+                          <div className="flex items-center gap-3">
+                            <Badge variant={selectedUser.custom_domain_status === 'verified' ? 'default' : 'secondary'}>
+                              {selectedUser.custom_domain_status === 'verified' ? (
+                                <>
+                                  <Check className="w-3 h-3 mr-1" />
+                                  Verified
+                                </>
+                              ) : (
+                                <>
+                                  <Loader className="w-3 h-3 mr-1 animate-spin" />
+                                  Pending
+                                </>
+                              )}
+                            </Badge>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeCustomDomain(selectedUser.backoffice_id)}
+                            >
+                              Remove Domain
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {!selectedUser.custom_domain && !showDomainSetup && (
+                    <Button
+                      onClick={() => setShowDomainSetup(true)}
+                      className="w-full"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Setup Custom Domain
+                    </Button>
+                  )}
+
+                  {showDomainSetup && (
+                    <div className="border-t pt-4 space-y-3">
+                      <label className="text-sm font-medium text-slate-900">Enter Custom Domain</label>
+                      <Input
+                        type="text"
+                        value={customDomain}
+                        onChange={(e) => setCustomDomain(e.target.value)}
+                        placeholder="example.com"
+                      />
+                      <p className="text-sm text-slate-500">
+                        Enter the domain you want to use for this store
+                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={setupCustomDomain}
+                          disabled={domainLoading}
+                          className="flex-1"
+                        >
+                          {domainLoading ? (
+                            <>
+                              <Loader className="w-4 h-4 mr-2 animate-spin" />
+                              Setting up...
+                            </>
+                          ) : (
+                            'Setup Domain'
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setShowDomainSetup(false);
+                            setCustomDomain('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Timestamps */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Timeline</CardTitle>
+                  <CardDescription>Account creation and update history</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-slate-500">Created At</label>
+                      <p className="text-slate-900 mt-1">{new Date(selectedUser.created_at).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-500">Last Updated</label>
+                      <p className="text-slate-900 mt-1">{new Date(selectedUser.updated_at).toLocaleString()}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column - Actions & Status */}
+            <div className="space-y-6">
+              {/* Status Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Status</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-500 mb-2 block">Current Status</label>
+                    <Badge 
+                      variant={selectedUser.status === 'active' ? 'default' : 'secondary'}
+                      className="text-sm"
+                    >
+                      {selectedUser.status === 'active' ? '● Active' : '● Inactive'}
+                    </Badge>
+                  </div>
+
+                  <Button
+                    variant={selectedUser.status === 'active' ? 'destructive' : 'default'}
+                    className="w-full"
+                    onClick={() => updateUserStatus(
+                      selectedUser.backoffice_id,
+                      selectedUser.status === 'active' ? 'inactive' : 'active'
+                    )}
+                  >
+                    {selectedUser.status === 'active' ? 'Deactivate User' : 'Activate User'}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Quick Info */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Info</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-slate-500">Backoffice ID</span>
+                    <span className="text-sm font-mono font-semibold">{selectedUser.backoffice_id}</span>
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-slate-500">Plan</span>
+                    <Badge variant="outline" className="capitalize">{selectedUser.subscription_plan}</Badge>
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-slate-500">Domain Type</span>
+                    <span className="text-sm font-semibold capitalize">{selectedUser.domain_type}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Main List View
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Alert */}
+        {alert && (
+          <Alert className={`mb-6 ${alert.type === 'error' ? 'border-red-500' : 'border-green-500'}`}>
+            {alert.type === 'error' ? <AlertCircle className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+            <AlertDescription>{alert.message}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-xl font-bold text-slate-900 mb-2">Tenants Management</h1>
+            <p className="text-slate-600">Manage all backoffice users and their stores</p>
+          </div>
+          <Button size="lg">
+            <Plus className="w-4 h-4 mr-2" />
+            New User
+          </Button>
         </div>
 
-        {/* Filters Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6">
-          {/* Search Input */}
+        {/* Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="relative">
-            <Search className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
-            <input
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <Input
               type="text"
               placeholder="Search by name, email, or subdomain..."
               value={searchTerm}
@@ -462,181 +492,143 @@ const Tenants = () => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-10 md:pl-12 pr-3 md:pr-4 py-2.5 md:py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:outline-none text-sm md:text-base"
+              className="pl-10"
             />
           </div>
 
-          {/* Filter Status */}
-          <div className="relative">
-            <Filter className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 md:w-5 md:h-5" />
-            <select
-              value={filterStatus}
-              onChange={(e) => {
-                setFilterStatus(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full pl-10 md:pl-12 pr-3 md:pr-4 py-2.5 md:py-3 rounded-lg border-2 border-gray-200 focus:border-blue-500 focus:outline-none text-sm md:text-base appearance-none bg-white cursor-pointer"
-            >
-              <option value="all">All Users</option>
-              <option value="active">Active Only</option>
-              <option value="inactive">Inactive Only</option>
-            </select>
-          </div>
+          <Select value={filterStatus} onValueChange={(value) => {
+            setFilterStatus(value);
+            setCurrentPage(1);
+          }}>
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Users</SelectItem>
+              <SelectItem value="active">Active Only</SelectItem>
+              <SelectItem value="inactive">Inactive Only</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Table Section */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full">
-              <thead style={{ backgroundColor: `${PRIMARY}08` }}>
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">User</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">Store</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">Plan</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">Status</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {paginatedUsers.map((user) => (
-                  <tr key={user.backoffice_id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-semibold text-gray-900">{user.name}</p>
-                        <p className="text-sm text-gray-500">{user.email}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <a 
-                        href={`https://${user.subdomain}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline flex items-center gap-1.5 text-sm break-all"
-                      >
-                        <span>{user.subdomain.substring(0, 25)}{user.subdomain.length > 25 ? '...' : ''}</span>
-                        <ExternalLink className="w-3 h-3 flex-shrink-0" />
-                      </a>
-                    </td>
-                    <td className="px-6 py-4">
-                      <PlanBadge plan={user.subscription_plan} />
-                    </td>
-                    <td className="px-6 py-4">
-                      <StatusBadge status={user.status} />
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => viewUserDetails(user.backoffice_id)}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-white transition-all text-sm hover:shadow-lg"
-                        style={{ backgroundColor: PRIMARY }}
-                      >
-                        <Eye className="w-4 h-4" />
-                        View
-                      </button>
-                    </td>
+        {/* Table */}
+        <Card>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-50 border-b">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">User</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">Store</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">Plan</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wide">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile Cards */}
-          <div className="md:hidden divide-y divide-gray-200">
-            {paginatedUsers.map((user) => (
-              <div key={user.backoffice_id} className="p-4 space-y-3 hover:bg-gray-50 transition">
-                <div>
-                  <p className="font-semibold text-gray-900">{user.name}</p>
-                  <p className="text-xs text-gray-500">{user.email}</p>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="text-xs space-y-1">
-                    <p className="text-gray-500 font-medium">Store:</p>
-                    <a 
-                      href={`https://${user.subdomain}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline flex items-center gap-1"
-                    >
-                      {user.subdomain.substring(0, 15)}{user.subdomain.length > 15 ? '...' : ''}
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                  <div className="text-xs space-y-1">
-                    <p className="text-gray-500 font-medium">Plan:</p>
-                    <PlanBadge plan={user.subscription_plan} />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <StatusBadge status={user.status} />
-                  <button
-                    onClick={() => viewUserDetails(user.backoffice_id)}
-                    className="px-3 py-1.5 rounded-lg font-semibold text-white text-xs transition-all"
-                    style={{ backgroundColor: PRIMARY }}
-                  >
-                    View
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Empty State */}
-          {paginatedUsers.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-600 text-sm md:text-base">No users found</p>
-              {searchTerm || filterStatus !== 'all' && (
-                <p className="text-gray-500 text-xs md:text-sm mt-2">Try adjusting your search or filters</p>
-              )}
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {paginatedUsers.map((user) => (
+                    <tr key={user.backoffice_id} className="hover:bg-slate-50 transition">
+                      <td className="px-6 py-4">
+                        <div>
+                          <p className="font-semibold text-slate-900">{user.name}</p>
+                          <p className="text-sm text-slate-500">{user.email}</p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <a 
+                          href={`https://${user.subdomain}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-blue-600 hover:underline text-sm"
+                        >
+                          {user.subdomain.substring(0, 30)}{user.subdomain.length > 30 ? '...' : ''}
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge variant="secondary" className="capitalize">
+                          {user.subscription_plan}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
+                          {user.status === 'active' ? '● Active' : '● Inactive'}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Button
+                          size="sm"
+                          onClick={() => viewUserDetails(user.backoffice_id)}
+                        >
+                          View Details
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          )}
-        </div>
+
+            {paginatedUsers.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-slate-600">No users found</p>
+                {(searchTerm || filterStatus !== 'all') && (
+                  <p className="text-slate-500 text-sm mt-2">Try adjusting your search or filters</p>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-6 flex items-center justify-between flex-wrap gap-4">
-            <div className="text-sm text-gray-600">
-              Showing <span className="font-semibold">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-semibold">{Math.min(currentPage * itemsPerPage, filteredUsers.length)}</span> of <span className="font-semibold">{filteredUsers.length}</span> users
+          <div className="mt-6 flex items-center justify-between">
+            <div className="text-sm text-slate-600">
+              Showing <span className="font-semibold">{(currentPage - 1) * itemsPerPage + 1}</span> to{' '}
+              <span className="font-semibold">{Math.min(currentPage * itemsPerPage, filteredUsers.length)}</span> of{' '}
+              <span className="font-semibold">{filteredUsers.length}</span> users
             </div>
             <div className="flex items-center gap-2">
-              <button
+              <Button
+                variant="outline"
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-2 rounded-lg border-2 border-gray-200 text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed hover:border-blue-500"
               >
                 Previous
-              </button>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                      currentPage === page
-                        ? 'text-white'
-                        : 'border-2 border-gray-200 hover:border-blue-500'
-                    }`}
-                    style={currentPage === page ? { backgroundColor: PRIMARY } : {}}
+              </Button>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                return (
+                  <Button
+                    key={pageNum}
+                    variant={currentPage === pageNum ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setCurrentPage(pageNum)}
                   >
-                    {page}
-                  </button>
-                ))}
-              </div>
-              <button
+                    {pageNum}
+                  </Button>
+                );
+              })}
+              <Button
+                variant="outline"
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 rounded-lg border-2 border-gray-200 text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed hover:border-blue-500"
               >
                 Next
-              </button>
+              </Button>
             </div>
           </div>
         )}
       </div>
-
-      {showModal && <UserDetailsModal />}
-      {showDomainModal && <DomainSetupModal />}
     </div>
   );
 };

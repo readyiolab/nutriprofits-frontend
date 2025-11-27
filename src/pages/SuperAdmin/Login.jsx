@@ -4,7 +4,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, Shield, LogIn, AlertCircle, Loader2 } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Shield,
+  LogIn,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +27,8 @@ import {
 } from "@/components/ui/card";
 
 // Background image (you can replace with your own)
-const BACKGROUND_IMAGE = "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=2340&auto=format&fit=crop";
+const BACKGROUND_IMAGE =
+  "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=2340&auto=format&fit=crop";
 
 // Zod schema
 const loginSchema = z.object({
@@ -41,32 +51,43 @@ export default function SuperAdminLogin() {
   });
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
-    setError("");
+  setIsLoading(true);
+  setError("");
 
-    try {
-      const res = await fetch("http://localhost:3000/api/superadmin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+  try {
+    const res = await fetch("http://localhost:3001/api/superadmin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+      credentials: "include", // IMPORTANT to receive cookie
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      const userData = result.data;
+
+      // Store authentication data
+      localStorage.setItem("superadmin_user", JSON.stringify(userData));
+      localStorage.setItem("superadminId", userData.superadmin_id);
+      localStorage.setItem("userRole", userData.role);
+      localStorage.setItem("isAuthenticated", "true");
+
+      console.log("✅ Login successful, stored:", {
+        superadminId: userData.superadmin_id,
+        isAuthenticated: "true",
       });
 
-      const result = await res.json();
-
-      if (result.success) {
-        localStorage.setItem("superadmin_token", result.token);
-localStorage.setItem("superadmin_user", JSON.stringify(result.data));
-navigate("/superadmin");
-;
-      } else {
-        setError(result.message || "Login failed. Please check your credentials.");
-      }
-    } catch (err) {
-      setError("Network error. Please try again later.");
-    } finally {
-      setIsLoading(false);
+      navigate("/superadmin");
+    } else {
+      setError(result.message || "Login failed. Please check your credentials.");
     }
-  };
+  } catch (err) {
+    setError("Network error. Please try again later.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex">
@@ -79,7 +100,6 @@ navigate("/superadmin");
         <div className="relative z-10 flex flex-col justify-between p-12 text-white h-full">
           <div>
             <div className="flex items-center space-x-4">
-              
               <h1 className="text-4xl font-medium">SuperAdmin Portal</h1>
             </div>
 
@@ -88,7 +108,8 @@ navigate("/superadmin");
                 Welcome Back, Admin
               </h2>
               <p className="mt-6 text-xl text-indigo-100">
-                Access the most powerful control panel. Monitor, manage, and secure the entire system with full privileges.
+                Access the most powerful control panel. Monitor, manage, and
+                secure the entire system with full privileges.
               </p>
             </div>
           </div>
@@ -103,8 +124,9 @@ navigate("/superadmin");
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-gray-50 px-6 py-12">
         <Card className="w-full max-w-md shadow-2xl border-0">
           <CardHeader className="text-center space-y-3 pb-8">
-           
-            <CardTitle className="text-3xl font-medium">SuperAdmin Login</CardTitle>
+            <CardTitle className="text-3xl font-medium">
+              SuperAdmin Login
+            </CardTitle>
             <CardDescription className="text-base">
               Enter your credentials to access the admin panel
             </CardDescription>
@@ -166,11 +188,11 @@ navigate("/superadmin");
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-600">{errors.password.message}</p>
+                  <p className="text-sm text-red-600">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
-
-              
 
               {/* Submit Button */}
               <Button
@@ -186,12 +208,10 @@ navigate("/superadmin");
                 ) : (
                   <>
                     <LogIn className="mr-2 h-5 w-5" />
-                    Login 
+                    Login
                   </>
                 )}
               </Button>
-
-             
             </form>
           </CardContent>
         </Card>

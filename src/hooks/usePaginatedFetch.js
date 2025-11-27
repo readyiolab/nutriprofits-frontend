@@ -1,16 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 
-/**
- * Custom hook for handling paginated API requests
- * @param {string} baseUrl - The base API endpoint URL
- * @param {Object} options - Configuration options
- * @param {number} options.pageSize - Number of items per page (default: 10)
- * @param {boolean} options.showToast - Whether to show toasts (default: true)
- * @param {function} options.onSuccess - Callback on successful fetch
- * @param {function} options.onError - Callback on error
- * @returns {Object} - { data, loading, error, currentPage, totalPages, goToPage, nextPage, prevPage, refetch, pageSize, setPageSize }
- */
 export const usePaginatedFetch = (baseUrl, options = {}) => {
   const {
     pageSize = 10,
@@ -39,20 +29,19 @@ export const usePaginatedFetch = (baseUrl, options = {}) => {
       setLoading(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
+      // Cookies are automatically sent with requests, no manual token handling needed
       const headers = {
         'Content-Type': 'application/json',
       };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
 
       const url = new URL(baseUrl, window.location.origin);
       url.searchParams.append('page', page);
       url.searchParams.append('limit', customPageSize);
 
-      const response = await fetch(url.toString(), { headers });
+      const response = await fetch(url.toString(), { 
+        headers,
+        credentials: 'include', // Include cookies in request
+      });
       const result = await response.json();
 
       if (result.success || response.ok) {

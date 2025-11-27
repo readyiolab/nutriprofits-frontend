@@ -221,25 +221,30 @@ const Template2Categories = () => {
         )}
       </div>
 
-      {/* CTA Section */}
-      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] py-16 m-12 rounded-3xl shadow-xl">
-        <div className="container mx-auto px-4 text-center text-white">
-          <h3 className="text-3xl sm:text-4xl md:text-5xl font-medium mb-6">
-            {pageContent.cta_title}
-          </h3>
-          <p className="text-lg sm:text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-            {pageContent.cta_description}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-black font-medium px-10 py-4 rounded-full hover:shadow-lg transition text-lg flex items-center justify-center gap-3 mx-auto sm:mx-0">
-              {pageContent.cta_button_text} <ShoppingBag className="w-6 h-6" />
-            </button>
-            <button className="border-2 border-white text-white px-10 py-4 rounded-full hover:bg-white hover:text-black transition font-medium text-lg">
-              {pageContent.cta_support_text}
-            </button>
-          </div>
-        </div>
-      </div>
+     {/* CTA Section */}
+<div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] py-10 sm:py-16 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl shadow-xl mb-10">
+  <div className="container mx-auto px-3 sm:px-4 text-center text-white">
+    <h3 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tigh">
+      {pageContent.cta_title}
+    </h3>
+
+    <p className="text-base sm:text-lg md:text-xl text-white/90 mb-8 sm:mb-10 max-w-xl mx-auto leading-relaxed">
+      {pageContent.cta_description}
+    </p>
+
+    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto px-2">
+      <button className="bg-white text-black font-medium px-8 py-3 sm:px-10 sm:py-4 rounded-full hover:shadow-lg transition text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto">
+        {pageContent.cta_button_text} 
+        <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
+      </button>
+
+      <button className="border-2 border-white text-white px-8 py-3 sm:px-10 sm:py-4 rounded-full hover:bg-white hover:text-black transition font-medium text-base sm:text-lg w-full sm:w-auto">
+        {pageContent.cta_support_text}
+      </button>
+    </div>
+  </div>
+</div>
+
     </div>
   );
 };

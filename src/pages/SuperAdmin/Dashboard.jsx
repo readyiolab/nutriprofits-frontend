@@ -10,6 +10,7 @@ const Dashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [recentUsers, setRecentUsers] = useState([]);
+  const [error, setError] = useState(null);
 
   // Color Scheme
   const PRIMARY = '#3B82F6'; // Blue
@@ -19,14 +20,28 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
-  const fetchDashboardData = async () => {
+
+
+ const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem('superadmin_token');
-      const response = await fetch('http://localhost:3000/api/superadmin/backoffice-users', {
+      const response = await fetch('http://localhost:3001/api/superadmin/backoffice-users', {
+        method: 'GET',
+        credentials: 'include', // ✅ Important: Include cookies in request
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Content-Type': 'application/json',
+        },
       });
+
+      if (response.status === 401) {
+        // Unauthorized - let Protected Route handle it
+        // Clear localStorage so Protected Route can catch it
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('superadminId');
+        localStorage.removeItem('superadmin_user');
+        localStorage.removeItem('userRole');
+        setError('Session expired. Please login again.');
+        return;
+      }
 
       if (response.ok) {
         const result = await response.json();
@@ -36,14 +51,18 @@ const Dashboard = () => {
         setStats({
           totalUsers: users.length,
           activeUsers: users.filter(u => u.status === 'active').length,
-          
         });
 
         // Get recent 5 users
         setRecentUsers(users.slice(0, 5));
+        setError(null);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Failed to fetch dashboard data');
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      setError('Network error. Please check your connection.');
     } finally {
       setLoading(false);
     }
@@ -126,7 +145,7 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-4xl font-bold mb-1 md:mb-2" style={{ color: SECONDARY }}>
+          <h1 className="text-xl md:text-2xl font-bold mb-1 md:mb-2" style={{ color: SECONDARY }}>
             Dashboard
           </h1>
           <p className="text-gray-600 text-sm md:text-base flex items-center gap-2">

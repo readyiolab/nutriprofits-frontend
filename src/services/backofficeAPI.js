@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Get API base URL from environment or use default
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 // Create axios instance
 const apiClient = axios.create({
@@ -9,19 +9,10 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // CRITICAL: Send cookies with requests
 });
 
-// Add request interceptor to include token
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// No token interceptor needed - cookies are automatically sent with withCredentials: true
 
 // Add response interceptor for error handling
 apiClient.interceptors.response.use(
@@ -29,7 +20,12 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Handle unauthorized - redirect to login
-      localStorage.removeItem('authToken');
+      // Clear user data from localStorage
+      localStorage.removeItem('backofficeId');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('isAuthenticated');
       window.location.href = '/backoffice/login';
     }
     return Promise.reject(error);
