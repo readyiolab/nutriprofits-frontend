@@ -55,14 +55,13 @@ const Login = () => {
 
         // Add small delay to ensure localStorage is updated before navigation
         setTimeout(() => {
-          console.log("🚀 Navigating to dashboard...");
           navigate("/backoffice/");
         }, 100);
       } else {
         setError(response.data.message || "Login failed");
       }
     } catch (error) {
-      console.error("❌ Login error:", error);
+      
       setError(error.response?.data?.message || "Internal server error");
     } finally {
       setLoading(false);

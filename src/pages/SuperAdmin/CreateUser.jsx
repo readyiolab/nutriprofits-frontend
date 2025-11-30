@@ -110,14 +110,12 @@ const CreateUser = () => {
   // Success View (Full Screen)
   if (success && createdUser) {
     return (
-      <div className="min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8">
-        <div className="max-w-5xl mx-auto">
+      <div className="min-h-screen bg-slate-50 ">
+        <div >
           {/* Success Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-4">
-              <CheckCircle className="w-10 h-10 text-green-600" />
-            </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">User Created Successfully!</h1>
+            
+            <h1 className="text-3xl font-medium text-slate-900 mb-2">User Created Successfully!</h1>
             <p className="text-slate-600">The backoffice user has been created and notified via email.</p>
           </div>
 
@@ -173,15 +171,15 @@ const CreateUser = () => {
                 <Separator />
 
                 {/* Temporary Password */}
-                <Alert className="border-amber-200 bg-amber-50">
-                  <AlertCircle className="h-4 w-4 text-amber-600" />
+                <Alert >
+                  <AlertCircle />
                   <AlertDescription>
                     <div className="space-y-2">
-                      <p className="font-semibold text-amber-900">Temporary Password</p>
+                      <p className="font-semibold text-black">Temporary Password</p>
                       <p className="font-mono text-lg font-bold text-slate-900 select-all bg-white px-3 py-2 rounded border">
                         {createdUser.temporary_password}
                       </p>
-                      <p className="text-sm text-amber-800">
+                      <p className="text-sm text-black">
                         This password has been sent via email. User should change it after first login.
                       </p>
                     </div>
@@ -266,7 +264,7 @@ const CreateUser = () => {
       <div >
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-xl font-bold text-slate-900 mb-2">Create Backoffice User</h1>
+          <h1 className="text-xl font-medium text-slate-900 mb-2">Create Backoffice User</h1>
           <p className="text-slate-600">Add a new user to the system</p>
         </div>
 

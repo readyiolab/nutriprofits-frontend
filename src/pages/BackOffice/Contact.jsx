@@ -145,17 +145,17 @@ const Contact = () => {
     <div className="min-h-screen bg-gray-50">
       <Toaster position="top-right" />
 
-      {/* Sticky Top Bar */}
-      <div className="sticky top-0 z-50 bg-white border-b shadow-sm rounded-xl">
+      
+      <div >
         <div className="flex items-center justify-between px-6 py-5">
           <div className="flex items-center gap-4">
             
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Contact Page</h1>
+              <h1 className="text-xl font-semibold text-gray-900">Contact Page</h1>
               <p className="text-gray-600">Customize your contact page content</p>
             </div>
           </div>
-          <Button onClick={handleSubmit} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={handleSubmit} disabled={saving} className="bg-blue-500 hover:bg-blue-700">
             {saving ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -172,7 +172,7 @@ const Contact = () => {
       </div>
 
       {/* Content */}
-      <div className="p-6 max-w-6xl mx-auto space-y-8">
+      <div className="p-3 space-y-8">
 
         {/* Hero Section */}
         <Card>

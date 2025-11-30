@@ -13,6 +13,7 @@ import {
   Bell,
   ChevronRight,
   Home,
+  BookOpen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,6 +38,7 @@ const SuperAdminLayout = () => {
     { id: '', label: 'Dashboard', icon: LayoutDashboard, exact: true },
     { id: 'tenants', label: 'Tenants', icon: Users },
     { id: 'create-user', label: 'Create Tenant', icon: UserPlus },
+     { id: 'trainings', label: ' Create Training ', icon: BookOpen },
     { id: 'change-password', label: 'Change Password', icon: KeyRound },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];

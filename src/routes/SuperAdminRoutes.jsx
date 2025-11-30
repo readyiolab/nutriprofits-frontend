@@ -7,6 +7,7 @@ import SuperAdminLayout from "../layouts/SuperAdminLayout";
 import Dashboard from "../pages/SuperAdmin/Dashboard";
 import Tenants from "../pages/SuperAdmin/Tenants";
 import CreateUser from "../pages/SuperAdmin/CreateUser";
+import TrainingManagement  from "../pages/SuperAdmin/TrainingManagement"
 import ChangePassword from "../pages/SuperAdmin/ChangePassword";
 import Analytics from "../pages/SuperAdmin/Analytics";
 import Settings from "../pages/SuperAdmin/Settings";
@@ -33,6 +34,7 @@ const SuperAdminRoutes = {
             { index: true, element: <Dashboard /> },
             { path: "tenants", element: <Tenants /> },
             { path: "create-user", element: <CreateUser /> },
+            {path:"trainings", element:<TrainingManagement/>},
             { path: "change-password", element: <ChangePassword /> },
             { path: "analytics", element: <Analytics /> },
             { path: "settings", element: <Settings /> },

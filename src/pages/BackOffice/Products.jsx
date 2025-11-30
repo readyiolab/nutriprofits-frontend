@@ -9,7 +9,6 @@ import {
   Trash2,
   Loader,
   AlertCircle,
-  MoreVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useFetch } from "@/hooks";
 import { toast } from "sonner";
 
 const API_BASE_URL = "http://localhost:3001/api/backoffice/product-categories";
@@ -36,13 +34,15 @@ const FORM_INITIAL_STATE = {
   stock: "",
   description: "",
   fullDescription: "",
-  highlights: "",
-  benefits: "",
-  ingredients: "",
+  highlights: [],
+  benefits: [],
+  ingredients: [],
+  buylink: "",
   image: "",
   logoUrl: "",
   product_image: null,
   logo_url: null,
+  rating: "",
 };
 
 const Products = () => {
@@ -53,34 +53,45 @@ const Products = () => {
   const [selectedStatus, setSelectedStatus] = React.useState("all-status");
   const [formData, setFormData] = React.useState(FORM_INITIAL_STATE);
   const [submitting, setSubmitting] = React.useState(false);
+  const [products, setProducts] = React.useState([]);
+  const [categories, setCategories] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
 
-  // Fetch products
-  const {
-    data: productsData,
-    loading,
-    error,
-    refetch: refetchProducts,
-  } = useFetch(`${API_BASE_URL}/products`, {
-    immediate: true,
-    showToast: false,
-    credentials: "include",
-  });
+  React.useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
 
-  // Fetch categories
-  const { data: categoriesData, loading: categoriesLoading } = useFetch(
-    `${API_BASE_URL}/categories`,
-    { immediate: true, showToast: false, credentials: "include" }
-  );
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/products`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      setProducts(Array.isArray(data) ? data : data.data || []);
+      setError(null);
+    } catch (err) {
+      setError("Failed to load products");
+      toast.error("Failed to load products");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const products = Array.isArray(productsData)
-    ? productsData
-    : productsData?.data || [];
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/categories`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      setCategories(Array.isArray(data) ? data : data.data || []);
+    } catch (err) {
+      toast.error("Failed to load categories");
+    }
+  };
 
-  const categories = Array.isArray(categoriesData)
-    ? categoriesData
-    : categoriesData?.data || [];
-
-  // Create a map for quick category lookup
   const categoryMap = React.useMemo(() => {
     return categories.reduce((map, cat) => {
       map[cat.id] = cat.category_name;
@@ -91,6 +102,49 @@ const Products = () => {
   const goToForm = (product = null) => {
     if (product) {
       setEditingProduct(product);
+      
+      // Parse highlights
+      let highlights = [];
+      if (product.highlights) {
+        if (typeof product.highlights === 'string') {
+          try {
+            highlights = JSON.parse(product.highlights);
+          } catch {
+            highlights = [];
+          }
+        } else if (Array.isArray(product.highlights)) {
+          highlights = product.highlights;
+        }
+      }
+      
+      // Parse benefits
+      let benefits = [];
+      if (product.benefits) {
+        if (typeof product.benefits === 'string') {
+          try {
+            benefits = JSON.parse(product.benefits);
+          } catch {
+            benefits = [];
+          }
+        } else if (Array.isArray(product.benefits)) {
+          benefits = product.benefits;
+        }
+      }
+      
+      // Parse ingredients
+      let ingredients = [];
+      if (product.ingredients) {
+        if (typeof product.ingredients === 'string') {
+          try {
+            ingredients = JSON.parse(product.ingredients);
+          } catch {
+            ingredients = [];
+          }
+        } else if (Array.isArray(product.ingredients)) {
+          ingredients = product.ingredients;
+        }
+      }
+      
       setFormData({
         name: product.product_name || "",
         categoryId: product.category_id?.toString() || "",
@@ -98,13 +152,15 @@ const Products = () => {
         stock: product.stock_quantity || "",
         description: product.product_description || "",
         fullDescription: product.full_description || "",
-        highlights: product.highlights || "",
-        benefits: product.benefits || "",
-        ingredients: product.ingredients || "",
+        highlights: highlights,
+        benefits: benefits,
+        ingredients: ingredients,
+        buylink: product.buylink || "",
         image: product.product_image || "",
         logoUrl: product.logo_url || "",
         product_image: null,
         logo_url: null,
+        rating: product.rating || "",
       });
     } else {
       setEditingProduct(null);
@@ -117,6 +173,60 @@ const Products = () => {
     setView("list");
     setEditingProduct(null);
     setFormData(FORM_INITIAL_STATE);
+  };
+
+  const handleHighlightChange = (index, value) => {
+    const updated = [...formData.highlights];
+    updated[index] = value;
+    setFormData({ ...formData, highlights: updated });
+  };
+
+  const addHighlight = () => {
+    setFormData({ ...formData, highlights: [...formData.highlights, ""] });
+  };
+
+  const removeHighlight = (index) => {
+    setFormData({
+      ...formData,
+      highlights: formData.highlights.filter((_, i) => i !== index),
+    });
+  };
+
+  const handleBenefitChange = (index, value) => {
+    const updated = [...formData.benefits];
+    updated[index] = value;
+    setFormData({ ...formData, benefits: updated });
+  };
+
+  const addBenefit = () => {
+    setFormData({ ...formData, benefits: [...formData.benefits, ""] });
+  };
+
+  const removeBenefit = (index) => {
+    setFormData({
+      ...formData,
+      benefits: formData.benefits.filter((_, i) => i !== index),
+    });
+  };
+
+  const handleIngredientChange = (index, field, value) => {
+    const updated = [...formData.ingredients];
+    updated[index] = { ...updated[index], [field]: value };
+    setFormData({ ...formData, ingredients: updated });
+  };
+
+  const addIngredient = () => {
+    setFormData({
+      ...formData,
+      ingredients: [...formData.ingredients, { name: "", description: "" }],
+    });
+  };
+
+  const removeIngredient = (index) => {
+    setFormData({
+      ...formData,
+      ingredients: formData.ingredients.filter((_, i) => i !== index),
+    });
   };
 
   const handleSubmit = async () => {
@@ -132,9 +242,11 @@ const Products = () => {
     form.append("stock_quantity", formData.stock);
     form.append("product_description", formData.description || "");
     form.append("full_description", formData.fullDescription || "");
-    form.append("highlights", formData.highlights || "");
-    form.append("benefits", formData.benefits || "");
-    form.append("ingredients", formData.ingredients || "");
+    form.append("highlights", JSON.stringify(formData.highlights.filter(h => h.trim())));
+    form.append("benefits", JSON.stringify(formData.benefits.filter(b => b.trim())));
+    form.append("ingredients", JSON.stringify(formData.ingredients.filter(i => i.name && i.name.trim())));
+    form.append("buylink", formData.buylink || "");
+    form.append("rating", formData.rating || "");
     if (formData.categoryId) form.append("category_id", formData.categoryId);
     if (formData.product_image) form.append("product_image", formData.product_image);
     if (formData.logo_url) form.append("logo_url", formData.logo_url);
@@ -154,7 +266,7 @@ const Products = () => {
       if (result.success) {
         toast.success(editingProduct ? "Product updated!" : "Product created!");
         goToList();
-        refetchProducts();
+        fetchProducts();
       } else {
         toast.error(result.message || "Failed to save");
       }
@@ -176,7 +288,7 @@ const Products = () => {
       const result = await res.json();
       if (result.success) {
         toast.success("Product deleted");
-        refetchProducts();
+        fetchProducts();
       } else {
         toast.error(result.message);
       }
@@ -198,17 +310,12 @@ const Products = () => {
   };
 
   const filteredProducts = products.filter((p) => {
-    const matchesSearch = p.product_name
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || p.category_id === Number(selectedCategory);
+    const matchesSearch = p.product_name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || p.category_id === Number(selectedCategory);
     const matchesStatus =
       selectedStatus === "all-status" ||
       (selectedStatus === "in-stock" && p.stock_quantity > 50) ||
-      (selectedStatus === "low-stock" &&
-        p.stock_quantity > 10 &&
-        p.stock_quantity <= 50) ||
+      (selectedStatus === "low-stock" && p.stock_quantity > 10 && p.stock_quantity <= 50) ||
       (selectedStatus === "out-stock" && p.stock_quantity <= 10);
 
     return matchesSearch && matchesCategory && matchesStatus;
@@ -262,35 +369,22 @@ const Products = () => {
                   <Input
                     placeholder="e.g., Whey Protein Isolate"
                     value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Category</Label>
-                    <Select
-                      value={formData.categoryId}
-                      onValueChange={(v) =>
-                        setFormData({ ...formData, categoryId: v })
-                      }
-                    >
+                    <Select value={formData.categoryId} onValueChange={(v) => setFormData({ ...formData, categoryId: v })}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categoriesLoading ? (
-                          <div className="p-2 text-sm">Loading...</div>
-                        ) : categories.length === 0 ? (
-                          <div className="p-2 text-sm">No categories available</div>
-                        ) : (
-                          categories.map((cat) => (
-                            <SelectItem key={cat.id} value={cat.id.toString()}>
-                              {cat.category_name}
-                            </SelectItem>
-                          ))
-                        )}
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id.toString()}>
+                            {cat.category_name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -301,21 +395,40 @@ const Products = () => {
                       step="0.01"
                       placeholder="0.00"
                       value={formData.price}
-                      onChange={(e) =>
-                        setFormData({ ...formData, price: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Stock Quantity *</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      value={formData.stock}
+                      onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label>Rating</Label>
+                    <Input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="5"
+                      placeholder="4.8"
+                      value={formData.rating}
+                      onChange={(e) => setFormData({ ...formData, rating: e.target.value })}
                     />
                   </div>
                 </div>
                 <div>
-                  <Label>Stock Quantity *</Label>
+                  <Label>Buy Link</Label>
                   <Input
-                    type="number"
-                    placeholder="0"
-                    value={formData.stock}
-                    onChange={(e) =>
-                      setFormData({ ...formData, stock: e.target.value })
-                    }
+                    type="url"
+                    placeholder="https://example.com/product"
+                    value={formData.buylink}
+                    onChange={(e) => setFormData({ ...formData, buylink: e.target.value })}
                   />
                 </div>
               </CardContent>
@@ -331,9 +444,7 @@ const Products = () => {
                   <Textarea
                     rows={3}
                     value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   />
                 </div>
                 <div>
@@ -341,12 +452,7 @@ const Products = () => {
                   <Textarea
                     rows={5}
                     value={formData.fullDescription}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        fullDescription: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setFormData({ ...formData, fullDescription: e.target.value })}
                   />
                 </div>
               </CardContent>
@@ -354,39 +460,94 @@ const Products = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Product Details</CardTitle>
+                <CardTitle>Highlights</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {formData.highlights.map((highlight, idx) => (
+                  <div key={idx} className="flex gap-2">
+                    <Input
+                      value={highlight}
+                      onChange={(e) => handleHighlightChange(idx, e.target.value)}
+                      placeholder="e.g., Helps achieve healthy body weight"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeHighlight(idx)}
+                      className="text-red-600 hover:bg-red-50"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                <Button onClick={addHighlight} variant="outline" className="w-full">
+                  <Plus className="h-4 w-4 mr-2" /> Add Highlight
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Benefits</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {formData.benefits.map((benefit, idx) => (
+                  <div key={idx} className="flex gap-2">
+                    <Input
+                      value={benefit}
+                      onChange={(e) => handleBenefitChange(idx, e.target.value)}
+                      placeholder="e.g., Improved metabolism and digestion"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeBenefit(idx)}
+                      className="text-red-600 hover:bg-red-50"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                <Button onClick={addBenefit} variant="outline" className="w-full">
+                  <Plus className="h-4 w-4 mr-2" /> Add Benefit
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Ingredients</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label>Highlights</Label>
-                  <Textarea
-                    rows={3}
-                    value={formData.highlights}
-                    onChange={(e) =>
-                      setFormData({ ...formData, highlights: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label>Benefits</Label>
-                  <Textarea
-                    rows={3}
-                    value={formData.benefits}
-                    onChange={(e) =>
-                      setFormData({ ...formData, benefits: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <Label>Ingredients</Label>
-                  <Textarea
-                    rows={3}
-                    value={formData.ingredients}
-                    onChange={(e) =>
-                      setFormData({ ...formData, ingredients: e.target.value })
-                    }
-                  />
-                </div>
+                {formData.ingredients.map((ingredient, idx) => (
+                  <div key={idx} className="space-y-2 p-4 border rounded-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <Label className="text-sm font-semibold">Ingredient {idx + 1}</Label>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeIngredient(idx)}
+                        className="text-red-600 hover:bg-red-50"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Input
+                      value={ingredient.name}
+                      onChange={(e) => handleIngredientChange(idx, "name", e.target.value)}
+                      placeholder="Ingredient name"
+                    />
+                    <Textarea
+                      rows={3}
+                      value={ingredient.description}
+                      onChange={(e) => handleIngredientChange(idx, "description", e.target.value)}
+                      placeholder="Ingredient description and benefits"
+                    />
+                  </div>
+                ))}
+                <Button onClick={addIngredient} variant="outline" className="w-full">
+                  <Plus className="h-4 w-4 mr-2" /> Add Ingredient
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -400,12 +561,7 @@ const Products = () => {
                 <Input
                   type="file"
                   accept="image/*"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      product_image: e.target.files?.[0] || null,
-                    })
-                  }
+                  onChange={(e) => setFormData({ ...formData, product_image: e.target.files?.[0] || null })}
                 />
                 {formData.product_image ? (
                   <img
@@ -414,11 +570,7 @@ const Products = () => {
                     className="w-full h-64 object-cover rounded-lg"
                   />
                 ) : formData.image ? (
-                  <img
-                    src={formData.image}
-                    alt="Current"
-                    className="w-full h-64 object-cover rounded-lg"
-                  />
+                  <img src={formData.image} alt="Current" className="w-full h-64 object-cover rounded-lg" />
                 ) : (
                   <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-64" />
                 )}
@@ -433,12 +585,7 @@ const Products = () => {
                 <Input
                   type="file"
                   accept="image/*"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      logo_url: e.target.files?.[0] || null,
-                    })
-                  }
+                  onChange={(e) => setFormData({ ...formData, logo_url: e.target.files?.[0] || null })}
                 />
                 {formData.logo_url ? (
                   <img
@@ -447,11 +594,7 @@ const Products = () => {
                     className="w-32 h-32 object-contain mx-auto"
                   />
                 ) : formData.logoUrl ? (
-                  <img
-                    src={formData.logoUrl}
-                    alt="Current Logo"
-                    className="w-32 h-32 object-contain mx-auto"
-                  />
+                  <img src={formData.logoUrl} alt="Current Logo" className="w-32 h-32 object-contain mx-auto" />
                 ) : (
                   <div className="bg-gray-200 border-2 border-dashed rounded-xl w-32 h-32 mx-auto" />
                 )}
@@ -467,15 +610,10 @@ const Products = () => {
     <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Products</h1>
-          <p className="text-gray-600 mt-2">
-            Manage {products.length} products across all categories
-          </p>
+          <h1 className="text-xl font-semibold text-gray-900">Products</h1>
+          <p className="text-gray-600 mt-2">Manage products across all categories</p>
         </div>
-        <Button
-          onClick={() => goToForm()}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
+        <Button onClick={() => goToForm()} className="bg-blue-500 hover:bg-blue-700">
           <Plus className="h-4 w-4 mr-2" />
           Add New Product
         </Button>
@@ -487,13 +625,11 @@ const Products = () => {
             <div className="flex items-center gap-3">
               <AlertCircle className="h-5 w-5 text-red-600" />
               <div>
-                <h3 className="font-semibold text-red-900">
-                  Error loading products
-                </h3>
+                <h3 className="font-semibold text-red-900">Error loading products</h3>
                 <p className="text-sm text-red-700">{error}</p>
               </div>
             </div>
-            <Button onClick={refetchProducts} variant="outline" size="sm">
+            <Button onClick={fetchProducts} variant="outline" size="sm">
               Retry
             </Button>
           </CardContent>
@@ -542,7 +678,7 @@ const Products = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>All Products ({filteredProducts.length})</CardTitle>
+          <CardTitle>All Products</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -560,16 +696,14 @@ const Products = () => {
                     <th className="py-3 px-4">Category</th>
                     <th className="py-3 px-4">Price</th>
                     <th className="py-3 px-4">Stock</th>
+                    <th className="py-3 px-4">Rating</th>
                     <th className="py-3 px-4">Status</th>
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredProducts.map((p) => {
-                    // FIX: Use categoryMap for lookup
-                    const catName =
-                      (p.category_id && categoryMap[p.category_id]) ||
-                      "Uncategorized";
+                    const catName = (p.category_id && categoryMap[p.category_id]) || "Uncategorized";
 
                     return (
                       <tr key={p.id} className="border-b hover:bg-gray-50">
@@ -583,29 +717,29 @@ const Products = () => {
                               />
                             )}
                             <div>
-                              <p className="font-medium">{p.product_name}</p>
-                              <p className="text-xs text-gray-500">ID: {p.id}</p>
+                              <p className="font-normal">{p.product_name}</p>
                             </div>
                           </div>
                         </td>
                         <td className="py-4 px-4">
                           <Badge variant="outline">{catName}</Badge>
                         </td>
-                        <td className="py-4 px-4 font-medium">
-                          ₹{parseFloat(p.product_price).toFixed(2)}
-                        </td>
+                        <td className="py-4 px-4 font-medium">₹{parseFloat(p.product_price).toFixed(2)}</td>
                         <td className="py-4 px-4">{p.stock_quantity}</td>
+                        <td className="py-4 px-4">
+                          {p.rating ? (
+                            <Badge variant="secondary">{p.rating} ★</Badge>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </td>
                         <td className="py-4 px-4">
                           <Badge className={getStatusColor(p.stock_quantity)}>
                             {getStatusText(p.stock_quantity)}
                           </Badge>
                         </td>
                         <td className="py-4 px-4 text-right">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => goToForm(p)}
-                          >
+                          <Button variant="ghost" size="icon" onClick={() => goToForm(p)}>
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button

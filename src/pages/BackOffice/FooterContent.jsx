@@ -280,7 +280,7 @@ const FooterContent = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Footer Content</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Footer Content</h1>
           <p className="text-gray-600 mt-2">
             Manage footer sections, social links, and contact information
           </p>
@@ -288,7 +288,7 @@ const FooterContent = () => {
         <Button
           onClick={handleSubmit}
           disabled={submitting}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-blue-500 hover:bg-blue-700"
         >
           {submitting ? (
             <Loader className="h-4 w-4 mr-2 animate-spin" />
@@ -564,7 +564,7 @@ const FooterContent = () => {
                 <Button
                   size="sm"
                   onClick={() => setShowSocialModal(true)}
-                  className="bg-blue-600"
+                  className="bg-blue-500"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>

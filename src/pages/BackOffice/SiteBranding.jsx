@@ -179,14 +179,14 @@ const SiteBranding = () => {
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Site Branding</h1>
+          <h1 className="text-xl font-semibold">Site Branding</h1>
           <p className="text-gray-600 mt-2">
             Manage your site logo, colors, and SEO settings
           </p>
         </div>
 
         <Button
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-blue-500 hover:bg-blue-700"
           disabled={submitting}
           onClick={handleSubmit}
         >

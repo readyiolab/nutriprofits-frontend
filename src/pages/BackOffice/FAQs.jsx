@@ -253,7 +253,7 @@ const FAQs = () => {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold">
+              <h1 className="text-xl font-semibold">
                 {editingFaq ? "Edit FAQ" : "Add New FAQ"}
               </h1>
               <p className="text-gray-600">
@@ -347,11 +347,11 @@ const FAQs = () => {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold">FAQ Page Content</h1>
+              <h1 className="text-xl font-semibold">FAQ Page Content</h1>
               <p className="text-gray-600">Customize hero and CTA sections</p>
             </div>
           </div>
-          <Button onClick={handleSavePageContent} disabled={savingPageContent} className="bg-blue-600">
+          <Button onClick={handleSavePageContent} disabled={savingPageContent} className="bg-blue-500">
             {savingPageContent ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
             Save All
           </Button>
@@ -412,14 +412,14 @@ const FAQs = () => {
     <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">FAQ Management</h1>
+          <h1 className="text-xl font-semibold text-gray-900">FAQ Management</h1>
           <p className="text-gray-600 mt-2">Manage questions and page content</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" onClick={goToContent}>
             Edit Page Content
           </Button>
-          <Button onClick={() => goToForm()} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={() => goToForm()} className="bg-blue-500 hover:bg-blue-700">
             <Plus className="h-4 w-4 mr-2" />
             Add FAQ
           </Button>

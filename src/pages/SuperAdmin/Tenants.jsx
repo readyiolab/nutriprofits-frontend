@@ -195,8 +195,8 @@ const Tenants = () => {
   // User Detail View (Full Screen)
   if (selectedUser) {
     return (
-      <div className="min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-slate-50 ">
+        <div >
           {/* Alert */}
           {alert && (
             <Alert className={`mb-6 ${alert.type === 'error' ? 'border-red-500' : 'border-green-500'}`}>
@@ -458,7 +458,7 @@ const Tenants = () => {
 
   // Main List View
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-slate-50 ">
       <div className="max-w-7xl mx-auto">
         {/* Alert */}
         {alert && (

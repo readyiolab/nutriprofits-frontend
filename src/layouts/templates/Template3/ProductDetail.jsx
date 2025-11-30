@@ -3454,7 +3454,7 @@ const ProductDetail = () => {
         </button>
 
         {/* Main Product Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12 justify-center items-center">
           {/* Product Image */}
           <div className="lg:sticky lg:top-24 h-fit">
             <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl">
@@ -3544,7 +3544,7 @@ const ProductDetail = () => {
         {/* Tabs Section */}
         <div >
           {/* Tab Headers */}
-          <div className="flex justify-center items-center border-b-2  border-gray-200 overflow-x-auto">
+          <div className="flex justify-center items-center  overflow-x-auto">
             <button
               onClick={() => setActiveTab("benefits")}
               className={`px-6 py-4 font-bold transition-all whitespace-nowrap ${
@@ -3566,6 +3566,15 @@ const ProductDetail = () => {
               Ingredients
             </button>
           </div>
+
+         <div className="mt-12 sm:mt-16 text-center ">
+            <div className="flex items-center justify-center gap-3">
+              <div className="h-1 w-8 sm:w-12 bg-gradient-to-r from-transparent to-[#303841]"></div>
+              <div className="w-2 h-2 rounded-full bg-[#303841]"></div>
+              <div className="h-1 w-8 sm:w-12 bg-gradient-to-l from-transparent to-[#303841]"></div>
+            </div>
+          </div>
+
 
           {/* Tab Content */}
           <div className="p-6 sm:p-8">

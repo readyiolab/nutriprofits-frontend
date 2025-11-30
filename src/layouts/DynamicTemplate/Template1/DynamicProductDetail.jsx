@@ -2,7 +2,7 @@ import { Dot } from "lucide-react";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-const ProductDetail = () => {
+const DynamicProductDetail = () => {
   const { productId, templateId } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
@@ -3562,4 +3562,4 @@ const ProductDetail = () => {
   );
 };
 
-export default ProductDetail;
+export default DynamicProductDetail;

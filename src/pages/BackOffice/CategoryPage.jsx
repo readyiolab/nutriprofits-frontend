@@ -199,7 +199,7 @@ const handleSubmit = async () => {
   }
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto p-6">
+    <div className="space-y-6  p-6">
       {message.text && (
         <Alert className={message.type === 'error' ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'}>
           <AlertDescription className={message.type === 'error' ? 'text-red-800' : 'text-green-800'}>
@@ -210,10 +210,10 @@ const handleSubmit = async () => {
       
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3l font-bold text-gray-900">Category Page Content</h1>
+          <h1 className="text-3l font-semibold text-gray-900">Category Page Content</h1>
           <p className="text-gray-600 mt-1">Manage your category page sections</p>
         </div>
-        <Button onClick={handleSubmit} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+        <Button onClick={handleSubmit} disabled={saving} className="bg-blue-500 hover:bg-blue-700">
           {saving ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />

@@ -347,7 +347,7 @@ const Settings = () => {
             <Button
               onClick={handleSaveSettings}
               disabled={saving}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-500 hover:bg-blue-700"
             >
               {saving ? (
                 <>
@@ -505,11 +505,11 @@ const Settings = () => {
                     {settings.custom_domain &&
                       settings.custom_domain_status !== "verified" && (
                         <Alert className=" mt-4">
-                          <Clock className="h-4 w-4 text-yellow-600" />
-                          <AlertTitle className="text-yellow-900 font-semibold">
+                          <Clock className="h-4 w-4 text-black" />
+                          <AlertTitle className="text-black font-semibold">
                             Verification In Progress
                           </AlertTitle>
-                          <AlertDescription className="text-yellow-800">
+                          <AlertDescription className="text-black">
                             <p className="mb-4">
                               Your domain{" "}
                               <strong>{settings.custom_domain}</strong> is being
@@ -517,9 +517,9 @@ const Settings = () => {
                             </p>
 
                             {/* STEP 1: Always show if not verified */}
-                            <div className="bg-white rounded-lg border border-yellow-200 p-4 mb-4">
+                            <div className="bg-white rounded-lg border border-black p-4 mb-4">
                               <div className="flex items-center gap-2 mb-3">
-                                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-yellow-500 text-white text-xs font-bold">
+                                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-black text-white text-xs font-bold">
                                   1
                                 </div>
                                 <h4 className="font-bold text-gray-900">
@@ -916,7 +916,7 @@ const Settings = () => {
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl">
-              📚 Complete DNS Setup Guide
+               Complete DNS Setup Guide
             </DialogTitle>
             <DialogDescription>
               Step-by-step instructions for common domain registrars
@@ -926,13 +926,13 @@ const Settings = () => {
           <div className="space-y-6 py-4">
             {/* General Instructions */}
             <div className="space-y-3">
-              <h3 className="font-bold text-lg">
-                🎯 General Steps (Works for most providers)
+              <h3 className="font-medium text-lg">
+                 General Steps (Works for most providers)
               </h3>
               <div className="space-y-4">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold flex-shrink-0">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black text-white font-bold flex-shrink-0">
                       1
                     </div>
                     <div>
@@ -949,7 +949,7 @@ const Settings = () => {
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold flex-shrink-0">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black text-white font-bold flex-shrink-0">
                       2
                     </div>
                     <div className="flex-1">
@@ -971,7 +971,7 @@ const Settings = () => {
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold flex-shrink-0">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black text-white font-bold flex-shrink-0">
                       3
                     </div>
                     <div className="flex-1">
@@ -1014,7 +1014,7 @@ const Settings = () => {
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold flex-shrink-0">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black text-white font-bold flex-shrink-0">
                       4
                     </div>
                     <div>
@@ -1031,7 +1031,7 @@ const Settings = () => {
 
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-600 text-white font-bold flex-shrink-0">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black text-white font-bold flex-shrink-0">
                       5
                     </div>
                     <div className="flex-1">
@@ -1103,8 +1103,8 @@ const Settings = () => {
 
             {/* Provider-Specific Guides */}
             <div className="border-t pt-6">
-              <h3 className="font-bold text-lg mb-4">
-                🏢 Provider-Specific Instructions
+              <h3 className="font-medium text-lg mb-4">
+                 Provider-Specific Instructions
               </h3>
 
               <div className="space-y-4">
@@ -1190,8 +1190,8 @@ const Settings = () => {
 
             {/* Common Issues */}
             <div className="border-t pt-6">
-              <h3 className="font-bold text-lg mb-4">
-                ⚠️ Common Issues & Solutions
+              <h3 className="font-medium text-lg mb-4">
+                 Common Issues & Solutions
               </h3>
 
               <div className="space-y-3">

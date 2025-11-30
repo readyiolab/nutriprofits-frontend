@@ -70,13 +70,13 @@ const Dashboard = () => {
 
   const StatCard = ({ icon: Icon, label, value, change, gradientFrom, gradientTo }) => (
     <div 
-      className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border-t-4"
-      style={{ borderColor: gradientFrom }}
+      className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 "
+
     >
       <div className="p-4 md:p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <p className="text-xs md:text-sm text-gray-500 font-medium uppercase tracking-wide">{label}</p>
+            <p className="text-xs md:text-sm text-gray-500 font-normal uppercase tracking-wide">{label}</p>
             <h3 className="text-2xl md:text-3xl font-bold mt-2" style={{ color: SECONDARY }}>
               {typeof value === 'number' && label.includes('Revenue') ? `$${value}` : value}
             </h3>
@@ -141,11 +141,11 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen p-3 md:p-6 lg:p-8" style={{ backgroundColor: '#F8FAFC' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#F8FAFC' }}>
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-6 md:mb-8">
-          <h1 className="text-xl md:text-2xl font-bold mb-1 md:mb-2" style={{ color: SECONDARY }}>
+          <h1 className="text-xl md:text-2xl font-medium mb-1 md:mb-2" style={{ color: SECONDARY }}>
             Dashboard
           </h1>
           <p className="text-gray-600 text-sm md:text-base flex items-center gap-2">

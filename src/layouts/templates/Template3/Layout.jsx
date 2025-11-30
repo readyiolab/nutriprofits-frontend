@@ -67,7 +67,7 @@ const Navigation = ({ templateId }) => {
                 <Link
                   key={item.label}
                   to={item.path.replace(":id", templateId)}
-                  className={`px-4 py-2 rounded-full font-medium transition-all duration-200 ${
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     isActive(item.path)
                       ? "text-[#d72323] bg-white shadow-sm"
                       : "text-[#303841] hover:text-[#d72323] hover:bg-white/60"
@@ -83,7 +83,7 @@ const Navigation = ({ templateId }) => {
           <div className="hidden md:block flex-shrink-0">
             <Link
               to={`/template/${templateId}/contact`}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#d72323] to-[#303841] text-white font-semibold rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#d72323] to-[#303841] text-white font-semibold text-sm rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-200"
             >
               Contact
             </Link>
@@ -120,7 +120,7 @@ const Navigation = ({ templateId }) => {
                   <Link
                     key={item.label}
                     to={item.path.replace(":id", templateId)}
-                    className={`block px-6 py-3 rounded-full text-center font-medium transition-all duration-200 ${
+                    className={`block px-6 py-3 text-sm rounded-full text-center font-medium transition-all duration-200 ${
                       isActive(item.path)
                         ? "text-[#d72323] bg-white shadow-sm"
                         : "text-[#303841] hover:text-[#d72323] hover:bg-white/60"
@@ -132,7 +132,7 @@ const Navigation = ({ templateId }) => {
               </div>
               <Link
                 to={`/template/${templateId}/contact`}
-                className="block w-full text-center px-6 py-3 bg-gradient-to-r from-[#d72323] to-[#303841] text-white font-semibold rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                className="block w-full text-center px-6 text-sm py-3 bg-gradient-to-r from-[#d72323] to-[#303841] text-white font-semibold rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-200"
               >
                 Contact
               </Link>

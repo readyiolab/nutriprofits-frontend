@@ -19,10 +19,14 @@ import {
   Zap,
 } from "lucide-react";
 import { useState } from "react";
+import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 
 const DynamicCategories = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [hoveredId, setHoveredId] = useState(null);
+  const backofficeData = useBackofficeData();
+
+  const {  backofficeProducts, backofficeCategories } = backofficeData;
 
   const categories = [
     { id: 1, name: "Longevity", description: "Premium longevity and anti-aging support products", image: "/assets/categories_icon/Longevity.png", color: "from-[#2c786c] to-[#004445]", icon: TrendingUp },

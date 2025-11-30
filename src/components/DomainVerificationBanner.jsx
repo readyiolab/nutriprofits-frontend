@@ -62,7 +62,7 @@ const DomainVerificationBanner = () => {
               Your domain <strong>{domainVerification.domain}</strong> is pending verification. Follow the steps below to activate it.
             </p>
             
-            <div className="space-y-4">
+            <div className="space-y-4 grid grid-cols-3 gap-5 ">
               {/* STEP 1: Verification */}
               <div className="bg-white rounded-lg border border-yellow-200 p-4">
                 <div className="flex items-center gap-2 mb-3">
