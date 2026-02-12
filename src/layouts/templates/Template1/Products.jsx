@@ -1,14 +1,33 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Search, ShoppingCart, Star, ArrowRight } from "lucide-react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { Search, ShoppingCart, Star, ArrowRight, LayoutGrid, ChevronRight, X,Shield,Activity,Zap } from "lucide-react";
+import { generateSlug } from "../../../utils/slug";
 
 const Template1Products = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
   const [searchQuery, setSearchQuery] = useState("");
-  const [displayedCount, setDisplayedCount] = useState(8); // Show 8 products initially
-  const [isLoading, setIsLoading] = useState(false); // Track loading state
-  const productsPerBatch = 8; // Load 8 more products on each "Load More" click
+  const [displayedCount, setDisplayedCount] = useState(8);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const productsPerBatch = 8;
+  const location = useLocation();
+  const productsRef = useRef(null);
+
+  // Read ?category= slug from URL when navigating from Categories page
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const catSlug = params.get("category");
+    if (catSlug) {
+      // Match slug back to actual category name from products
+      const allCats = [...new Set(products.map((p) => (p.category || "").trim()).filter(Boolean))];
+      const matched = allCats.find((c) => generateSlug(c) === catSlug);
+      if (matched) {
+        setSelectedCategory(matched);
+        setDisplayedCount(8);
+      }
+    }
+  }, [location.search]);
 
   const products = [
     {
@@ -3399,7 +3418,24 @@ const Template1Products = () => {
     },
   ];
 
-  const filteredProducts = products.filter(
+  // Extract unique categories with counts
+  const categories = useMemo(() => {
+    const catMap = {};
+    products.forEach((p) => {
+      const cat = (p.category || "").trim();
+      if (cat) catMap[cat] = (catMap[cat] || 0) + 1;
+    });
+    return Object.entries(catMap)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, []);
+
+  // Filter by selected category first, then by search
+  const categoryFilteredProducts = selectedCategory
+    ? products.filter((p) => (p.category || "").trim() === selectedCategory)
+    : products;
+
+  const filteredProducts = categoryFilteredProducts.filter(
     (product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.category.toLowerCase().includes(searchQuery.toLowerCase())
@@ -3414,7 +3450,6 @@ const Template1Products = () => {
   // Handle Load More
   const handleLoadMore = () => {
     setIsLoading(true);
-    // Simulate loading delay (you can remove this if not needed)
     setTimeout(() => {
       setDisplayedCount((prev) => prev + productsPerBatch);
       setIsLoading(false);
@@ -3424,7 +3459,20 @@ const Template1Products = () => {
   // Reset displayed count when search changes
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    setDisplayedCount(8); // Reset to initial count on search
+    setDisplayedCount(8);
+  };
+
+  // Handle category selection
+  // Handle category selection
+  const handleCategorySelect = (catName) => {
+    setSelectedCategory(catName);
+    setDisplayedCount(8);
+    setSearchQuery("");
+    
+    // Smooth scroll to products section
+    setTimeout(() => {
+      productsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   return (
@@ -3470,7 +3518,9 @@ const Template1Products = () => {
         {/* HEADING SECTION */}
         <div className="text-center mb-10">
           <h2 className="text-4xl font-medium text-[#004445] mb-3">
-            Premium Health & Wellness Supplements
+            {selectedCategory
+              ? `${selectedCategory} Products`
+              : "Premium Health & Wellness Supplements"}
           </h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto">
             Browse our complete range of natural, effective, and science-backed
@@ -3478,8 +3528,39 @@ const Template1Products = () => {
           </p>
         </div>
 
+        {/* MOBILE CATEGORY BAR */}
+        {categories.length > 0 && (
+          <div className="lg:hidden mb-6">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              <button
+                onClick={() => handleCategorySelect(null)}
+                className={`flex-shrink-0 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                  !selectedCategory
+                    ? "bg-gradient-to-r from-[#004445] to-[#2c786c] text-white shadow-md shadow-[#004445]/25"
+                    : "bg-white text-[#004445] border border-[#2c786c]/30 hover:border-[#f8b400] hover:shadow-sm"
+                }`}
+              >
+                All Products
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat.name}
+                  onClick={() => handleCategorySelect(cat.name)}
+                  className={`flex-shrink-0 px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                    selectedCategory === cat.name
+                      ? "bg-gradient-to-r from-[#004445] to-[#2c786c] text-white shadow-md shadow-[#004445]/25"
+                      : "bg-white text-[#004445] border border-[#2c786c]/30 hover:border-[#f8b400] hover:shadow-sm"
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* SEARCH BAR */}
-        <div className="mb-12 max-w-2xl mx-auto">
+        <div className="mb-8 max-w-2xl mx-auto">
           <div className="relative">
             <input
               type="text"
@@ -3495,51 +3576,166 @@ const Template1Products = () => {
           </div>
         </div>
 
-        {/* PRODUCTS GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
+        {/* ═══ SIDEBAR + PRODUCTS LAYOUT ═══ */}
+        {/* ═══ SIDEBAR + PRODUCTS LAYOUT ═══ */}
+        <div className="flex gap-8 mb-16" ref={productsRef} style={{ scrollMarginTop: '120px' }}>
+
+          {/* ── ENHANCED STICKY CATEGORY SIDEBAR (desktop only) ── */}
+          {categories.length > 0 && (
+            <aside className="hidden lg:block w-80 flex-shrink-0 sticky top-24 self-start h-fit max-h-[calc(100vh-8rem)]">
+              <div>
+                {/* Clean Minimal Sidebar */}
+                <div className="bg-white rounded-[2rem] shadow-xl overflow-hidden border-2 border-[#f8b400]/10 hover:border-[#f8b400]/30 transition-all duration-300">
+                  {/* Elegant Light Header */}
+                  <div className="bg-[#faf5e4]/30 px-6 py-6 border-b border-[#f8b400]/20">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border border-[#004445]/10">
+                          <LayoutGrid className="w-5 h-5 text-[#004445]" />
+                        </div>
+                        <div>
+                          <h3 className="text-[#004445] font-bold text-lg tracking-tight">Categories</h3>
+                          <p className="text-gray-500 text-xs font-medium">{categories.length} categories</p>
+                        </div>
+                    </div>
+                  </div>
+
+                  {/* Category List - Clean & Minimal */}
+                  <nav className="p-4 max-h-[calc(100vh-240px)] overflow-y-auto custom-scrollbar">
+                    {/* All Products Button */}
+                    <button
+                      onClick={() => {
+                        handleCategorySelect(null);
+                      }}
+                      className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-sm font-bold transition-all duration-300 mb-2 group ${
+                        !selectedCategory
+                          ? "bg-gradient-to-r from-[#004445] to-[#2c786c] text-white shadow-lg shadow-[#004445]/25 scale-105"
+                          : "text-[#004445] hover:bg-gradient-to-r hover:from-[#faf5e4] hover:to-[#f5f0db] border-2 border-transparent hover:border-[#f8b400]/20"
+                      }`}
+                    >
+                      <span className="flex items-center gap-3">
+                        <span className={`w-2.5 h-2.5 rounded-full transition-all ${
+                          !selectedCategory ? "bg-[#f8b400] animate-pulse shadow-lg shadow-[#f8b400]/50" : "bg-[#2c786c]/30 group-hover:bg-[#f8b400]"
+                        }`}></span>
+                        <span>All Products</span>
+                      </span>
+                      <span className={`text-xs font-bold px-3 py-1.5 rounded-xl transition-all ${
+                        !selectedCategory 
+                          ? "bg-[#f8b400] text-[#004445]" 
+                          : "bg-[#004445]/10 text-[#004445] group-hover:bg-[#f8b400]/20"
+                      }`}>
+                        {products.length}
+                      </span>
+                    </button>
+
+                    {/* Category Buttons */}
+                    {categories.map((cat) => {
+                      const isActive = selectedCategory === cat.name;
+                      return (
+                        <button
+                          key={cat.name}
+                          onClick={() => {
+                            handleCategorySelect(cat.name);
+                          }}
+                          className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 mb-2 group relative overflow-hidden ${
+                            isActive
+                              ? "bg-gradient-to-r from-[#004445] to-[#2c786c] text-white shadow-lg shadow-[#004445]/25 scale-105"
+                              : "text-[#004445] hover:bg-gradient-to-r hover:from-[#faf5e4] hover:to-[#f5f0db] border-2 border-transparent hover:border-[#f8b400]/20 hover:scale-102"
+                          }`}
+                        >
+                          {/* Active indicator line */}
+                          {isActive && (
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-[#f8b400] rounded-r-full shadow-lg shadow-[#f8b400]/50"></div>
+                          )}
+                          
+                          <span className="flex items-center gap-3 truncate">
+                            <ChevronRight 
+                              className={`w-4 h-4 transition-all duration-300 flex-shrink-0 ${
+                                isActive 
+                                  ? "rotate-90 text-[#f8b400]" 
+                                  : "text-[#2c786c] group-hover:translate-x-1 group-hover:text-[#f8b400]"
+                              }`} 
+                            />
+                            <span className="truncate">{cat.name}</span>
+                          </span>
+                          
+                          <span className={`text-xs font-bold px-3 py-1.5 rounded-xl flex-shrink-0 transition-all ${
+                            isActive 
+                              ? "bg-[#f8b400] text-[#004445] shadow-md" 
+                              : "bg-[#004445]/10 text-[#004445] group-hover:bg-[#f8b400]/30"
+                          }`}>
+                            {cat.count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </nav>
+
+                  {/* Bottom Decoration */}
+                  <div className="h-2 bg-gradient-to-r from-[#004445] via-[#f8b400] to-[#2c786c]"></div>
+                </div>
+              </div>
+            </aside>
+          )}
+
+          {/* ── MAIN PRODUCT GRID ── */}
+          <div className="flex-1 min-w-0">
+            {/* Active category indicator */}
+            {selectedCategory && (
+              <div className="flex items-center gap-3 mb-6 bg-gradient-to-r from-[#004445]/5 to-[#2c786c]/5 rounded-2xl px-5 py-3.5 border border-[#2c786c]/10">
+                <span className="text-sm text-[#004445]">
+                  Showing <strong>{filteredProducts.length}</strong> product{filteredProducts.length !== 1 ? "s" : ""} in
+                </span>
+                <span className="bg-gradient-to-r from-[#004445] to-[#2c786c] text-white text-sm font-semibold px-4 py-1.5 rounded-full flex items-center gap-2 shadow-md shadow-[#004445]/15">
+                  {selectedCategory}
+                  <button onClick={() => handleCategorySelect(null)} className="hover:bg-white/20 rounded-full p-0.5 ml-0.5 transition-colors">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </span>
+              </div>
+            )}
+
+            {/* Products Grid — 3 cols when sidebar present, 4 cols when no categories */}
+            <div className={`grid grid-cols-1 sm:grid-cols-2 ${categories.length > 0 ? "xl:grid-cols-3" : "lg:grid-cols-3 xl:grid-cols-4"} gap-5`}>
           {displayedProducts.map((product) => (
             <div
               key={product.id}
               onClick={() =>
                 navigate(`/template/${templateId}/products/${product.id}`)
               }
-              className="bg-white rounded-2xl shadow-lg cursor-pointer overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col "
+              className="bg-white rounded-2xl cursor-pointer overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col border border-[#2c786c]/10 hover:border-[#2c786c]/25"
             >
-              {/* Product Image - Full width/height */}
-              <div className="relative h-48 sm:h-64  bg-gradient-to-br from-[#2c786c]/10 to-[#004445]/10 overflow-hidden">
+              {/* Product Image */}
+              <div className="relative h-40 sm:h-48 overflow-hidden p-6 flex items-center justify-center">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full  transition-transform duration-500 object-cover"
+                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
                   onError={(e) => {
                     e.target.src =
                       "https://via.placeholder.com/400x400.png?text=Product";
                   }}
                 />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
 
-              {/* Product Card */}
-              <div className="p-6 flex flex-col flex-1">
-                {/* Product Info */}
-                <div className="flex-1 mb-4 justify-center items-center text-center">
-                  <h3 className="text-xl font-medium text-[#004445] mb-2 line-clamp-2 group-hover:text-[#2c786c] transition-colors">
+              {/* Product Info */}
+              <div className="p-4 sm:p-5 flex flex-col flex-1">
+                <div className="flex-1 mb-3 text-center">
+                  <h3 className="text-sm sm:text-base font-semibold text-[#004445] mb-1.5 line-clamp-2 group-hover:text-[#2c786c] transition-colors leading-snug">
                     {product.name}
                   </h3>
-                  <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                  <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
                     {product.description}
                   </p>
                 </div>
 
-                {/* Button at bottom */}
                 <button
                   onClick={() =>
                     navigate(`/template/${templateId}/products/${product.id}`)
                   }
-                  className="w-full bg-gradient-to-r from-[#004445] to-[#2c786c] cursor-pointer text-white py-3.5 px-6 rounded-xl font-medium  transition-all duration-300 flex items-center justify-center gap-2 group/btn"
+                  className="w-full bg-gradient-to-r from-[#004445] to-[#2c786c] cursor-pointer text-white py-2.5 px-5 rounded-xl text-sm font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#004445]/15 flex items-center justify-center gap-1.5"
                 >
                   <span>Learn More</span>
+                  <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               </div>
             </div>
@@ -3548,7 +3744,7 @@ const Template1Products = () => {
 
         {/* LOAD MORE BUTTON */}
         {hasMoreProducts && (
-          <div className="flex justify-center mb-16">
+            <div className="flex justify-center mt-10">
             <button
               onClick={handleLoadMore}
               disabled={isLoading}
@@ -3601,11 +3797,14 @@ const Template1Products = () => {
               No products found
             </h3>
             <p className="text-[#2c786c] text-lg">
-              Try searching for "weight loss", "keto", "energy", or any product
-              name.
+              {selectedCategory
+                ? `No products found in ${selectedCategory}.`
+                : 'Try searching for "weight loss", "keto", "energy", or any product name.'}
             </p>
           </div>
         )}
+          </div>
+        </div>
       </div>
 
       {/* FEATURED SECTION - CTA */}

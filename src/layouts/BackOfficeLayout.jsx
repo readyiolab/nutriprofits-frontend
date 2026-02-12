@@ -19,7 +19,10 @@ import {
   KeyRound,
   ChevronLeft,
   PanelLeftClose,
-  PanelLeft
+  PanelLeft,
+  Map,
+  BookOpen,
+  Globe2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -55,6 +58,12 @@ const BackOfficeLayout = () => {
       ],
     },
     {
+      title: "Getting Started",
+      items: [
+        { id: "guide", label: "Setup Guide", icon: Map }
+      ]
+    },
+    {
       title: "Products",
       items: [
         { id: "product/page-content", label: "Page Content", icon: Section },
@@ -66,6 +75,12 @@ const BackOfficeLayout = () => {
       items: [
         { id: "categories/page-content", label: "Page Content", icon: Section },
         { id: "categories", label: "All Categories", icon: FolderTree },
+      ],
+    },
+    {
+      title: "Content",
+      items: [
+        { id: "blog", label: "Blog Posts", icon: BookOpen },
       ],
     },
     {
@@ -81,6 +96,7 @@ const BackOfficeLayout = () => {
       items: [
         { id: "site-branding", label: "Site Branding", icon: Palette },
         { id: "footer-content", label: "Footer Content", icon: Layout },
+        { id: "domain", label: "Domain Management", icon: Globe2 },
         { id: "settings", label: "Settings", icon: Settings },
         { id: "change-password", label: "Change Password", icon: KeyRound }
       ],
@@ -200,7 +216,7 @@ const BackOfficeLayout = () => {
 
               {/* Navigation with custom scrollbar */}
               <nav className="flex-1 p-4 space-y-6 overflow-y-auto scrollbar-hide">
-                <style jsx>{`
+                <style>{`
                   .scrollbar-hide::-webkit-scrollbar {
                     display: none;
                   }

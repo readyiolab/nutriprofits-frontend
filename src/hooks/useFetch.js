@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 export const useFetch = (url, options = {}) => {
   const {
@@ -38,8 +39,34 @@ export const useFetch = (url, options = {}) => {
         fetchOptions.body = JSON.stringify(customBody);
       }
 
-      const response = await fetch(customUrl, fetchOptions);
-      const result = await response.json();
+      const resolvedUrl = (() => {
+        if (!customUrl) return customUrl;
+        if (customUrl.startsWith('http://') || customUrl.startsWith('https://')) {
+          return customUrl;
+        }
+        if (customUrl.startsWith('/api/')) {
+          return `${API_BASE_URL}${customUrl.slice(4)}`;
+        }
+        if (customUrl === '/api') {
+          return API_BASE_URL;
+        }
+        return customUrl;
+      })();
+
+      const response = await fetch(resolvedUrl, fetchOptions);
+      const contentType = response.headers.get('content-type') || '';
+
+      let result = null;
+      if (contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        const errorMessage = response.ok
+          ? 'Unexpected response format.'
+          : `Request failed (${response.status}).`;
+        const errorDetails = text ? ` ${text.slice(0, 120)}...` : '';
+        throw new Error(`${errorMessage}${errorDetails}`.trim());
+      }
 
       if (result.success || response.ok) {
         setData(result.data || result);
@@ -50,17 +77,17 @@ export const useFetch = (url, options = {}) => {
           onSuccess(result.data || result);
         }
         return result.data || result;
-      } else {
-        const errorMessage = result.message || 'An error occurred';
-        setError(errorMessage);
-        if (showToast) {
-          toast.error(errorMessage);
-        }
-        if (onError) {
-          onError(errorMessage);
-        }
-        throw new Error(errorMessage);
       }
+
+      const errorMessage = result.message || 'An error occurred';
+      setError(errorMessage);
+      if (showToast) {
+        toast.error(errorMessage);
+      }
+      if (onError) {
+        onError(errorMessage);
+      }
+      throw new Error(errorMessage);
     } catch (err) {
       const errorMessage = err.message || 'Failed to fetch data';
       setError(errorMessage);

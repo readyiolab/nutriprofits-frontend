@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Heart, ShoppingCart, Check, Star, Package, Zap, Shield } from "lucide-react";
+import { ArrowLeft, Heart, ShoppingCart, Check, Star, Package, Zap, Shield, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 
 const ProductDetail = () => {
   const { productId, templateId } = useParams();
@@ -3457,7 +3457,7 @@ const ProductDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12 justify-center items-center">
           {/* Product Image */}
           <div className="lg:sticky lg:top-24 h-fit">
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-xl">
+            <div className="rounded-2xl p-6 sm:p-8 ">
     
                 <img
                   src={product.image}
@@ -3505,17 +3505,63 @@ const ProductDetail = () => {
               {product.fullDescription}
             </p>
 
-            {/* Price */}
-            <div >
-              <div className="flex items-baseline gap-3 mb-4">
-                <span className="text-xl font-semibold text-[#303841]">{product.price}</span>
-                {product.originalPrice && (
-                  <span className="text-xl text-gray-400 line-through">{product.originalPrice}</span>
-                )}
-                
+            {/* Price & Quantity Panel */}
+            <div className="bg-[#f8fafc] border border-gray-100 rounded-2xl p-6 sm:p-8 mb-8 border-l-4 border-[#d72323]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
+                {/* Price */}
+                <div>
+                   <div className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">unit_price_index</div>
+                   <div className="flex items-baseline gap-3">
+                      <span className="text-3xl font-black text-[#303841] tracking-tighter">{product.price}</span>
+                      {product.originalPrice && (
+                        <span className="text-xl text-gray-400 line-through font-mono opacity-50">{product.originalPrice}</span>
+                      )}
+                   </div>
+                </div>
+
+                {/* Quantity */}
+                <div>
+                   <div className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 text-right sm:text-left">quantity_selector</div>
+                   <div className="flex items-center gap-4">
+                      <div className="flex items-center bg-white rounded-lg border-2 border-[#303841] p-1 shadow-[4px_4px_0px_rgba(48,56,65,0.1)]">
+                        <button 
+                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          className="w-10 h-10 flex items-center justify-center rounded hover:bg-[#f8fafc] transition-all text-[#303841] hover:text-[#d72323]"
+                        >
+                          <Minus className="w-5 h-5" />
+                        </button>
+                        <div className="w-12 text-center font-black text-[#303841] text-lg font-mono">{String(quantity).padStart(2, '0')}</div>
+                        <button 
+                          onClick={() => setQuantity(quantity + 1)}
+                          className="w-10 h-10 flex items-center justify-center rounded hover:bg-[#f8fafc] transition-all text-[#303841] hover:text-[#d72323]"
+                        >
+                          <Plus className="w-5 h-5" />
+                        </button>
+                      </div>
+                      <button 
+                        onClick={() => setQuantity(1)}
+                        className="w-12 h-12 flex items-center justify-center rounded-lg border-2 border-transparent text-gray-400 hover:text-[#303841] hover:bg-white transition-all"
+                        title="Reset Quantity"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                   </div>
+                </div>
               </div>
-              
-              
+
+              {/* BUY BUTTON */}
+              <div className="mt-8">
+                 <a 
+                   href={product.buyLink || "#"}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="w-full flex items-center justify-center gap-3 bg-[#d72323] text-white px-8 py-5 rounded-xl font-black uppercase tracking-[0.1em] shadow-[0_10px_20px_rgba(215,35,35,0.2)] hover:bg-[#b91c1c] hover:shadow-[0_15px_30px_rgba(215,35,35,0.3)] hover:-translate-y-1 transition-all active:translate-y-0"
+                 >
+                   <ShoppingBag className="w-6 h-6" />
+                   INITIATE_ORDER_PROCEDURE
+                 </a>
+                 <p className="text-center text-[10px] font-mono text-gray-400 mt-4 uppercase tracking-[0.2em]">Secure Checkout // SSL Encryption Active</p>
+              </div>
             </div>
 
             
@@ -3617,6 +3663,65 @@ const ProductDetail = () => {
             )}
           </div>
         </div>
+
+        {/* RELATED PRODUCTS */}
+        {(() => {
+          let relatedProducts = products
+            .filter(p => p.category === product.category && p.id !== product.id);
+
+          if (relatedProducts.length < 4) {
+            const otherProducts = products
+              .filter(p => p.category !== product.category && p.id !== product.id)
+              .slice(0, 4 - relatedProducts.length);
+            relatedProducts = [...relatedProducts, ...otherProducts];
+          }
+          
+          relatedProducts = relatedProducts.slice(0, 4);
+          
+          if (relatedProducts.length === 0) return null;
+          
+          return (
+            <div className="mt-16">
+              <h2 className="text-2xl font-bold text-[#303841] mb-8 text-center uppercase tracking-wider relative inline-block left-1/2 -translate-x-1/2">
+                Related Systems
+                <span className="absolute -bottom-2 left-0 w-full h-1 bg-[#d72323] transform skew-x-12"></span>
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {relatedProducts.map((rp) => (
+                  <div
+                    key={rp.id}
+                    onClick={() => navigate(`/template/${templateId}/product/${rp.id}`)}
+                    className="bg-white rounded-sm shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer border border-gray-200 hover:border-[#303841] relative"
+                  >
+                     <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#d72323] opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
+
+                    <div className="h-48 overflow-hidden flex items-center justify-center p-4 relative">
+                      <img
+                        src={rp.image}
+                        alt={rp.name}
+                        className="w-full h-full object-contain filter group-hover:grayscale-0 transition-all duration-500"
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/400x400.png?text=Product";
+                        }}
+                      />
+                    </div>
+                    <div className="p-4 text-center bg-white border-t border-gray-100 relative">
+                       <div className="text-[10px] font-mono text-[#d72323] mb-1">ID: {rp.id}</div>
+                      <h3 className="text-lg font-bold text-[#303841] group-hover:text-black transition-colors line-clamp-2 uppercase">
+                        {rp.name}
+                      </h3>
+                      <div className="mt-3 flex items-center justify-center">
+                        <span className="px-4 py-1 border border-[#303841] text-[#303841] text-xs font-bold uppercase tracking-widest group-hover:bg-[#303841] group-hover:text-white transition-all">
+                          View Data
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

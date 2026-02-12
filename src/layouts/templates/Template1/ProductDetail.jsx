@@ -1,4 +1,4 @@
-import { Dot } from "lucide-react";
+import { Dot, ArrowRight, Minus, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -3443,12 +3443,12 @@ const ProductDetail = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* LEFT SIDE - STICKY IMAGE */}
-          <div className="lg:sticky lg:top-8 h-fit">
-            <div className="bg-white rounded-2xl shadow-lg h-full flex items-center justify-center">
+          <div className="lg:sticky lg:top-8 h-fit flex justify-center">
+            <div className="w-full max-w-[400px] aspect-square flex items-center justify-center p-8">
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-full h-full object-contain p-4"
+                className="max-w-full max-h-full object-contain drop-shadow-xl hover:scale-105 transition-transform duration-500"
                 onError={(e) => {
                   e.target.src =
                     "https://via.placeholder.com/500x500?text=Product";
@@ -3476,18 +3476,54 @@ const ProductDetail = () => {
                 {product.fullDescription || product.description}
               </p>
 
-              {/* Price */}
-              <div className="text-xl font-medium text-[#004445] mb-6">
-                {product.price}
+              {/* Price & Quantity Area */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-8">
+                <div>
+                  <div className="text-xs text-gray-400 uppercase tracking-widest mb-1.5 font-bold">Price</div>
+                  <div className="text-3xl font-bold text-[#004445]">
+                    {product.price}
+                  </div>
+                </div>
+
+                <div className="h-10 w-px bg-gray-200 hidden sm:block"></div>
+
+                <div>
+                  <div className="text-xs text-gray-400 uppercase tracking-widest mb-1.5 font-bold">Quantity</div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
+                      <button 
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm transition-all text-[#004445]"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="w-10 text-center font-bold text-[#004445]">{quantity}</span>
+                      <button 
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm transition-all text-green-600"
+                      >
+                        <Plus className="w-4 h-4 text-[#d72323]" />
+                      </button>
+                    </div>
+                    <button 
+                      onClick={() => setQuantity(1)}
+                      className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                      title="Reset Quantity"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
               </div>
+
               <div>
                 <a
-                  href={product.buyLink}
+                  href={product.buyLink || "#"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-[#f8b400] text-[#004445] px-6 py-3 rounded-full cursor-pointer font-medium shadow-md hover:bg-[#ffc933] transition-all "
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-[#f8b400] text-[#004445] px-10 py-4 rounded-full cursor-pointer font-bold shadow-lg shadow-[#f8b400]/20 hover:bg-[#ffc933] hover:-translate-y-0.5 transition-all active:translate-y-0"
                 >
-                  Learn More & Buy →
+                  Learn More & Buy Now <ArrowRight className="w-5 h-5" />
                 </a>
               </div>
             </div>
@@ -3557,6 +3593,69 @@ const ProductDetail = () => {
 
           
         </div>
+
+        {/* RELATED PRODUCTS */}
+        {(() => {
+          let relatedProducts = products
+            .filter(p => p.category === product.category && p.id !== product.id);
+
+          if (relatedProducts.length < 4) {
+            const otherProducts = products
+              .filter(p => p.category !== product.category && p.id !== product.id)
+              .slice(0, 4 - relatedProducts.length);
+            relatedProducts = [...relatedProducts, ...otherProducts];
+          }
+          
+          relatedProducts = relatedProducts.slice(0, 4);
+          
+          if (relatedProducts.length === 0) return null;
+          
+          return (
+            <div className="mt-16 border-t border-[#f8b400]/20 pt-16">
+              <div className="text-center mb-10">
+                <span className="text-[#f8b400] font-bold tracking-wider uppercase text-xs mb-2 block">You May Also Like</span>
+                <h2 className="text-3xl font-bold text-[#004445]">Related Products</h2>
+                <div className="w-16 h-1 bg-[#f8b400] mx-auto mt-4 rounded-full"></div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {relatedProducts.map((rp) => (
+                  <div
+                    key={rp.id}
+                    onClick={() => navigate(`/template/${templateId}/product/${rp.id}`)}
+                    className="group bg-white rounded-2xl border border-[#e5e7eb] hover:border-[#f8b400]/50 hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer overflow-hidden relative"
+                  >
+                    <div className="h-40 relative p-6 flex items-center justify-center overflow-hidden">
+                      <img
+                        src={rp.image}
+                        alt={rp.name}
+                        className="w-full h-full object-contain drop-shadow-sm group-hover:scale-110 transition-transform duration-500"
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/400x400.png?text=Product";
+                        }}
+                      />
+                      {rp.category && (
+                        <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-[10px] font-bold text-[#004445] border border-[#e5e7eb]">
+                          {rp.category}
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-5 flex flex-col flex-grow">
+                      <h3 className="font-bold text-lg text-[#004445] mb-2 line-clamp-2 group-hover:text-[#2c786c] transition-colors leading-tight">
+                        {rp.name}
+                      </h3>
+                      <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-100/50">
+                        <span className="text-[#004445] font-bold">{rp.price}</span>
+                        <div className="w-8 h-8 rounded-full bg-[#faf5e4] flex items-center justify-center text-[#004445] group-hover:bg-[#004445] group-hover:text-white transition-all">
+                          <ArrowRight className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

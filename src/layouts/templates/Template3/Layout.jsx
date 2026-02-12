@@ -1,13 +1,13 @@
 import { Outlet, Link, useParams, useLocation } from "react-router-dom";
 import { getTemplateById } from "../../../data/templates";
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
+import { Menu, X, Home, ShoppingBag, Info, FileText, HelpCircle, Mail, Facebook, Twitter, Instagram } from "lucide-react";
 
-// Navigation Component
-const Navigation = ({ templateId }) => {
+// Sidebar Navigation Component
+const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const mobileMenuRef = useRef(null);
+  const mobileMenuRef = React.useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,6 +39,7 @@ const Navigation = ({ templateId }) => {
     { label: "Our Products", path: "/template/:id/products" },
     { label: "Shop by Category", path: "/template/:id/categories" },
     { label: "About Us", path: "/template/:id/about" },
+    { label: "Blog", path: "/template/:id/blog" },
     { label: "FAQ's", path: "/template/:id/faq" },
   ];
 
@@ -55,7 +56,7 @@ const Navigation = ({ templateId }) => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link to={`/template/${templateId}/products`} className="text-2xl font-bold text-[#303841] hover:text-[#d72323] transition-colors">
+            <Link to={`/template/${templateId}/products`} className="text-2xl font-bold text-[#303841] hover:text-[#d72323] transition-colors font-t3-heading">
               LOGO
             </Link>
           </div>
@@ -67,7 +68,7 @@ const Navigation = ({ templateId }) => {
                 <Link
                   key={item.label}
                   to={item.path.replace(":id", templateId)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 font-t3-heading tracking-wide ${
                     isActive(item.path)
                       ? "text-[#d72323] bg-white shadow-sm"
                       : "text-[#303841] hover:text-[#d72323] hover:bg-white/60"
@@ -83,7 +84,7 @@ const Navigation = ({ templateId }) => {
           <div className="hidden md:block flex-shrink-0">
             <Link
               to={`/template/${templateId}/contact`}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#d72323] to-[#303841] text-white font-semibold text-sm rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+              className="px-6 py-2.5 bg-gradient-to-r from-[#d72323] to-[#303841] text-white font-semibold text-sm rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-t3-heading tracking-wide"
             >
               Contact
             </Link>
@@ -120,7 +121,7 @@ const Navigation = ({ templateId }) => {
                   <Link
                     key={item.label}
                     to={item.path.replace(":id", templateId)}
-                    className={`block px-6 py-3 text-sm rounded-full text-center font-medium transition-all duration-200 ${
+                    className={`block px-6 py-3 text-sm rounded-full text-center font-medium transition-all duration-200 font-t3-heading tracking-wide ${
                       isActive(item.path)
                         ? "text-[#d72323] bg-white shadow-sm"
                         : "text-[#303841] hover:text-[#d72323] hover:bg-white/60"
@@ -132,7 +133,7 @@ const Navigation = ({ templateId }) => {
               </div>
               <Link
                 to={`/template/${templateId}/contact`}
-                className="block w-full text-center px-6 text-sm py-3 bg-gradient-to-r from-[#d72323] to-[#303841] text-white font-semibold rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                className="block w-full text-center px-6 text-sm py-3 bg-gradient-to-r from-[#d72323] to-[#303841] text-white font-semibold rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-t3-heading tracking-wide"
               >
                 Contact
               </Link>
@@ -147,7 +148,7 @@ const Navigation = ({ templateId }) => {
 // Footer Column Component
 const FooterColumn = ({ title, children }) => (
   <div>
-    <h3 className="text-lg font-bold mb-4 text-[#eeeeee]">{title}</h3>
+    <h3 className="text-lg font-bold mb-4 text-[#eeeeee] font-t3-heading">{title}</h3>
     {children}
   </div>
 );
@@ -163,7 +164,7 @@ const Footer = ({ template }) => {
   const quickLinks = ["Products", "Categories", "About", "FAQ", "Contact"];
 
   return (
-    <footer className="bg-gradient-to-br from-[#0f1214] via-[#303841] to-[#0f1214] text-[#eeeeee] py-16 mt-20">
+    <footer className="bg-gradient-to-br from-[#0f1214] via-[#303841] to-[#0f1214] text-[#eeeeee] py-16 mt-20 font-t3-body">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <FooterColumn title={template?.name || "Your Brand"}>
@@ -178,7 +179,7 @@ const Footer = ({ template }) => {
                   className="w-10 h-10 rounded-full bg-[#303841] hover:bg-gray-700 flex items-center justify-center transition-all duration-200 transform hover:scale-110"
                   aria-label={link.name}
                 >
-                  <span className="text-sm font-semibold text-[#eeeeee]">{link.name[0]}</span>
+                  <span className="text-sm font-semibold text-[#eeeeee] font-t3-heading">{link.name[0]}</span>
                 </a>
               ))}
             </div>
@@ -227,9 +228,9 @@ const Footer = ({ template }) => {
               <input
                 type="email"
                 placeholder="Your email"
-                className="px-4 py-2 rounded bg-white text-[#303841] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#d72323] transition-all"
+                className="px-4 py-2 rounded bg-white text-[#303841] placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#d72323] transition-all font-t3-body"
               />
-              <button className="px-4 py-2 rounded bg-[#d72323] hover:bg-[#303841] text-white font-semibold hover:shadow-lg transition-all duration-200 transform hover:scale-105">
+              <button className="px-4 py-2 rounded bg-[#d72323] hover:bg-[#303841] text-white font-semibold hover:shadow-lg transition-all duration-200 transform hover:scale-105 font-t3-heading tracking-wide">
                 Subscribe
               </button>
             </form>
@@ -255,20 +256,25 @@ const Footer = ({ template }) => {
 const Template3Layout = () => {
   const { templateId } = useParams();
   const template = getTemplateById(templateId);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   if (!template) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#eeeeee]">
+      <div className="min-h-screen flex items-center justify-center bg-[#eeeeee] font-t3-body">
         <div className="text-center">
-          <p className="text-xl font-semibold text-[#303841]">Template not found</p>
+          <p className="text-xl font-semibold text-[#303841] font-t3-heading">Template not found</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#eeeeee]">
-      <Navigation templateId={templateId} />
+    <div className="min-h-screen flex flex-col bg-[#eeeeee] font-t3-body">
+      <Navigation 
+        templateId={templateId} 
+        mobileMenuOpen={mobileMenuOpen} 
+        setMobileMenuOpen={setMobileMenuOpen} 
+      />
       <main className="flex-1">
         <Outlet context={{ template }} />
       </main>

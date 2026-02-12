@@ -17,6 +17,10 @@ import FAQs from "../pages/BackOffice/FAQs";
 import Settings from "../pages/BackOffice/Settings";
 import SiteBranding from "../pages/BackOffice/SiteBranding";
 import FooterContent from "../pages/BackOffice/FooterContent";
+import Guide from "../pages/BackOffice/Guide";
+import BlogList from "../pages/BackOffice/BlogList";
+import BlogEditor from "../pages/BackOffice/BlogEditor";
+import DomainManagement from "../pages/BackOffice/DomainManagement";
 import BackofficeProtectedRoute from "../protectedRoute/BackofficeProtectedRoute";
 
 const BackOfficeRoutes = {
@@ -41,6 +45,9 @@ const BackOfficeRoutes = {
           children: [
             { index: true, element: <Dashboard /> },
 
+            // Setup Guide
+            { path: "guide", element: <Guide /> },
+
             // Products
             { path: "products", element: <Products /> },
             { path: "product/page-content", element: <ProductPage /> },
@@ -54,9 +61,15 @@ const BackOfficeRoutes = {
             { path: "contact", element: <Contact /> },
             { path: "faqs", element: <FAQs /> },
 
+            // Blog
+            { path: "blog", element: <BlogList /> },
+            { path: "blog/new", element: <BlogEditor /> },
+            { path: "blog/edit/:id", element: <BlogEditor /> },
+
             // Site Settings 
             { path: "site-branding", element: <SiteBranding /> },
             { path: "footer-content", element: <FooterContent /> },
+            { path: "domain", element: <DomainManagement /> },
             { path: "settings", element: <Settings /> },
             // In your BackOfficeRoutes.js
             { path: "change-password", element: <ChangePassword /> },

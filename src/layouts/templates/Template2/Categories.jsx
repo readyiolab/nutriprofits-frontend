@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { generateSlug } from "../../../utils/slug";
 import {
   ArrowRight,
   Search,
@@ -22,6 +24,8 @@ import {
 } from "lucide-react";
 
 const Template2Categories = () => {
+  const navigate = useNavigate();
+  const { templateId } = useParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [hoveredId, setHoveredId] = useState(null);
@@ -185,55 +189,55 @@ const Template2Categories = () => {
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-12">
           {filteredCategories.map((category) => (
-            <div
+            <Link
               key={category.id}
-              className="group cursor-pointer transform transition-all hover:-translate-y-2"
+              to={`/template/${templateId}/products?category=${generateSlug(category.name)}`}
+              className="group block cursor-pointer transform transition-all duration-300 hover:-translate-y-1.5"
               onMouseEnter={() => setHoveredId(category.id)}
               onMouseLeave={() => setHoveredId(null)}
             >
-              <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all h-full border border-purple-100 hover:border-black">
-                {/* Image Container */}
-                <div className="relative h-48 bg-gradient-to-br from-purple-50 to-pink-50 overflow-hidden">
+              <div className="bg-white rounded-2xl overflow-hidden transition-all h-full border border-gray-100 hover:border-blue-200 hover:shadow-lg">
+                {/* Image */}
+                <div className="relative h-44 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 overflow-hidden">
                   <img
                     src={category.image || 'https://via.placeholder.com/300'}
                     alt={category.name}
-                    className="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-contain p-5 group-hover:scale-105 transition-transform duration-500"
                   />
                   
-                  {/* Hover Overlay */}
-                  <div className={`absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center`}>
-                    <TrendingUp className="w-12 h-12 text-white" strokeWidth={2} />
+                  <div className={`absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4`}>
+                    <span className="text-white text-xs font-medium bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">View Products</span>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
-                  <h3 className="text-lg font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition line-clamp-1">
+                <div className="p-4 sm:p-5">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-1.5 group-hover:text-blue-600 transition line-clamp-1 leading-snug">
                     {category.name}
                   </h3>
                   
                   {category.description && (
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    <p className="text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">
                       {category.description}
                     </p>
                   )}
                   
                   <div className="flex items-center justify-between">
                     {category.product_count !== undefined && (
-                      <span className="text-sm text-gray-500 font-medium">
+                      <span className="text-xs text-gray-400 font-medium">
                         {category.product_count} Products
                       </span>
                     )}
-                    <button className="bg-black text-white px-4 py-2 rounded-xl hover:shadow-lg transition flex items-center gap-2 ml-auto">
-                      <span className="text-sm font-medium">Browse</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
+                    <div className="bg-gray-900 text-white px-3 py-1.5 rounded-lg group-hover:bg-blue-600 group-hover:shadow-md transition-all flex items-center gap-1.5 ml-auto">
+                      <span className="text-xs font-medium">Browse</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -259,14 +263,14 @@ const Template2Categories = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto px-2">
-            <button className="bg-white text-black font-medium px-8 py-3 sm:px-10 sm:py-4 rounded-full hover:shadow-lg transition text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto">
+            <Link to={`/template/${templateId}${pageContent.cta_button_link}`} className="bg-white text-black font-medium px-8 py-3 sm:px-10 sm:py-4 rounded-full hover:shadow-lg transition text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto">
               {pageContent.cta_button_text} 
               <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
+            </Link>
 
-            <button className="border-2 border-white text-white px-8 py-3 sm:px-10 sm:py-4 rounded-full hover:bg-white hover:text-black transition font-medium text-base sm:text-lg w-full sm:w-auto">
+            <Link to={`/template/${templateId}${pageContent.cta_support_link}`} className="border-2 border-white text-white px-8 py-3 sm:px-10 sm:py-4 rounded-full hover:bg-white hover:text-black transition font-medium text-base sm:text-lg w-full sm:w-auto flex items-center justify-center">
               {pageContent.cta_support_text}
-            </button>
+            </Link>
           </div>
         </div>
       </div>

@@ -16,8 +16,14 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid - redirect to login
-      window.location.href = '/login';
+      const requestUrl = error.config?.url || "";
+      const isBackofficeLogin = requestUrl.includes("/backoffice/login");
+      const isOnBackofficeLogin = window.location.pathname.startsWith("/backoffice/login");
+
+      // Avoid redirect loops and allow login page to show invalid credentials message.
+      if (!isBackofficeLogin && !isOnBackofficeLogin) {
+        window.location.href = "/backoffice/login";
+      }
     }
     return Promise.reject(error);
   }

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Search,
   Filter,
@@ -10,7 +10,13 @@ import {
   Zap,
   Heart,
   ShoppingBag,
+  LayoutGrid,
+  ChevronRight,
+  X,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
+import { generateSlug } from "../../../utils/slug";
 
 const Template2Products = () => {
   const navigate = useNavigate();
@@ -20,6 +26,22 @@ const Template2Products = () => {
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("featured");
   const [displayedCount, setDisplayedCount] = useState(9);
+  const location = useLocation();
+  const productsRef = useRef(null);
+
+  // Read ?category= slug from URL when navigating from Categories page
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const catSlug = params.get("category");
+    if (catSlug) {
+      const allCats = [...new Set(products.map((p) => (p.category || "").trim()).filter(Boolean))];
+      const matched = allCats.find((c) => generateSlug(c) === catSlug);
+      if (matched) {
+        setSelectedCategory(matched);
+        setDisplayedCount(9);
+      }
+    }
+  }, [location.search]);
 
   // PASTE YOUR PRODUCTS ARRAY HERE (copy from Template1Products)
   const products = [
@@ -3410,8 +3432,39 @@ const Template2Products = () => {
       ],
     },
   ];
-  // Extract unique categories
-  const categories = ["All", ...new Set(products.map((p) => p.category))];
+  // Extract unique categories with counts
+  const categories = useMemo(() => {
+    const catMap = {};
+    products.forEach((p) => {
+      const cat = (p.category || "").trim();
+      if (cat) catMap[cat] = (catMap[cat] || 0) + 1;
+    });
+    return Object.entries(catMap)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, []);
+
+  const handleCategorySelect = (catName) => {
+    setSelectedCategory(catName);
+    setDisplayedCount(9);
+    setSearchQuery("");
+    
+    // Smooth scroll to products section
+    setTimeout(() => {
+      productsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setDisplayedCount(9);
+  };
+
+  // Handle product click
+  const handleProductClick = (product) => {
+    navigate(`/template/${templateId}/products/${product.id}`);
+  };
 
   // Filter and sort products
   let filteredProducts = products.filter((product) => {
@@ -3419,7 +3472,7 @@ const Template2Products = () => {
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.category.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
-      selectedCategory === "All" || product.category === selectedCategory;
+      selectedCategory === "All" || (product.category || "").trim() === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -3487,216 +3540,227 @@ const Template2Products = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8 md:py-12">
-        {/* Filter Bar */}
-        <div className="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 border border-purple-100">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {/* Search */}
-            <div className="md:col-span-2 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 
-          rounded-xl focus:border-blue-600 focus:outline-none transition text-sm md:text-base"
-              />
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          
+          {/* SIDEBAR NAVIGATION (Desktop) */}
+          <aside className="hidden lg:block w-72 flex-shrink-0 sticky top-24 self-start h-fit max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar pr-2">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl shadow-blue-900/5 border border-white/60 overflow-hidden">
+               <div className="p-6 border-b border-blue-50 bg-blue-50/50">
+                  <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                     <LayoutGrid className="w-5 h-5 text-blue-600" />
+                     Collections
+                  </h3>
+               </div>
+                <nav className="p-3 flex flex-col gap-1 max-h-[calc(100vh-320px)] overflow-y-auto custom-scrollbar">
+                  <button
+                     onClick={() => handleCategorySelect("All")}
+                     className={`w-full px-4 py-3 rounded-2xl transition-all flex justify-between items-center group text-left ${
+                        selectedCategory === "All"
+                           ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                           : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
+                     }`}
+                  >
+                     <span className="font-semibold text-sm">All Products</span>
+                     {selectedCategory === "All" && <ChevronRight className="w-4 h-4" />}
+                  </button>
+                  {categories.map((cat) => (
+                     <button
+                        key={cat.name}
+                        onClick={() => handleCategorySelect(cat.name)}
+                        className={`w-full px-4 py-3 rounded-2xl transition-all flex justify-between items-center group text-left ${
+                           selectedCategory === cat.name
+                              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                              : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
+                        }`}
+                     >
+                        <span className="font-semibold text-sm">{cat.name}</span>
+                        {selectedCategory === cat.name && <ChevronRight className="w-4 h-4" />}
+                     </button>
+                  ))}
+               </nav>
             </div>
 
-            {/* Category */}
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-3 border-2 border-gray-200 rounded-xl 
-        focus:border-blue-600 focus:outline-none transition text-sm md:text-base"
-            >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
+            {/* Stats Widget */}
+            <div className="mt-6 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl shadow-blue-900/20">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16"></div>
+               <div className="relative z-10">
+                  <p className="text-blue-100 text-xs font-bold uppercase tracking-wider mb-1">Total Products</p>
+                  <h4 className="text-4xl font-bold">{products.length}</h4>
+                  <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2 text-xs font-medium text-blue-100">
+                     <Sparkles className="w-3 h-3 text-yellow-300" />
+                     Premium Quality Guaranteed
+                  </div>
+               </div>
+            </div>
+          </aside>
 
-            {/* Sort */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-3 border-2 border-gray-200 rounded-xl 
-        focus:border-blue-600 focus:outline-none transition text-sm md:text-base"
-            >
-              <option value="featured">Featured</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Highest Rated</option>
-            </select>
-          </div>
-
-          {/* View Toggle */}
-          <div className="flex items-center gap-2 mt-4 justify-end">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-lg transition ${
-                viewMode === "grid"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              <Grid className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`p-2 rounded-lg transition ${
-                viewMode === "list"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              <List className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* GRID VIEW */}
-        {viewMode === "grid" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {displayedProducts.map((product) => (
-              <div
-                key={product.id}
-                onClick={() =>
-                  navigate(`/template/${templateId}/products/${product.id}`)
-                }
-                className="group bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer 
-          hover:shadow-2xl transition-all duration-300 border border-purple-100 hover:border-black"
-              >
-                {/* Image */}
-                <div className="relative h-52 sm:h-64 bg-gradient-to-br from-purple-50 to-pink-50 overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
+          {/* MAIN CONTENT */}
+          <div className="flex-1 w-full" ref={productsRef} style={{ scrollMarginTop: '120px' }}>
+            
+            {/* MOBILE CATEGORY BAR (Horizontal) */}
+            <div className="lg:hidden mb-8">
+               <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                  <button
+                     onClick={() => handleCategorySelect("All")}
+                     className={`flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
+                        selectedCategory === "All"
+                           ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                           : "bg-white text-slate-600 border border-blue-100"
+                     }`}
+                  >
+                     All
+                  </button>
+                  {categories.map((cat) => (
+                     <button
+                        key={cat.name}
+                        onClick={() => handleCategorySelect(cat.name)}
+                        className={`flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
+                           selectedCategory === cat.name
+                              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                              : "bg-white text-slate-600 border border-blue-100"
+                        }`}
+                     >
+                        {cat.name}
+                     </button>
+                  ))}
+               </div>
+            </div>
+          
+            {/* Filter Bar */}
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg shadow-blue-900/5 p-4 md:p-6 mb-8 border border-white/60">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {/* Search */}
+                <div className="md:col-span-2 relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-100 
+              rounded-xl focus:border-blue-600 focus:outline-none transition text-sm md:text-base bg-white/50"
                   />
-                  {product.badge && (
-                    <div
-                      className="absolute top-3 left-3 bg-gradient-to-r 
-              from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold"
-                    >
-                      {product.badge}
-                    </div>
-                  )}
                 </div>
 
-                {/* Content */}
-                <div className="p-4 sm:p-6">
-                  <span className="text-xs font-semibold text-black bg-purple-50 px-2 py-1 rounded-full">
-                    {product.category}
-                  </span>
+                {/* Sort */}
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-4 py-3 border-2 border-gray-100 rounded-xl 
+            focus:border-blue-600 focus:outline-none transition text-sm md:text-base bg-white/50 cursor-pointer"
+                >
+                  <option value="featured">Featured</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="rating">Highest Rated</option>
+                </select>
+              </div>
 
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mt-2 line-clamp-1">
-                    {product.name}
-                  </h3>
-
-                  <p className="text-sm text-gray-600 mt-1 mb-4 line-clamp-2">
-                    {product.description}
-                  </p>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg sm:text-xl font-medium bg-black bg-clip-text text-transparent">
-                      {product.price}
-                    </span>
-                    <button className="bg-black text-white px-4 py-2 rounded-xl text-sm hover:shadow-lg transition">
-                      <ShoppingBag className="w-4 h-4" />
-                    </button>
-                  </div>
+              {/* View Toggle */}
+              <div className="flex items-center gap-2 mt-4 justify-between">
+                <div className="text-sm font-medium text-slate-500">
+                  Showing <span className="text-slate-900 font-bold">{filteredProducts.length}</span> results
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`p-2 rounded-lg transition ${
+                      viewMode === "grid"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    <Grid className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`p-2 rounded-lg transition ${
+                      viewMode === "list"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                  >
+                    <List className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          /* LIST VIEW */
-          <div className="space-y-4 mb-12">
-            {displayedProducts.map((product) => (
-              <div
-                key={product.id}
-                onClick={() =>
-                  navigate(`/template/${templateId}/products/${product.id}`)
-                }
-                className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer
-          hover:shadow-2xl transition-all duration-300 border border-purple-100 p-4 sm:p-6"
-              >
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                  {/* Image */}
-                  <div className="w-full sm:w-48 h-48 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl overflow-hidden mx-auto sm:mx-0">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-contain p-4"
-                    />
-                  </div>
+            </div>
 
-                  {/* Content */}
-                  <div className="flex-1">
-                    <div className="flex flex-col sm:flex-row justify-between">
-                      <div>
-                        <span className="text-xs font-semibold text-black bg-purple-50 px-2 py-1 rounded-full">
-                          {product.category}
-                        </span>
-                        <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mt-2">
+            {/* ─── MAIN GRID ─── */}
+             <div className={`grid grid-cols-1 ${viewMode === 'list' ? 'cols-1' : 'sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3'} gap-6`}>
+                {displayedProducts.map((product) => {
+                  return (
+                    <div
+                      key={product.id}
+                      onClick={() => handleProductClick(product)}
+                      className={`group bg-white rounded-3xl overflow-hidden shadow-lg shadow-blue-900/5 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 cursor-pointer border border-transparent hover:border-blue-100 flex ${viewMode === 'list' ? 'flex-row items-center' : 'flex-col'}`}
+                    >
+                      <div className={`relative overflow-hidden flex items-center justify-center p-6 ${viewMode === 'list' ? 'w-48 h-48 flex-shrink-0' : 'aspect-[4/3] w-full'}`}>
+                        <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-700 drop-shadow-sm"
+                          onError={(e) => { e.target.src = "https://via.placeholder.com/400?text=Product"; }}
+                        />
+                        {/* Floating Badge */}
+                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-xs font-bold text-blue-600 px-3 py-1 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                           View
+                        </div>
+                      </div>
+                      
+                      <div className="p-5 flex flex-col flex-1">
+                        <div className="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-2">
+                           {product.category || "Collection"}
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-2 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
                           {product.name}
                         </h3>
+                        <p className="text-slate-500 text-xs line-clamp-2 mb-4 flex-1">
+                          {product.description}
+                        </p>
+                        
+                         <button className="w-full py-2.5 rounded-xl bg-blue-50 text-blue-600 text-sm font-semibold group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 flex items-center justify-center gap-2 mt-auto">
+                            View Details <ArrowRight className="w-4 h-4" />
+                         </button>
                       </div>
-
-                      
                     </div>
-
-                    <p className="text-gray-600 mt-3 mb-4 text-sm sm:text-base">
-                      {product.description}
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                      <span className="text-xl sm:text-2xl font-semibold bg-black bg-clip-text text-transparent">
-                        {product.price}
-                      </span>
-
-                      <button className="bg-black text-white px-6 py-3 rounded-xl text-sm sm:text-base hover:shadow-lg">
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        )}
 
-        {/* Load More */}
-        {hasMore && (
-          <div className="text-center mt-6">
-            <button
-              onClick={() => setDisplayedCount((prev) => prev + 9)}
-              className="bg-black text-white px-8 py-4 rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition"
-            >
-              Load More
-            </button>
-          </div>
-        )}
+            {/* Load More */}
+            {hasMore && (
+              <div className="text-center mt-12">
+                <button
+                  onClick={() => setDisplayedCount((prev) => prev + 10)}
+                  className="bg-blue-600 text-white px-10 py-4 rounded-full font-bold shadow-xl shadow-blue-500/20 hover:bg-blue-700 hover:scale-105 transition-all duration-300"
+                >
+                  Load More Products
+                </button>
+              </div>
+            )}
 
-        {/* No Results */}
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-              No products found
-            </h3>
-            <p className="text-gray-600 text-sm sm:text-base">
-              Try adjusting your search or filters
-            </p>
+            {/* No Results */}
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-32 bg-white/50 backdrop-blur-sm rounded-[3rem] border border-white/60 shadow-inner">
+                <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                   <Search className="w-10 h-10 text-blue-300" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                  No products found
+                </h3>
+                <p className="text-slate-500 max-w-sm mx-auto">
+                  Try adjusting your search query or select another category to see results.
+                </p>
+              </div>
+            )}
+            
           </div>
-        )}
+        </div>
       </div>
-
       {/* CTA Section */}
-<div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] 
-     py-10 sm:py-16 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl shadow-xl text-center mb-10">
+      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] py-10 sm:py-16 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl shadow-xl text-center mb-10">
 
   <div className="container mx-auto px-3 sm:px-4 text-white">
     

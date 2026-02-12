@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { generateSlug } from "../../../utils/slug";
 import { Search, ChevronRight, Sparkles, TrendingUp, Droplets, Apple, Activity, Eye, Flame, Heart, Shield, Moon, Zap, Dumbbell, Pill, Brain, Sun, Wind } from "lucide-react";
 
 const Template3Categories = () => {
@@ -126,7 +127,7 @@ const Template3Categories = () => {
             <p className="text-[#3a4750]">Try searching for something else</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 mb-12 sm:mb-16">
             {filteredCategories.map((category) => {
               const IconComponent = category.icon;
               return (
@@ -135,47 +136,45 @@ const Template3Categories = () => {
                   className="group relative"
                   onMouseEnter={() => setHoveredId(category.id)}
                   onMouseLeave={() => setHoveredId(null)}
-                  onClick={() => navigate(`/template/${templateId}/products?category=${category.name}`)}
+                  onClick={() => navigate(`/template/${templateId}/products?category=${generateSlug(category.name)}`)}
                 >
-                  {/* Card */}
-                  <div className="bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer h-full flex flex-col border-2 border-transparent hover:border-[#d72323]">
-                    {/* Image Container with Gradient Overlay */}
-                    <div className="relative h-48 sm:h-56 overflow-hidden">
-                      <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-20`} />
+                  <div className="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer h-full flex flex-col border border-gray-100 hover:border-[#d72323]/30">
+                    {/* Image */}
+                    <div className="relative h-44 sm:h-48 overflow-hidden bg-gray-50">
                       <img
                         src={category.image}
                         alt={category.name}
-                        className="w-full h-full object-contain p-6   "
+                        className="w-full h-full object-contain p-5 group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => (e.target.src = "https://via.placeholder.com/400x400?text=" + category.name)}
                       />
                       
                       {/* Icon Badge */}
-                      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg">
-                        <IconComponent className="w-6 h-6 text-[#303841]" />
+                      <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm p-2 rounded-lg shadow-sm">
+                        <IconComponent className="w-5 h-5 text-[#303841]" />
                       </div>
 
-                      {/* Product Count Badge */}
-                      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-lg">
-                        <span className="text-sm font-semibold text-[#303841]">{category.count} Products</span>
+                      {/* Count Badge */}
+                      <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md shadow-sm">
+                        <span className="text-xs font-semibold text-[#303841]">{category.count} Products</span>
                       </div>
                     </div>
 
                     {/* Content */}
-                    <div className="p-5 sm:p-6 flex flex-col flex-1">
+                    <div className="p-4 sm:p-4.5 flex flex-col flex-1">
                       <div className="flex-1">
-                        <h3 className="text-lg sm:text-xl font-semibold text-[#303841] mb-2 group-hover:text-[#d72323] transition-colors">
+                        <h3 className="text-sm sm:text-base font-semibold text-[#303841] mb-1.5 group-hover:text-[#d72323] transition-colors leading-snug">
                           {category.name}
                         </h3>
-                        <p className="text-sm text-[#3a4750] line-clamp-2 mb-4">
+                        <p className="text-xs text-gray-400 line-clamp-2 mb-3 leading-relaxed">
                           {category.description}
                         </p>
                       </div>
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                        <span className="text-sm font-semibold text-[#d72323]">Explore</span>
-                        <button className="bg-[#303841] text-white p-2 rounded-lg hover:bg-[#d72323] transition-all transform group-hover:translate-x-1">
-                          <ChevronRight className="w-5 h-5" />
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <span className="text-xs font-semibold text-[#d72323]">Explore</span>
+                        <button className="bg-[#303841] text-white p-1.5 rounded-lg hover:bg-[#d72323] transition-all">
+                          <ChevronRight className="w-4 h-4" />
                         </button>
                       </div>
                     </div>

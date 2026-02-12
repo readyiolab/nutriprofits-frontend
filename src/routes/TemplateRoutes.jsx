@@ -72,6 +72,14 @@ const TemplateRoutes = {
       path: "contact", 
       element: <DynamicTemplatePage pageType="contact" /> 
     },
+    { 
+      path: "blog", 
+      element: <DynamicTemplatePage pageType="blog" /> 
+    },
+    { 
+      path: "blog/:blogSlug", 
+      element: <DynamicTemplatePage pageType="blogDetail" /> 
+    },
   ],
 };
 

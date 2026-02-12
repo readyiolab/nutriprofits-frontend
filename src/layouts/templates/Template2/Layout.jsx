@@ -19,102 +19,104 @@ const Template2Layout = () => {
     { to: `/template/${templateId}/products`, label: "Products" },
     { to: `/template/${templateId}/categories`, label: "Category" },
     { to: `/template/${templateId}/about`, label: "About Us" },
+    { to: `/template/${templateId}/blog`, label: "Blog" },
     { to: `/template/${templateId}/faq`, label: "FAQ's" },
   ];
 
   return (
     <>
-      <div className="min-h-screen flex flex-col justify-between">
+      <div className="min-h-screen flex flex-col justify-between font-t2-body">
 
         {/* NAVBAR */}
-        <nav className="bg-gradient-to-r from-first to-first/90 backdrop-blur-md sticky top-0 z-50 shadow-lg border-b border-third/20">
+        <nav className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 transition-all duration-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-4">
+            <div className="flex justify-between items-center h-20">
 
               {/* Brand Name */}
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg  flex items-center justify-center ">
+              <div className="flex-shrink-0 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-third/10 to-fourth/10">
                   {template?.logoUrl ? (
                     <img
                       src={template.logoUrl}
                       alt={`${template?.name} Logo`}
-                      className="h-16 w-16 object-contain"
+                      className="h-10 w-10 object-contain"
                     />
                   ) : (
-                    <span className="text-white font-bold text-lg">
+                    <span className="text-fourth font-bold text-xl font-t2-heading">
                       {template?.name?.charAt(0)}
                     </span>
                   )}
                 </div>
-                <h1 className="text-xl md:text-2xl font-bold text-fourth hidden sm:block">
+                <h1 className="text-2xl font-bold text-gray-900 tracking-tight hidden sm:block font-t2-heading">
                   {template?.name}
                 </h1>
               </div>
 
               {/* Desktop Menu */}
-              <div className="hidden lg:flex items-center gap-8">
+              <div className="hidden lg:flex items-center space-x-8 ml-auto">
                 {navLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="text-fourth hover:text-third font-medium text-sm transition-all duration-300 relative group"
+                    className="relative group py-2 text-sm font-medium uppercase tracking-wider text-gray-600 hover:text-fourth transition-colors duration-300"
                   >
                     {link.label}
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-third to-fourth group-hover:w-full transition-all duration-300"></span>
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-fourth transition-all duration-300 ease-out group-hover:w-full"></span>
                   </Link>
                 ))}
-              </div>
 
-              {/* Desktop Contact Button */}
-              <div className="hidden lg:flex items-center gap-4">
+                {/* Desktop Contact Button */}
                 <Link
                   to={`/template/${templateId}/contact`}
-                  className="px-6 py-2.5 bg-blue-500 font-medium rounded-full text-white text-sm hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+                  className="ml-6 px-6 py-2.5 bg-fourth text-white text-sm font-medium tracking-wide first-letter:uppercase hover:bg-third transition-all duration-300 rounded shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
-                  <Mail className="h-4 w-4" />
                   Contact Us
                 </Link>
               </div>
 
-              {/* Mobile Menu */}
-              <div className="lg:hidden flex items-center gap-3">
+              {/* Mobile Menu Button */}
+              <div className="lg:hidden flex items-center">
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
                   <SheetTrigger asChild>
-                    <button className="text-fourth hover:bg-third/20 p-2.5 rounded-lg transition-all duration-300">
-                      {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                    <button className="text-gray-600 hover:text-fourth p-2 transition-colors">
+                      {isOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
                     </button>
                   </SheetTrigger>
-                  <SheetContent side="right" className="bg-gradient-to-b from-first to-first/95 border-l border-third/30 w-[280px] p-0">
-                    <SheetHeader className="bg-gradient-to-r from-first to-first/90 px-6 py-6 border-b border-third/20">
-                      <SheetTitle className="text-2xl font-bold text-fourth text-left flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-third to-fourth flex items-center justify-center">
-                          {template?.name?.charAt(0)}
-                        </div>
-                        {template?.name}
-                      </SheetTitle>
-                    </SheetHeader>
-                    
-                    <div className="mt-6 flex flex-col space-y-2 px-4">
-                      {navLinks.map((link) => (
-                        <Link
-                          key={link.to}
-                          to={link.to}
-                          onClick={() => setIsOpen(false)}
-                          className="text-fourth hover:text-third hover:bg-third/15 text-lg font-medium py-3 px-4 rounded-lg transition-all duration-300"
-                        >
-                          {link.label}
-                        </Link>
-                      ))}
-                      
-                      {/* Mobile Contact Button */}
-                      <Link
-                        to={`/template/${templateId}/contact`}
-                        onClick={() => setIsOpen(false)}
-                        className="mt-4 w-full px-4 py-3 bg-blue-500 font-medium rounded-full text-white text-sm hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+                  <SheetContent 
+                    side="right" 
+                    className="w-full sm:w-full border-none p-0 bg-white/95 backdrop-blur-xl"
+                  >
+                    <div className="flex flex-col h-full items-center justify-center relative">
+                      {/* Close Button specific for fullscreen */}
+                      <button 
+                         onClick={() => setIsOpen(false)}
+                         className="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-900 transition-colors"
                       >
-                        <Mail className="h-5 w-5" />
-                        Contact Us
-                      </Link>
+                        <X className="h-8 w-8" />
+                      </button>
+
+                      <div className="flex flex-col space-y-8 text-center">
+                        {navLinks.map((link) => (
+                          <Link
+                            key={link.to}
+                            to={link.to}
+                            onClick={() => setIsOpen(false)}
+                            className="text-4xl md:text-5xl font-light text-gray-800 hover:text-fourth transition-all duration-300 transform hover:scale-105 font-t2-heading"
+                          >
+                            {link.label}
+                          </Link>
+                        ))}
+                        
+                        <div className="pt-8">
+                             <Link
+                            to={`/template/${templateId}/contact`}
+                            onClick={() => setIsOpen(false)}
+                            className="px-10 py-4 bg-fourth text-white text-lg font-medium tracking-wide first-letter:uppercase hover:bg-third transition-all duration-300 rounded-full shadow-xl"
+                          >
+                            Contact Us
+                          </Link>
+                        </div>
+                      </div>
                     </div>
                   </SheetContent>
                 </Sheet>
@@ -139,11 +141,11 @@ const Template2Layout = () => {
               <div className="lg:col-span-1">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-third to-fourth flex items-center justify-center">
-                    <span className="text-white font-bold">
+                    <span className="text-white font-bold font-t2-heading">
                       {template?.name?.charAt(0)}
                     </span>
                   </div>
-                  <h3 className="text-2xl font-bold">{template?.name}</h3>
+                  <h3 className="text-2xl font-bold font-t2-heading">{template?.name}</h3>
                 </div>
                 <p className="text-second text-sm leading-relaxed">
                   Committed to sustainability and natural excellence in every product.
@@ -152,7 +154,7 @@ const Template2Layout = () => {
 
               {/* Quick Links */}
               <div>
-                <h4 className="text-lg font-semibold mb-6 text-first flex items-center gap-2">
+                <h4 className="text-lg font-semibold mb-6 text-first flex items-center gap-2 font-t2-heading">
                   <span className="w-1 h-6 bg-gradient-to-b from-third to-fourth rounded"></span>
                   Quick Links
                 </h4>
@@ -170,7 +172,7 @@ const Template2Layout = () => {
 
               {/* Contact */}
               <div>
-                <h4 className="text-lg font-semibold mb-6 text-first flex items-center gap-2">
+                <h4 className="text-lg font-semibold mb-6 text-first flex items-center gap-2 font-t2-heading">
                   <span className="w-1 h-6 bg-gradient-to-b from-third to-fourth rounded"></span>
                   Contact
                 </h4>
@@ -192,7 +194,7 @@ const Template2Layout = () => {
 
               {/* Social */}
               <div>
-                <h4 className="text-lg font-semibold mb-6 text-first flex items-center gap-2">
+                <h4 className="text-lg font-semibold mb-6 text-first flex items-center gap-2 font-t2-heading">
                   <span className="w-1 h-6 bg-gradient-to-b from-third to-fourth rounded"></span>
                   Follow Us
                 </h4>
@@ -202,7 +204,7 @@ const Template2Layout = () => {
                       key={icon}
                       className="w-12 h-12 bg-gradient-to-br from-third/20 to-fourth/20 border border-third/50 rounded-lg flex items-center justify-center hover:from-third hover:to-fourth hover:border-third/100 transition-all duration-300 hover:scale-110 group"
                     >
-                      <span className="text-third group-hover:text-fourth font-bold text-lg transition-colors">
+                      <span className="text-third group-hover:text-fourth font-bold text-lg transition-colors font-t2-heading">
                         {icon}
                       </span>
                     </button>

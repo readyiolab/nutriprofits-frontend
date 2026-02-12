@@ -8,6 +8,10 @@ import {
   Share2,
   ShoppingBag,
   Dot,
+  ArrowRight,
+  Minus,
+  Plus,
+  Trash2
 } from "lucide-react";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -3452,7 +3456,7 @@ const ProductDetailTemplate2 = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16 justify-center items-center space-y-8 lg:space-y-0">
           {/* LEFT - Product Image */}
           <div className="lg:sticky lg:top-8 h-fit">
-            <div className="relative  rounded-3xl p-8 ">
+            <div className="relative p-8">
               {/* Badge */}
               <div className="absolute top-6 right-6 bg-black text-white px-4 py-2 rounded-full text-sm font-medium z-10">
                 {product.category}
@@ -3480,19 +3484,57 @@ const ProductDetailTemplate2 = () => {
                 {product.fullDescription || product.description}
               </p>
 
-              {/* Price & Actions */}
-              <div className="flex items-center gap-4 mb-6">
-                <div className="text-xl md:text-2xl font-medium  bg-black bg-clip-text text-transparent">
-                  {product.price}
+              {/* Price & Quantity Area */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-8">
+                <div>
+                  <div className="text-xs text-slate-400 uppercase tracking-widest mb-1.5 font-bold">Current Price</div>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-900 bg-clip-text text-transparent">
+                    {product.price}
+                  </div>
+                </div>
+
+                <div className="h-10 w-px bg-slate-200 hidden sm:block"></div>
+
+                <div>
+                  <div className="text-xs text-slate-400 uppercase tracking-widest mb-1.5 font-bold">Select Bottles</div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center bg-white rounded-xl border border-slate-200 shadow-sm p-1">
+                      <button 
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-50 transition-all text-slate-600"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="w-12 text-center font-bold text-slate-800 text-lg">{quantity}</span>
+                      <button 
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-blue-50 transition-all text-blue-600"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <button 
+                      onClick={() => setQuantity(1)}
+                      className="w-12 h-12 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                      title="Reset Selection"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-4 mb-8">
-                <button className="flex-1 min-w-[200px] bg-gradient-to-r from-blue-600 to-blue-900 text-white px-8 py-4 rounded-xl font-medium cursor-pointer  flex items-center justify-center gap-2">
+                <a 
+                  href={product.buyLink || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 min-w-[200px] bg-gradient-to-r from-blue-600 to-blue-900 text-white px-8 py-5 rounded-2xl font-bold shadow-xl shadow-blue-900/10 flex items-center justify-center gap-3 hover:shadow-blue-900/20 hover:-translate-y-1 transition-all active:translate-y-0"
+                >
                   <ShoppingBag className="w-5 h-5" />
-                  Learn More & Buy Now
-                </button>
+                  Complete Your Purchase
+                </a>
               </div>
             </div>
           </div>
@@ -3598,19 +3640,71 @@ const ProductDetailTemplate2 = () => {
         )}
       </div>
 
-        {/* CTA Section */}
-        <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] rounded-3xl p-12 text-center mt-16">
-          <h2 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tigh">
-            Ready to Transform Your Health?
-          </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied customers who achieved their wellness
-            goals
-          </p>
-          <button className="bg-white text-blue-900 px-12 py-4 rounded-xl font-medium text-lg hover:shadow-2xl hover:scale-105 transition-all">
-            Get Started Today
-          </button>
-        </div>
+        {/* RELATED PRODUCTS */}
+        {(() => {
+          let relatedProducts = products
+            .filter(p => p.category === product.category && p.id !== product.id);
+
+          if (relatedProducts.length < 4) {
+            const otherProducts = products
+              .filter(p => p.category !== product.category && p.id !== product.id)
+              .slice(0, 4 - relatedProducts.length);
+            relatedProducts = [...relatedProducts, ...otherProducts];
+          }
+          
+          relatedProducts = relatedProducts.slice(0, 4);
+          
+          if (relatedProducts.length === 0) return null;
+          
+          return (
+            <div className="mt-20 border-t border-blue-100 pt-16">
+              <div className="text-center mb-12">
+                 <span className="text-blue-500 font-bold tracking-widest uppercase text-xs mb-3 block">Complete Your Routine</span>
+                 <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Complementary Solutions</h2>
+                 <div className="w-20 h-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded-full shadow-lg shadow-blue-500/20"></div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {relatedProducts.map((rp) => (
+                  <div
+                    key={rp.id}
+                    onClick={() => navigate(`/template/${templateId}/product/${rp.id}`)}
+                    className="group bg-white rounded-3xl overflow-hidden shadow-lg shadow-blue-900/5 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 border border-transparent hover:border-blue-100 flex flex-col h-full cursor-pointer"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden flex items-center justify-center p-6">
+                      <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <img
+                        src={rp.image}
+                        alt={rp.name}
+                        className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-700 drop-shadow-sm"
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/400x400.png?text=Product";
+                        }}
+                      />
+                      {/* Floating Badge */}
+                      <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-[10px] font-bold text-blue-600 px-3 py-1 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                         {rp.category || 'Featured'}
+                      </div>
+                    </div>
+                    
+                    <div className="p-5 flex flex-col flex-1">
+                      <h3 className="text-lg font-bold text-slate-800 mb-2 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+                        {rp.name}
+                      </h3>
+                      
+                       <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-50">
+                          <span className="text-slate-800 font-bold">{rp.price}</span>
+                          <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                             <ArrowRight className="w-4 h-4" />
+                          </div>
+                       </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
