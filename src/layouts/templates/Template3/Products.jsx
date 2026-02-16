@@ -3527,9 +3527,6 @@ const Template3Products = () => {
         <p className="text-xs text-gray-400 line-clamp-2 mb-3 flex-1 leading-relaxed">
           {product.description}
         </p>
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-          <span className="text-base font-semibold text-[#303841]">{product.price}</span>
-        </div>
       </div>
     </div>
   );
@@ -3562,9 +3559,6 @@ const Template3Products = () => {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-3 border-t border-gray-100">
-          <span className="text-xl font-semibold text-[#303841]">{product.price}</span>
-        </div>
       </div>
     </div>
   );
@@ -3636,8 +3630,6 @@ const Template3Products = () => {
                     className="appearance-none w-full sm:w-auto px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#d72323] focus:outline-none bg-white cursor-pointer pr-10 text-[#303841]"
                   >
                     <option value="featured">Featured</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
                     <option value="rating">Highest Rated</option>
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#3a4750] pointer-events-none" />

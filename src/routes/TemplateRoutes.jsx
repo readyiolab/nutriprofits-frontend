@@ -57,6 +57,10 @@ const TemplateRoutes = {
       element: <DynamicTemplatePage pageType="productDetail" /> 
     },
     { 
+      path: "product/:productId", 
+      element: <DynamicTemplatePage pageType="productDetail" /> 
+    },
+    { 
       path: "categories", 
       element: <DynamicTemplatePage pageType="categories" /> 
     },

@@ -3476,22 +3476,6 @@ const Template2Products = () => {
     return matchesSearch && matchesCategory;
   });
 
-  // Sort products
-  if (sortBy === "price-low") {
-    filteredProducts.sort(
-      (a, b) =>
-        parseFloat(a.price.replace("$", "")) -
-        parseFloat(b.price.replace("$", ""))
-    );
-  } else if (sortBy === "price-high") {
-    filteredProducts.sort(
-      (a, b) =>
-        parseFloat(b.price.replace("$", "")) -
-        parseFloat(a.price.replace("$", ""))
-    );
-  } else if (sortBy === "rating") {
-    filteredProducts.sort((a, b) => b.rating - a.rating);
-  }
 
   const displayedProducts = filteredProducts.slice(0, displayedCount);
   const hasMore = displayedCount < filteredProducts.length;
@@ -3650,8 +3634,6 @@ const Template2Products = () => {
             focus:border-blue-600 focus:outline-none transition text-sm md:text-base bg-white/50 cursor-pointer"
                 >
                   <option value="featured">Featured</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
                   <option value="rating">Highest Rated</option>
                 </select>
               </div>
@@ -3705,7 +3687,7 @@ const Template2Products = () => {
                         />
                         {/* Floating Badge */}
                         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-xs font-bold text-blue-600 px-3 py-1 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                           View
+                           Learn More
                         </div>
                       </div>
                       
@@ -3721,7 +3703,7 @@ const Template2Products = () => {
                         </p>
                         
                          <button className="w-full py-2.5 rounded-xl bg-blue-50 text-blue-600 text-sm font-semibold group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 flex items-center justify-center gap-2 mt-auto">
-                            View Details <ArrowRight className="w-4 h-4" />
+                            Learn More <ArrowRight className="w-4 h-4" />
                          </button>
                       </div>
                     </div>

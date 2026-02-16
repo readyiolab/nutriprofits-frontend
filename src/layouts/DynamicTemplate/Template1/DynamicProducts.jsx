@@ -290,7 +290,7 @@ const DynamicProducts = () => {
                 const slug = getProductSlug(product);
                 const productLink = activeCategory
                   ? `/categories/${getCategorySlug(activeCategory)}/${slug}`
-                  : `/product/${slug}`;
+                  : `/products/${slug}`;
                 return (
                   <div
                     key={product.id}

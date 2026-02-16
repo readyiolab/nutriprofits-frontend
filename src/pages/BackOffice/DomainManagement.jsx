@@ -10,7 +10,7 @@ import {
   ExternalLink,
   Trash2,
   RefreshCw,
-  Info,
+ Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +34,12 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useFetch } from "@/hooks";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { useDomainVerification } from "@/contexts/DomainVerificationContext";
 
 const DomainManagement = () => {

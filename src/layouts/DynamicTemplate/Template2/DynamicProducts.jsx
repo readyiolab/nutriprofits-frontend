@@ -200,7 +200,7 @@ const DynamicProducts = () => {
                     const slug = getProductSlug(product);
                     const productLink = activeCategory
                       ? `/categories/${getCategorySlug(activeCategory)}/${slug}`
-                      : `/product/${slug}`;
+                      : `/products/${slug}`;
                       
                     return (
                       <div
@@ -218,7 +218,7 @@ const DynamicProducts = () => {
                           />
                           {/* Floating Badge */}
                           <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-xs font-bold text-blue-600 px-3 py-1 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 delay-100">
-                             View
+                             Learn More
                           </div>
                         </div>
                         
@@ -234,7 +234,7 @@ const DynamicProducts = () => {
                           </p>
                           
                            <button className="w-full py-2.5 rounded-xl bg-blue-50 text-blue-600 text-sm font-semibold group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 flex items-center justify-center gap-2 mt-auto">
-                              View Details <ArrowRight className="w-4 h-4" />
+                            Learn More <ArrowRight className="w-4 h-4" />
                            </button>
                         </div>
                       </div>

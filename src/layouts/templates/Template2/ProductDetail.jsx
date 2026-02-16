@@ -3484,58 +3484,7 @@ const ProductDetailTemplate2 = () => {
                 {product.fullDescription || product.description}
               </p>
 
-              {/* Price & Quantity Area */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-8">
-                <div>
-                  <div className="text-xs text-slate-400 uppercase tracking-widest mb-1.5 font-bold">Current Price</div>
-                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-900 bg-clip-text text-transparent">
-                    {product.price}
-                  </div>
-                </div>
 
-                <div className="h-10 w-px bg-slate-200 hidden sm:block"></div>
-
-                <div>
-                  <div className="text-xs text-slate-400 uppercase tracking-widest mb-1.5 font-bold">Select Bottles</div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center bg-white rounded-xl border border-slate-200 shadow-sm p-1">
-                      <button 
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-50 transition-all text-slate-600"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="w-12 text-center font-bold text-slate-800 text-lg">{quantity}</span>
-                      <button 
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-blue-50 transition-all text-blue-600"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <button 
-                      onClick={() => setQuantity(1)}
-                      className="w-12 h-12 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
-                      title="Reset Selection"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-4 mb-8">
-                <a 
-                  href={product.buyLink || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 min-w-[200px] bg-gradient-to-r from-blue-600 to-blue-900 text-white px-8 py-5 rounded-2xl font-bold shadow-xl shadow-blue-900/10 flex items-center justify-center gap-3 hover:shadow-blue-900/20 hover:-translate-y-1 transition-all active:translate-y-0"
-                >
-                  <ShoppingBag className="w-5 h-5" />
-                  Complete Your Purchase
-                </a>
-              </div>
             </div>
           </div>
         </div>
@@ -3640,6 +3589,18 @@ const ProductDetailTemplate2 = () => {
         )}
       </div>
 
+        <div className="mt-2 text-center py-10">
+          <a 
+            href={product.buyLink || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full max-w-lg mx-auto bg-gradient-to-r from-blue-600 to-blue-900 text-white px-12 py-6 rounded-3xl font-bold shadow-2xl shadow-blue-900/20 flex items-center justify-center gap-4 hover:shadow-blue-900/40 hover:-translate-y-1 transition-all active:translate-y-0 text-xl"
+          >
+            <ShoppingBag className="w-6 h-6" />
+            Learn More & Buy Now
+          </a>
+        </div>
+
         {/* RELATED PRODUCTS */}
         {(() => {
           let relatedProducts = products
@@ -3668,7 +3629,7 @@ const ProductDetailTemplate2 = () => {
                 {relatedProducts.map((rp) => (
                   <div
                     key={rp.id}
-                    onClick={() => navigate(`/template/${templateId}/product/${rp.id}`)}
+                    onClick={() => navigate(`/template/${templateId}/products/${rp.id}`)}
                     className="group bg-white rounded-3xl overflow-hidden shadow-lg shadow-blue-900/5 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 border border-transparent hover:border-blue-100 flex flex-col h-full cursor-pointer"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden flex items-center justify-center p-6">
@@ -3693,7 +3654,7 @@ const ProductDetailTemplate2 = () => {
                       </h3>
                       
                        <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-50">
-                          <span className="text-slate-800 font-bold">{rp.price}</span>
+                          <span className="text-slate-800 font-bold">Learn More</span>
                           <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                              <ArrowRight className="w-4 h-4" />
                           </div>
@@ -3706,6 +3667,7 @@ const ProductDetailTemplate2 = () => {
           );
         })()}
       </div>
+
     </div>
   );
 };

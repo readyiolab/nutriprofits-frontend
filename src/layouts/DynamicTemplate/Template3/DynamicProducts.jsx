@@ -200,7 +200,7 @@ const DynamicProducts = () => {
                     const slug = getProductSlug(product);
                     const productLink = activeCategory
                       ? `/categories/${getCategorySlug(activeCategory)}/${slug}`
-                      : `/product/${slug}`;
+                      : `/products/${slug}`;
                       
                     return (
                        <div 
@@ -235,7 +235,7 @@ const DynamicProducts = () => {
                                 {product.product_description}
                              </p>
                              <button className="w-full py-2 border-2 border-[#303841] text-[#303841] text-xs font-bold uppercase tracking-widest hover:bg-[#303841] hover:text-white transition-colors">
-                                Access Data
+                                Learn More
                              </button>
                           </div>
                        </div>

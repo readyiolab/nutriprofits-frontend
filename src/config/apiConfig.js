@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL =  'http://localhost:3001/api';
+const API_BASE_URL = 'http://localhost:3001/api';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -24,6 +24,9 @@ api.interceptors.response.use(
       if (!isBackofficeLogin && !isOnBackofficeLogin) {
         window.location.href = "/backoffice/login";
       }
+    } else if (error.response?.status === 429) {
+      // Handle rate limiting - show a friendly message
+      alert("Too many requests. Please wait a moment before trying again.");
     }
     return Promise.reject(error);
   }

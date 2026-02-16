@@ -158,67 +158,6 @@ const DynamicProductDetail = () => {
                 {product.full_description || product.product_description}
               </p>
 
-            {/* Price & Quantity Panel */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 mb-8 border-l-4 border-[#d72323] shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
-                {/* Price */}
-                {product.product_price > 0 && (
-                  <div>
-                     <div className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">market_price_index</div>
-                     <div className="flex items-baseline gap-3">
-                        <span className="text-3xl font-black text-[#303841] tracking-tighter">
-                          ${Number(product.product_price).toFixed(2)}
-                        </span>
-                     </div>
-                  </div>
-                )}
-
-                {/* Quantity */}
-                <div>
-                   <div className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 text-right sm:text-left">quantity_selector</div>
-                   <div className="flex items-center gap-4">
-                      <div className="flex items-center bg-[#f8fafc] rounded-lg border-2 border-[#303841] p-1 shadow-[4px_4px_0px_rgba(48,56,65,0.1)]">
-                        <button 
-                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          className="w-10 h-10 flex items-center justify-center rounded hover:bg-white transition-all text-[#303841] hover:text-[#d72323]"
-                        >
-                          <Minus className="w-5 h-5" />
-                        </button>
-                        <div className="w-12 text-center font-black text-[#303841] text-lg font-mono">{String(quantity).padStart(2, '0')}</div>
-                        <button 
-                          onClick={() => setQuantity(quantity + 1)}
-                          className="w-10 h-10 flex items-center justify-center rounded hover:bg-white transition-all text-[#303841] hover:text-[#d72323]"
-                        >
-                          <Plus className="w-5 h-5" />
-                        </button>
-                      </div>
-                      <button 
-                        onClick={() => setQuantity(1)}
-                        className="w-12 h-12 flex items-center justify-center rounded-lg text-gray-400 hover:text-[#303841] hover:bg-gray-50 transition-all font-bold"
-                        title="Reset Quantity"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                   </div>
-                </div>
-              </div>
-
-              {/* ACTION BUTTON */}
-              {product.buylink && (
-                <div className="mt-8">
-                   <a 
-                     href={product.buylink}
-                     target="_blank"
-                     rel="noopener noreferrer"
-                     className="w-full flex items-center justify-center gap-3 bg-[#d72323] text-white px-8 py-5 rounded-xl font-black uppercase tracking-[0.1em] shadow-[0_10px_20px_rgba(215,35,35,0.2)] hover:bg-[#b91c1c] hover:shadow-[0_15px_30px_rgba(215,35,35,0.3)] hover:-translate-y-1 transition-all active:translate-y-0"
-                   >
-                     <ShoppingBag className="w-6 h-6" />
-                     EXECUTE_ORDER_MODULE
-                   </a>
-                   <p className="text-center text-[10px] font-mono text-gray-400 mt-4 uppercase tracking-[0.2em]">Affiliate Data Link // Encrypted Session</p>
-                </div>
-              )}
-            </div>
             </div>
           </div>
         </div>
@@ -323,6 +262,21 @@ const DynamicProductDetail = () => {
           )}
         </div>
 
+        {product.buylink && (
+          <div className="mt-16 max-w-2xl mx-auto py-12">
+             <a 
+               href={product.buylink}
+               target="_blank"
+               rel="noopener noreferrer"
+               className="w-full flex items-center justify-center gap-4 bg-[#d72323] text-white px-10 py-6 rounded-xl font-black uppercase tracking-[0.2em] shadow-[0_15px_30px_rgba(215,35,35,0.3)] hover:bg-[#b91c1c] hover:shadow-[0_20px_40px_rgba(215,35,35,0.4)] hover:-translate-y-1 transition-all active:translate-y-0 text-xl border-b-4 border-[#8b1a1a]"
+             >
+               <ShoppingBag className="w-7 h-7" />
+               Learn More & Buy Now
+             </a>
+             <p className="text-center text-xs font-mono text-gray-400 mt-6 uppercase tracking-[0.3em]">Affiliate Security System // End-to-End Encrypted</p>
+          </div>
+        )}
+
         {/* RELATED PRODUCTS */}
         {relatedProducts.length > 0 && (
           <div className="mt-16">
@@ -336,7 +290,7 @@ const DynamicProductDetail = () => {
                 const rpCategory = categories.find((c) => c.id === rp.category_id);
                 const rpLink = rpCategory
                   ? `/categories/${getCategorySlug(rpCategory)}/${rpSlug}`
-                  : `/product/${rpSlug}`;
+                  : `/products/${rpSlug}`;
                 return (
                   <Link
                     key={rp.id}
@@ -362,7 +316,7 @@ const DynamicProductDetail = () => {
                       </h3>
                       <div className="mt-3 flex items-center justify-center">
                         <span className="px-4 py-1 border border-[#303841] text-[#303841] text-xs font-bold uppercase tracking-widest group-hover:bg-[#303841] group-hover:text-white transition-all">
-                          View Data
+                            Learn More
                         </span>
                       </div>
                     </div>
@@ -370,6 +324,20 @@ const DynamicProductDetail = () => {
                 );
               })}
             </div>
+          </div>
+        )}
+        {product.buylink && (
+          <div className="mt-16 max-w-2xl mx-auto pb-20">
+             <a 
+               href={product.buylink}
+               target="_blank"
+               rel="noopener noreferrer"
+               className="w-full flex items-center justify-center gap-4 bg-[#d72323] text-white px-10 py-6 rounded-xl font-black uppercase tracking-[0.2em] shadow-[0_15px_30_rgba(215,35,35,0.3)] hover:bg-[#b91c1c] hover:shadow-[0_20px_40px_rgba(215,35,35,0.4)] hover:-translate-y-1 transition-all active:translate-y-0 text-xl border-b-4 border-[#8b1a1a]"
+             >
+               <ShoppingBag className="w-7 h-7" />
+               Learn More & Buy Now
+             </a>
+             <p className="text-center text-xs font-mono text-gray-400 mt-6 uppercase tracking-[0.3em]">Affiliate Security System // End-to-End Encrypted</p>
           </div>
         )}
       </div>

@@ -3505,66 +3505,6 @@ const ProductDetail = () => {
               {product.fullDescription}
             </p>
 
-            {/* Price & Quantity Panel */}
-            <div className="bg-[#f8fafc] border border-gray-100 rounded-2xl p-6 sm:p-8 mb-8 border-l-4 border-[#d72323]">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
-                {/* Price */}
-                <div>
-                   <div className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">unit_price_index</div>
-                   <div className="flex items-baseline gap-3">
-                      <span className="text-3xl font-black text-[#303841] tracking-tighter">{product.price}</span>
-                      {product.originalPrice && (
-                        <span className="text-xl text-gray-400 line-through font-mono opacity-50">{product.originalPrice}</span>
-                      )}
-                   </div>
-                </div>
-
-                {/* Quantity */}
-                <div>
-                   <div className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-[0.2em] mb-2 text-right sm:text-left">quantity_selector</div>
-                   <div className="flex items-center gap-4">
-                      <div className="flex items-center bg-white rounded-lg border-2 border-[#303841] p-1 shadow-[4px_4px_0px_rgba(48,56,65,0.1)]">
-                        <button 
-                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          className="w-10 h-10 flex items-center justify-center rounded hover:bg-[#f8fafc] transition-all text-[#303841] hover:text-[#d72323]"
-                        >
-                          <Minus className="w-5 h-5" />
-                        </button>
-                        <div className="w-12 text-center font-black text-[#303841] text-lg font-mono">{String(quantity).padStart(2, '0')}</div>
-                        <button 
-                          onClick={() => setQuantity(quantity + 1)}
-                          className="w-10 h-10 flex items-center justify-center rounded hover:bg-[#f8fafc] transition-all text-[#303841] hover:text-[#d72323]"
-                        >
-                          <Plus className="w-5 h-5" />
-                        </button>
-                      </div>
-                      <button 
-                        onClick={() => setQuantity(1)}
-                        className="w-12 h-12 flex items-center justify-center rounded-lg border-2 border-transparent text-gray-400 hover:text-[#303841] hover:bg-white transition-all"
-                        title="Reset Quantity"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                   </div>
-                </div>
-              </div>
-
-              {/* BUY BUTTON */}
-              <div className="mt-8">
-                 <a 
-                   href={product.buyLink || "#"}
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   className="w-full flex items-center justify-center gap-3 bg-[#d72323] text-white px-8 py-5 rounded-xl font-black uppercase tracking-[0.1em] shadow-[0_10px_20px_rgba(215,35,35,0.2)] hover:bg-[#b91c1c] hover:shadow-[0_15px_30px_rgba(215,35,35,0.3)] hover:-translate-y-1 transition-all active:translate-y-0"
-                 >
-                   <ShoppingBag className="w-6 h-6" />
-                   INITIATE_ORDER_PROCEDURE
-                 </a>
-                 <p className="text-center text-[10px] font-mono text-gray-400 mt-4 uppercase tracking-[0.2em]">Secure Checkout // SSL Encryption Active</p>
-              </div>
-            </div>
-
-            
 
             {/* Highlights */}
             {product.highlights && product.highlights.length > 0 && (
@@ -3631,11 +3571,11 @@ const ProductDetail = () => {
                 </h3>
                 <div className="grid sm:grid-cols-2 gap-4">
                   {product.benefits.map((benefit, idx) => (
-                    <div key={idx} className="flex items-start gap-3 p-4">
-                      <div className="w-6 h-6 bg-[#d72323] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Check className="w-4 h-4 text-white" />
+                    <div key={idx} className="flex items-start gap-4 p-5 bg-[#f8fafc] rounded-2xl border border-gray-50 hover:border-gray-100 transition-all">
+                      <div className="w-6 h-6 bg-[#d72323] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 shadow-md shadow-[#d72323]/15">
+                        <Check className="w-3 h-3 text-white" />
                       </div>
-                      <span className="text-[#303841] font-medium">{benefit}</span>
+                      <span className="text-[#303841] font-bold leading-snug">{benefit}</span>
                     </div>
                   ))}
                 </div>
@@ -3649,11 +3589,11 @@ const ProductDetail = () => {
                 </h3>
                 <div className="space-y-6">
                   {product.ingredients.map((ingredient, idx) => (
-                    <div key={idx} className=" p-4">
-                      <h4 className="text-lg font-semibold text-[#303841] mb-3">
+                    <div key={idx} className="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                      <h4 className="text-lg font-bold text-[#d72323] mb-3 group-hover:translate-x-1 transition-transform">
                         {ingredient.name}
                       </h4>
-                      <p className="text-[#3a4750] leading-relaxed">
+                      <p className="text-[#3a4750] text-sm leading-relaxed font-medium">
                         {ingredient.description}
                       </p>
                     </div>
@@ -3662,6 +3602,19 @@ const ProductDetail = () => {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="mt-16 max-w-2xl mx-auto py-12">
+           <a 
+             href={product.buyLink || "#"}
+             target="_blank"
+             rel="noopener noreferrer"
+             className="w-full flex items-center justify-center gap-4 bg-[#d72323] text-white px-10 py-6 rounded-xl font-black uppercase tracking-[0.2em] shadow-[0_15px_30px_rgba(215,35,35,0.3)] hover:bg-[#b91c1c] hover:shadow-[0_20px_40px_rgba(215,35,35,0.4)] hover:-translate-y-1 transition-all active:translate-y-0 text-xl border-b-4 border-[#8b1a1a]"
+           >
+             <ShoppingBag className="w-7 h-7" />
+             Learn More & Buy Now
+           </a>
+           <p className="text-center text-xs font-mono text-gray-400 mt-6 uppercase tracking-[0.3em]">Affiliate Security System // End-to-End Encrypted</p>
         </div>
 
         {/* RELATED PRODUCTS */}
@@ -3690,7 +3643,7 @@ const ProductDetail = () => {
                 {relatedProducts.map((rp) => (
                   <div
                     key={rp.id}
-                    onClick={() => navigate(`/template/${templateId}/product/${rp.id}`)}
+                    onClick={() => navigate(`/template/${templateId}/products/${rp.id}`)}
                     className="bg-white rounded-sm shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer border border-gray-200 hover:border-[#303841] relative"
                   >
                      <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#d72323] opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
@@ -3705,23 +3658,24 @@ const ProductDetail = () => {
                         }}
                       />
                     </div>
-                    <div className="p-4 text-center bg-white border-t border-gray-100 relative">
-                       <div className="text-[10px] font-mono text-[#d72323] mb-1">ID: {rp.id}</div>
-                      <h3 className="text-lg font-bold text-[#303841] group-hover:text-black transition-colors line-clamp-2 uppercase">
-                        {rp.name}
-                      </h3>
-                      <div className="mt-3 flex items-center justify-center">
-                        <span className="px-4 py-1 border border-[#303841] text-[#303841] text-xs font-bold uppercase tracking-widest group-hover:bg-[#303841] group-hover:text-white transition-all">
-                          View Data
-                        </span>
+                      <div className="p-4 text-center bg-white border-t border-gray-100 relative">
+                         <div className="text-[10px] font-mono text-[#d72323] mb-1">ID: {rp.id}</div>
+                        <h3 className="text-lg font-bold text-[#303841] group-hover:text-black transition-colors line-clamp-2 uppercase">
+                          {rp.name}
+                        </h3>
+                        <div className="mt-3 flex items-center justify-center">
+                          <span className="px-4 py-1 border border-[#303841] text-[#303841] text-xs font-bold uppercase tracking-widest group-hover:bg-[#303841] group-hover:text-white transition-all">
+                            Learn More
+                          </span>
+                        </div>
                       </div>
-                    </div>
                   </div>
                 ))}
               </div>
             </div>
           );
         })()}
+
       </div>
     </div>
   );

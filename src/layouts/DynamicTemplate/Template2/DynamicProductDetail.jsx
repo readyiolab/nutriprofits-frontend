@@ -159,62 +159,7 @@ const DynamicProductDetail = () => {
                 {product.full_description || product.product_description}
               </p>
 
-               {/* Price & Actions Area */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-8">
-                {product.product_price > 0 && (
-                  <div>
-                    <div className="text-xs text-slate-400 uppercase tracking-widest mb-1.5 font-bold">Price per Unit</div>
-                    <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                      ${Number(product.product_price).toFixed(2)}
-                    </div>
-                  </div>
-                )}
 
-                <div className="h-10 w-px bg-slate-200 hidden sm:block"></div>
-
-                <div>
-                  <div className="text-xs text-slate-400 uppercase tracking-widest mb-1.5 font-bold">Total Quantity</div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center bg-white rounded-xl border border-slate-200 shadow-sm p-1">
-                      <button 
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-50 transition-all text-slate-600"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="w-12 text-center font-bold text-slate-800 text-lg">{quantity}</span>
-                      <button 
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-blue-50 transition-all text-blue-600"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <button 
-                      onClick={() => setQuantity(1)}
-                      className="w-12 h-12 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
-                      title="Reset Quantity"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              {product.buylink && (
-                <div className="flex flex-wrap gap-4 mb-8">
-                  <a
-                    href={product.buylink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 min-w-[200px] bg-gradient-to-r from-blue-600 to-blue-800 text-white px-8 py-5 rounded-2xl font-bold shadow-xl shadow-blue-800/20 flex items-center justify-center gap-3 hover:shadow-blue-800/40 hover:-translate-y-1 transition-all active:translate-y-0"
-                  >
-                    <ShoppingBag className="w-5 h-5" />
-                    Proceed to Purchase
-                  </a>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -319,6 +264,20 @@ const DynamicProductDetail = () => {
           )}
         </div>
 
+        {product.buylink && (
+          <div className="mt-12 text-center py-10">
+            <a 
+              href={product.buylink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full max-w-lg mx-auto bg-gradient-to-r from-blue-600 to-blue-800 text-white px-12 py-6 rounded-3xl font-bold shadow-2xl shadow-blue-800/20 flex items-center justify-center gap-4 hover:shadow-blue-800/40 hover:-translate-y-1 transition-all active:translate-y-0 text-xl"
+            >
+              <ShoppingBag className="w-6 h-6" />
+              Learn More & Buy Now
+            </a>
+          </div>
+        )}
+
         {/* RELATED PRODUCTS */}
         {relatedProducts.length > 0 && (
           <div className="mt-20 border-t border-blue-100 pt-16">
@@ -334,7 +293,7 @@ const DynamicProductDetail = () => {
                 const rpCategory = categories.find((c) => c.id === rp.category_id);
                 const rpLink = rpCategory
                   ? `/categories/${getCategorySlug(rpCategory)}/${rpSlug}`
-                  : `/product/${rpSlug}`;
+                  : `/products/${rpSlug}`;
                 return (
                   <Link
                     key={rp.id}
@@ -363,7 +322,7 @@ const DynamicProductDetail = () => {
                       </h3>
                       
                        <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-50">
-                          <span className="text-slate-800 font-bold">{rp.product_price ? `$${rp.product_price}` : "View"}</span>
+                          <span className="text-slate-800 font-bold">Learn More</span>
                           <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                              <ArrowRight className="w-4 h-4" />
                           </div>
@@ -375,6 +334,7 @@ const DynamicProductDetail = () => {
             </div>
           </div>
         )}
+
       </div>
     </div>
   );

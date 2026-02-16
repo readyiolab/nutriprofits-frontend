@@ -3476,56 +3476,7 @@ const ProductDetail = () => {
                 {product.fullDescription || product.description}
               </p>
 
-              {/* Price & Quantity Area */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-8">
-                <div>
-                  <div className="text-xs text-gray-400 uppercase tracking-widest mb-1.5 font-bold">Price</div>
-                  <div className="text-3xl font-bold text-[#004445]">
-                    {product.price}
-                  </div>
-                </div>
 
-                <div className="h-10 w-px bg-gray-200 hidden sm:block"></div>
-
-                <div>
-                  <div className="text-xs text-gray-400 uppercase tracking-widest mb-1.5 font-bold">Quantity</div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
-                      <button 
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm transition-all text-[#004445]"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="w-10 text-center font-bold text-[#004445]">{quantity}</span>
-                      <button 
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm transition-all text-green-600"
-                      >
-                        <Plus className="w-4 h-4 text-[#d72323]" />
-                      </button>
-                    </div>
-                    <button 
-                      onClick={() => setQuantity(1)}
-                      className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
-                      title="Reset Quantity"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <a
-                  href={product.buyLink || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-[#f8b400] text-[#004445] px-10 py-4 rounded-full cursor-pointer font-bold shadow-lg shadow-[#f8b400]/20 hover:bg-[#ffc933] hover:-translate-y-0.5 transition-all active:translate-y-0"
-                >
-                  Learn More & Buy Now <ArrowRight className="w-5 h-5" />
-                </a>
-              </div>
             </div>
 
             {/* Highlights */}
@@ -3611,6 +3562,18 @@ const ProductDetail = () => {
           if (relatedProducts.length === 0) return null;
           
           return (
+            <>
+            <div className="container mx-auto px-4 py-12 text-center">
+              <a
+                href={product.buyLink || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-[#f8b400] text-[#004445] px-12 py-5 rounded-full cursor-pointer font-bold shadow-2xl shadow-[#f8b400]/30 hover:bg-[#ffc933] hover:-translate-y-1 transition-all active:translate-y-0 text-xl"
+              >
+                Learn More & Buy Now <ArrowRight className="w-6 h-6" />
+              </a>
+            </div>
+
             <div className="mt-16 border-t border-[#f8b400]/20 pt-16">
               <div className="text-center mb-10">
                 <span className="text-[#f8b400] font-bold tracking-wider uppercase text-xs mb-2 block">You May Also Like</span>
@@ -3621,7 +3584,7 @@ const ProductDetail = () => {
                 {relatedProducts.map((rp) => (
                   <div
                     key={rp.id}
-                    onClick={() => navigate(`/template/${templateId}/product/${rp.id}`)}
+                    onClick={() => navigate(`/template/${templateId}/products/${rp.id}`)}
                     className="group bg-white rounded-2xl border border-[#e5e7eb] hover:border-[#f8b400]/50 hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer overflow-hidden relative"
                   >
                     <div className="h-40 relative p-6 flex items-center justify-center overflow-hidden">
@@ -3644,7 +3607,7 @@ const ProductDetail = () => {
                         {rp.name}
                       </h3>
                       <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-100/50">
-                        <span className="text-[#004445] font-bold">{rp.price}</span>
+                        <span className="text-[#004445] font-bold">Learn More</span>
                         <div className="w-8 h-8 rounded-full bg-[#faf5e4] flex items-center justify-center text-[#004445] group-hover:bg-[#004445] group-hover:text-white transition-all">
                           <ArrowRight className="w-4 h-4" />
                         </div>
@@ -3654,9 +3617,11 @@ const ProductDetail = () => {
                 ))}
               </div>
             </div>
-          );
+          </>
+        );
         })()}
       </div>
+
     </div>
   );
 };

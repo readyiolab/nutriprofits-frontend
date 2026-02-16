@@ -27,6 +27,9 @@ apiClient.interceptors.response.use(
       localStorage.removeItem('userRole');
       localStorage.removeItem('isAuthenticated');
       window.location.href = '/backoffice/login';
+    } else if (error.response?.status === 429) {
+      // Handle rate limiting - show a friendly message
+      alert("Too many requests. Please wait a moment before trying again.");
     }
     return Promise.reject(error);
   }
@@ -74,7 +77,8 @@ export const categoryAPI = {
 
   // Update category
   updateCategory: async (categoryId, categoryData) => {
-    try {     const response = await apiClient.put(`/backoffice/product-categories/categories/${categoryId}`, {
+    try {
+      const response = await apiClient.put(`/backoffice/product-categories/categories/${categoryId}`, {
         category_name: categoryData.name,
         category_description: categoryData.description,
         category_image: categoryData.image,
