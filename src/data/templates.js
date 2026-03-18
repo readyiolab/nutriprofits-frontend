@@ -2,6 +2,8 @@
 export const templatesData = [
   {
     id: "template1",
+    name: "Modern Business",
+    category: "Professional",
     logoUrl: "/assets/logos/modern-business-logo.png",
     description: "Clean and modern design with gradient effects",
     thumbnail: "/templates/template1-thumb.jpg",
@@ -12,6 +14,8 @@ export const templatesData = [
   },
   {
     id: "template2",
+    name: "Classic Pro",
+    category: "Corporate",
     logoUrl: "/assets/logos/classic-professional-logo.png",
     description: "Traditional professional layout",
     thumbnail: "/templates/template2-thumb.jpg",
@@ -23,6 +27,8 @@ export const templatesData = [
   },
   {
     id: "template3",
+    name: "Minimalist",
+    category: "E-commerce",
     logoUrl: "/assets/logos/minimal-elegant-logo.png",
     description: "Simple and elegant design",
     thumbnail: "/templates/template3-thumb.jpg",
