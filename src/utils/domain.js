@@ -13,7 +13,10 @@ export const getDomainInfo = () => {
   const isMain =
     hostname === baseDomain ||
     hostname === `www.${baseDomain}` ||
-    hostname === "localhost";
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    // Identify common LAN IP patterns or explicit check for the user's current IP
+    /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
 
   return {
     hostname,

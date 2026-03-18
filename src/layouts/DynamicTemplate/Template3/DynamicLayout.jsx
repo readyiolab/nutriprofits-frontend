@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import { Menu, Home, ShoppingBag, Info, FileText, HelpCircle, Mail, Facebook, Twitter, Instagram } from "lucide-react";
 
 // Navigation Component
-const Navigation = ({ storeName, mobileMenuOpen, setMobileMenuOpen }) => {
+const Navigation = ({ storeName, branding, mobileMenuOpen, setMobileMenuOpen }) => {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const mobileMenuRef = React.useRef(null);
@@ -54,8 +54,12 @@ const Navigation = ({ storeName, mobileMenuOpen, setMobileMenuOpen }) => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link to="/" className="text-2xl font-bold text-[#303841] hover:text-[#d72323] transition-colors font-t3-heading">
-              {storeName}
+            <Link to="/" className="text-2xl font-bold text-[#303841] hover:text-[#d72323] transition-colors font-t3-heading flex items-center gap-2">
+              {branding?.logo_url ? (
+                <img src={branding.logo_url} alt={branding.logo_alt_text || storeName} className="h-8 sm:h-10 w-auto object-contain" />
+              ) : (
+                <span>{storeName}</span>
+              )}
             </Link>
           </div>
 
@@ -154,7 +158,8 @@ const FooterColumn = ({ title, children }) => (
 // Footer Component
 const Footer = () => {
   const backofficeData = useBackofficeData();
-  const storeName = backofficeData?.backoffice?.store_name || backofficeData?.backoffice?.name || "Store";
+  const branding = backofficeData?.branding || {};
+  const storeName = branding.site_name || backofficeData?.backoffice?.store_name || backofficeData?.backoffice?.name || "Store";
   const contact = backofficeData?.contactPageContent || {};
 
   const socialLinks = [
@@ -264,12 +269,14 @@ const Footer = () => {
 const DynamicLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const backofficeData = useBackofficeData();
-  const storeName = backofficeData?.backoffice?.store_name || backofficeData?.backoffice?.name || "Store";
+  const branding = backofficeData?.branding || {};
+  const storeName = branding.site_name || backofficeData?.backoffice?.store_name || backofficeData?.backoffice?.name || "Store";
 
   return (
     <div className="min-h-screen flex flex-col bg-[#eeeeee] font-t3-body">
       <Navigation 
         storeName={storeName} 
+        branding={branding}
         mobileMenuOpen={mobileMenuOpen} 
         setMobileMenuOpen={setMobileMenuOpen} 
       />

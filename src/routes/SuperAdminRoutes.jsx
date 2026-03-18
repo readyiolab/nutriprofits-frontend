@@ -1,18 +1,22 @@
+import { lazy } from "react";
+import Loadable from "../components/Loadable";
 import { Navigate } from "react-router-dom";
 
 // Layout
 import SuperAdminLayout from "../layouts/SuperAdminLayout";
 
-// Pages - all inside pages/SuperAdmin/
-import Dashboard from "../pages/SuperAdmin/Dashboard";
-import Tenants from "../pages/SuperAdmin/Tenants";
-import CreateUser from "../pages/SuperAdmin/CreateUser";
-import TrainingManagement  from "../pages/SuperAdmin/TrainingManagement"
-import ChangePassword from "../pages/SuperAdmin/ChangePassword";
-import Analytics from "../pages/SuperAdmin/Analytics";
-import Settings from "../pages/SuperAdmin/Settings";
-import Login from "../pages/SuperAdmin/Login";
+// Protected Route wrapper
 import SuperAdminProtectedRoute from "../protectedRoute/SuperAdminProtectedRoute";
+
+// Lazy load pages
+const Dashboard = lazy(() => import("../pages/SuperAdmin/Dashboard"));
+const Tenants = lazy(() => import("../pages/SuperAdmin/Tenants"));
+const CreateUser = lazy(() => import("../pages/SuperAdmin/CreateUser"));
+const TrainingManagement  = lazy(() => import("../pages/SuperAdmin/TrainingManagement"));
+const ChangePassword = lazy(() => import("../pages/SuperAdmin/ChangePassword"));
+const Analytics = lazy(() => import("../pages/SuperAdmin/Analytics"));
+const Settings = lazy(() => import("../pages/SuperAdmin/Settings"));
+const Login = lazy(() => import("../pages/SuperAdmin/Login"));
 
 const SuperAdminRoutes = {
   path: "/superadmin",
@@ -31,13 +35,13 @@ const SuperAdminRoutes = {
           path: "",
           element: <SuperAdminLayout />,
           children: [
-            { index: true, element: <Dashboard /> },
-            { path: "tenants", element: <Tenants /> },
-            { path: "create-user", element: <CreateUser /> },
-            {path:"trainings", element:<TrainingManagement/>},
-            { path: "change-password", element: <ChangePassword /> },
-            { path: "analytics", element: <Analytics /> },
-            { path: "settings", element: <Settings /> },
+            { index: true, element: Loadable(Dashboard)({}) },
+            { path: "tenants", element: Loadable(Tenants)({}) },
+            { path: "create-user", element: Loadable(CreateUser)({}) },
+            {path:"trainings", element: Loadable(TrainingManagement)({})},
+            { path: "change-password", element: Loadable(ChangePassword)({}) },
+            { path: "analytics", element: Loadable(Analytics)({}) },
+            { path: "settings", element: Loadable(Settings)({}) },
 
             // Catch-all redirect
             { path: "*", element: <Navigate to="/superadmin" replace /> },

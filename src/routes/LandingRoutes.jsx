@@ -1,23 +1,24 @@
+import { lazy } from "react";
+import Loadable from "../components/Loadable";
 import LandingLayout from "../layouts/LandingLayout";
-import Home from "../pages/Landing/Home";
 
-import About from "../pages/Landing/About";
-import FAQ from "../pages/Landing/FAQ";
-import Contact from "../pages/Landing/Contact";
-import Templates from "../pages/Landing/Templates";
+// Lazy load pages
+const Home = lazy(() => import("../pages/Landing/Home"));
+const About = lazy(() => import("../pages/Landing/About"));
+const FAQ = lazy(() => import("../pages/Landing/FAQ"));
+const Contact = lazy(() => import("../pages/Landing/Contact"));
+const Templates = lazy(() => import("../pages/Landing/Templates"));
 
 const LandingRoutes = {
   path: "/",
   element: <LandingLayout />,
   children: [
-    { index: true, element: <Home /> },
-    { path: "about", element: <About /> },
-    { path: "faq", element: <FAQ /> },
-    { path: "contact", element: <Contact /> },
-    { path: "templates", element: <Templates /> },
+    { index: true, element: Loadable(Home)({}) },
+    { path: "about", element: Loadable(About)({}) },
+    { path: "faq", element: Loadable(FAQ)({}) },
+    { path: "contact", element: Loadable(Contact)({}) },
+    { path: "templates", element: Loadable(Templates)({}) },
   ],
 };
 
 export default LandingRoutes;
-
-

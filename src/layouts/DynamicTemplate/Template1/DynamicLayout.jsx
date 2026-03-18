@@ -15,7 +15,8 @@ const DynamicLayout = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const storeName = backofficeData?.backoffice?.store_name || backofficeData?.backoffice?.name || "Store";
+  const branding = backofficeData?.branding || {};
+  const storeName = branding.site_name || backofficeData?.backoffice?.store_name || backofficeData?.backoffice?.name || "Store";
   const contact = backofficeData?.contactPageContent || {};
 
   const navigationLinks = [
@@ -35,8 +36,12 @@ const DynamicLayout = () => {
           <div className="flex justify-between items-center py-4">
             {/* Logo */}
             <div className="flex items-center">
-              <Link to="/" className="text-lg sm:text-xl font-semibold text-[#004445] font-t1-heading">
-                {storeName}
+              <Link to="/" className="text-lg sm:text-xl font-semibold text-[#004445] font-t1-heading flex items-center gap-2">
+                {branding.logo_url ? (
+                  <img src={branding.logo_url} alt={branding.logo_alt_text || storeName} className="h-8 sm:h-10 w-auto object-contain" />
+                ) : (
+                  <span>{storeName}</span>
+                )}
               </Link>
             </div>
 

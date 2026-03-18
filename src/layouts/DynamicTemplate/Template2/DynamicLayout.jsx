@@ -14,7 +14,8 @@ const DynamicLayout = () => {
   const backofficeData = useBackofficeData();
   const [isOpen, setIsOpen] = useState(false);
 
-  const storeName = backofficeData?.backoffice?.store_name || backofficeData?.backoffice?.name || "Store";
+  const branding = backofficeData?.branding || {};
+  const storeName = branding.site_name || backofficeData?.backoffice?.store_name || backofficeData?.backoffice?.name || "Store";
   const contact = backofficeData?.contactPageContent || {};
 
   const navLinks = [
@@ -28,8 +29,6 @@ const DynamicLayout = () => {
 
   return (
     <>
-      
-
       <div className="min-h-screen flex flex-col justify-between font-t2-body">
 
         {/* NAVBAR */}
@@ -37,11 +36,17 @@ const DynamicLayout = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-20">
 
-              {/* Brand Name */}
+              {/* Brand Name / Logo */}
               <div className="flex-shrink-0">
-                <h1 className="text-2xl font-bold text-gray-900 tracking-tight font-t2-heading">
-                  {storeName}
-                </h1>
+                <Link to="/" className="flex items-center">
+                  {branding.logo_url ? (
+                    <img src={branding.logo_url} alt={branding.logo_alt_text || storeName} className="h-10 sm:h-12 w-auto object-contain" />
+                  ) : (
+                    <h1 className="text-2xl font-bold text-gray-900 tracking-tight font-t2-heading">
+                      {storeName}
+                    </h1>
+                  )}
+                </Link>
               </div>
 
               {/* Desktop Menu */}

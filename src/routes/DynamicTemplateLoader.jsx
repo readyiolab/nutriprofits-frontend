@@ -60,6 +60,47 @@ const DynamicTemplateLoader = () => {
     fetchBackofficeData();
   }, []);
 
+  // Update SEO and Favicon when data changes
+  useEffect(() => {
+    if (!backofficeData?.branding) return;
+
+    const { branding } = backofficeData;
+    const storeName = branding.site_name || backofficeData?.backoffice?.store_name || "Store";
+
+    // 1. Update Title
+    document.title = branding.meta_title || `${storeName}`;
+
+    // 2. Update Description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = "description";
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = branding.meta_description || branding.site_description || "";
+
+    // 3. Update Keywords
+    let metaKeywords = document.querySelector('meta[name="keywords"]');
+    if (!metaKeywords) {
+      metaKeywords = document.createElement('meta');
+      metaKeywords.name = "keywords";
+      document.head.appendChild(metaKeywords);
+    }
+    metaKeywords.content = branding.meta_keywords || "";
+
+    // 4. Update Favicon
+    if (branding.favicon_url) {
+      let link = document.querySelector("link[rel*='icon']");
+      if (!link) {
+        link = document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'shortcut icon';
+        document.head.appendChild(link);
+      }
+      link.href = branding.favicon_url;
+    }
+  }, [backofficeData]);
+
   if (loading) {
     return <LoadingFallback />;
   }
