@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast, Toaster } from "sonner";
+import api from "@/config/apiConfig";
 
 const INITIAL_FORM_STATE = {
   hero_title: "",
@@ -60,14 +61,11 @@ const Contact = () => {
   React.useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/contact/${backofficeId}/page-content`, {
-          credentials: "include",
-        });
-        const result = await res.json();
-        if (result.success && result.data) {
-          setFormData({ ...INITIAL_FORM_STATE, ...result.data });
-          setHeroImagePreview(result.data.hero_image_url || "");
-          setOfficeImagePreview(result.data.office_image_url || "");
+        const result = await api.get(`/contact/${backofficeId}/page-content`);
+        if (result.data.success && result.data.data) {
+          setFormData({ ...INITIAL_FORM_STATE, ...result.data.data });
+          setHeroImagePreview(result.data.data.hero_image_url || "");
+          setOfficeImagePreview(result.data.data.office_image_url || "");
         }
       } catch (err) {
         toast.error("Failed to load contact page");
@@ -104,20 +102,16 @@ const Contact = () => {
     if (officeImageFile) data.append("office_image", officeImageFile);
 
     try {
-      const res = await fetch(
-        `http://localhost:3001/api/contact/${backofficeId}/page-content/upsert`,
-        { method: "POST", credentials: "include", body: data }
-      );
-      const result = await res.json();
+      const result = await api.post(`/contact/${backofficeId}/page-content/upsert`, data);
+      const resData = result.data;
 
-      if (result.success) {
+      if (resData.success) {
         toast.success("Contact page saved successfully!");
         setHeroImageFile(null);
         setOfficeImageFile(null);
-        const refresh = await fetch(`http://localhost:3001/api/contact/${backofficeId}/page-content`, {
-          credentials: "include",
-        });
-        const fresh = await refresh.json();
+        
+        const freshResult = await api.get(`/contact/${backofficeId}/page-content`);
+        const fresh = freshResult.data;
         if (fresh.success) {
           setFormData({ ...INITIAL_FORM_STATE, ...fresh.data });
           setHeroImagePreview(fresh.data.hero_image_url || "");

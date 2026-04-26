@@ -161,6 +161,7 @@ const Footer = () => {
   const branding = backofficeData?.branding || {};
   const storeName = branding.site_name || backofficeData?.backoffice?.store_name || backofficeData?.backoffice?.name || "Store";
   const contact = backofficeData?.contactPageContent || {};
+  const footer = backofficeData?.footerContent || {};
 
   const socialLinks = [
     { name: "Facebook", href: "#" },
@@ -182,55 +183,89 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <FooterColumn title={storeName}>
             <p className="text-white leading-relaxed mb-4">
-              Your trusted business partner for quality products and exceptional service.
+              {footer.about_description || "Your trusted business partner for quality products and exceptional service."}
             </p>
-            <div className="flex space-x-4">
-              {socialLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="w-10 h-10 rounded-full bg-[#303841] hover:bg-gray-700 flex items-center justify-center transition-all duration-200 transform hover:scale-110"
-                  aria-label={link.name}
-                >
-                  <span className="text-sm font-semibold text-[#eeeeee] font-t3-heading">{link.name[0]}</span>
-                </a>
-              ))}
+            <div className="flex flex-wrap gap-4">
+              {footer.social_links ? (
+                JSON.parse(typeof footer.social_links === 'string' ? footer.social_links : JSON.stringify(footer.social_links)).map((social, idx) => (
+                  <a
+                    key={idx}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-[#303841] hover:bg-gray-700 flex items-center justify-center transition-all duration-200 transform hover:scale-110"
+                    title={social.platform}
+                  >
+                    <span className="text-sm font-semibold text-[#eeeeee] font-t3-heading">{social.platform[0]}</span>
+                  </a>
+                ))
+              ) : (
+                socialLinks.map((link) => (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    className="w-10 h-10 rounded-full bg-[#303841] hover:bg-gray-700 flex items-center justify-center transition-all duration-200 transform hover:scale-110"
+                    aria-label={link.name}
+                  >
+                    <span className="text-sm font-semibold text-[#eeeeee] font-t3-heading">{link.name[0]}</span>
+                  </a>
+                ))
+              )}
             </div>
           </FooterColumn>
 
-          <FooterColumn title="Quick Links">
-            <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    to={link.to}
-                    className="text-white hover:text-[#d72323] transition-colors duration-200 flex items-center group"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#d72323] mr-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <FooterColumn title="Links">
+            {footer.footer_links ? (
+              <div className="flex flex-col gap-6">
+                 {JSON.parse(typeof footer.footer_links === 'string' ? footer.footer_links : JSON.stringify(footer.footer_links)).map((section, idx) => (
+                   <div key={idx}>
+                     <h4 className="text-[10px] uppercase tracking-widest text-[#d72323] mb-3 opacity-80 font-bold">{section.section_title}</h4>
+                     <ul className="space-y-2">
+                       {section.links.map((link, lIdx) => (
+                         <li key={lIdx}>
+                           <Link to={link.url} className="text-white hover:text-[#d72323] transition-colors duration-200 text-sm">
+                             {link.label}
+                           </Link>
+                         </li>
+                       ))}
+                     </ul>
+                   </div>
+                 ))}
+              </div>
+            ) : (
+              <ul className="space-y-3">
+                {quickLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      to={link.to}
+                      className="text-white hover:text-[#d72323] transition-colors duration-200 flex items-center group"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#d72323] mr-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </FooterColumn>
 
           <FooterColumn title="Contact Info">
             <div className="space-y-4">
               <div>
                 <p className="text-white text-sm">Email</p>
-                <a href={`mailto:${contact.email || 'info@example.com'}`} className="text-[#d72323] hover:text-[#eeeeee] transition-colors">
-                  {contact.email || "info@example.com"}
+                <a href={`mailto:${footer.contact_email || contact.email || 'info@example.com'}`} className="text-[#d72323] hover:text-[#eeeeee] transition-colors">
+                  {footer.contact_email || contact.email || "info@example.com"}
                 </a>
               </div>
               <div>
                 <p className="text-white text-sm">Phone</p>
-                <a href={`tel:${contact.phone || '+11234567890'}`} className="text-[#d72323] hover:text-[#eeeeee] transition-colors">
-                  {contact.phone || "(123) 456-7890"}
+                <a href={`tel:${footer.contact_phone || contact.phone || '+11234567890'}`} className="text-[#d72323] hover:text-[#eeeeee] transition-colors">
+                  {footer.contact_phone || contact.phone || "(123) 456-7890"}
                 </a>
               </div>
               <div>
                 <p className="text-white text-sm">Address</p>
-                <p className="text-white">{contact.address || "123 Business St, City, State 12345"}</p>
+                <p className="text-white">{footer.contact_address || contact.address || "123 Business St, City, State 12345"}</p>
               </div>
             </div>
           </FooterColumn>
@@ -253,7 +288,7 @@ const Footer = () => {
         <div className="border-t border-white/20 my-8" />
 
         <div className="flex flex-col md:flex-row justify-between items-center text-white text-sm">
-          <p>© {new Date().getFullYear()} {storeName}. All rights reserved.</p>
+          <p>{footer.copyright_text || `© ${new Date().getFullYear()} ${storeName}. All rights reserved.`}</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="#" className="hover:text-[#d72323] transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-[#d72323] transition-colors">Terms of Service</a>

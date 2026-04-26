@@ -15,6 +15,7 @@ import {
   Users,
   Eye,
 } from 'lucide-react';
+import api from '@/config/apiConfig';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -55,16 +56,12 @@ const TrainingManagement = () => {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
 
-  const API_BASE_URL = 'http://localhost:3001/api/backoffice-training';
-
   // Fetch all trainings
   const fetchTrainings = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/trainings`, {
-        credentials: 'include',
-      });
-      const result = await response.json();
+      const response = await api.get('/backoffice-training/trainings');
+      const result = response.data;
       if (result.success) {
         setTrainings(result.data);
       }
@@ -130,12 +127,8 @@ const TrainingManagement = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/trainings`, {
-        method: 'POST',
-        credentials: 'include',
-        body: formDataToSend,
-      });
-      const result = await response.json();
+      const response = await api.post('/backoffice-training/trainings', formDataToSend);
+      const result = response.data;
       if (result.success) {
         setSuccessMessage('Training created successfully!');
         setShowCreateDialog(false);
@@ -166,12 +159,8 @@ const TrainingManagement = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/trainings/${selectedTraining.training_id}`, {
-        method: 'PUT',
-        credentials: 'include',
-        body: formDataToSend,
-      });
-      const result = await response.json();
+      const response = await api.put(`/backoffice-training/trainings/${selectedTraining.training_id}`, formDataToSend);
+      const result = response.data;
       if (result.success) {
         setSuccessMessage('Training updated successfully!');
         setShowEditDialog(false);
@@ -194,11 +183,8 @@ const TrainingManagement = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/trainings/${trainingId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      const result = await response.json();
+      const response = await api.delete(`/backoffice-training/trainings/${trainingId}`);
+      const result = response.data;
       if (result.success) {
         setSuccessMessage('Training deleted successfully!');
         fetchTrainings();

@@ -1,12 +1,18 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
+import api from '@/config/apiConfig';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-
+/**
+ * Custom hook for data fetching using the shared axios instance.
+ * Supports GET, POST, PUT, PATCH, DELETE with automatic error handling.
+ *
+ * @param {string} url - API endpoint (relative to base URL, e.g. "/backoffice/branding")
+ * @param {Object} options - Hook configuration
+ * @returns {Object} - { data, loading, error, fetchData, refetch, setData }
+ */
 export const useFetch = (url, options = {}) => {
   const {
     method = 'GET',
-    headers = {},
     body = null,
     immediate = true,
     showToast = true,
@@ -18,98 +24,78 @@ export const useFetch = (url, options = {}) => {
   const [loading, setLoading] = useState(immediate);
   const [error, setError] = useState(null);
 
-  const fetchData = useCallback(async (customUrl = url, customBody = body) => {
+  // Use refs for callbacks to avoid re-render loops
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
+  onSuccessRef.current = onSuccess;
+  onErrorRef.current = onError;
+
+  const fetchData = useCallback(async (customUrl, customBody) => {
+    const requestUrl = customUrl || url;
+    const requestBody = customBody !== undefined ? customBody : body;
+
+    if (!requestUrl) return;
+
     try {
       setLoading(true);
       setError(null);
 
-      // Cookies are automatically sent with requests, no manual token handling needed
-      const requestHeaders = {
-        'Content-Type': 'application/json',
-        ...headers,
-      };
+      const config = { method, url: requestUrl };
 
-      const fetchOptions = {
-        method,
-        headers: requestHeaders,
-        credentials: 'include', // Include cookies in request
-      };
-
-      if (customBody && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-        fetchOptions.body = JSON.stringify(customBody);
+      if (requestBody && ['POST', 'PUT', 'PATCH'].includes(method.toUpperCase())) {
+        config.data = requestBody;
       }
 
-      const resolvedUrl = (() => {
-        if (!customUrl) return customUrl;
-        if (customUrl.startsWith('http://') || customUrl.startsWith('https://')) {
-          return customUrl;
-        }
-        if (customUrl.startsWith('/api/')) {
-          return `${API_BASE_URL}${customUrl.slice(4)}`;
-        }
-        if (customUrl === '/api') {
-          return API_BASE_URL;
-        }
-        return customUrl;
-      })();
+      const response = await api(config);
+      const result = response.data;
 
-      const response = await fetch(resolvedUrl, fetchOptions);
-      const contentType = response.headers.get('content-type') || '';
+      if (result.success !== false) {
+        const responseData = result.data ?? result;
+        setData(responseData);
 
-      let result = null;
-      if (contentType.includes('application/json')) {
-        result = await response.json();
-      } else {
-        const text = await response.text();
-        const errorMessage = response.ok
-          ? 'Unexpected response format.'
-          : `Request failed (${response.status}).`;
-        const errorDetails = text ? ` ${text.slice(0, 120)}...` : '';
-        throw new Error(`${errorMessage}${errorDetails}`.trim());
-      }
-
-      if (result.success || response.ok) {
-        setData(result.data || result);
         if (showToast && result.message) {
           toast.success(result.message);
         }
-        if (onSuccess) {
-          onSuccess(result.data || result);
+        if (onSuccessRef.current) {
+          onSuccessRef.current(responseData);
         }
-        return result.data || result;
+        return responseData;
       }
 
+      // Server returned { success: false }
       const errorMessage = result.message || 'An error occurred';
       setError(errorMessage);
       if (showToast) {
         toast.error(errorMessage);
       }
-      if (onError) {
-        onError(errorMessage);
+      if (onErrorRef.current) {
+        onErrorRef.current(errorMessage);
       }
       throw new Error(errorMessage);
     } catch (err) {
-      const errorMessage = err.message || 'Failed to fetch data';
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to fetch data';
       setError(errorMessage);
-      if (showToast) {
+
+      // Only show toast if not already shown above
+      if (showToast && !err.response?.data?.message) {
         toast.error(errorMessage);
       }
-      if (onError) {
-        onError(errorMessage);
+      if (onErrorRef.current) {
+        onErrorRef.current(errorMessage);
       }
       console.error('Fetch error:', err);
     } finally {
       setLoading(false);
     }
-  }, [method, headers, onSuccess, onError, showToast]);
+  }, [url, method, body, showToast]);
 
   useEffect(() => {
     if (immediate && url) {
-      fetchData(url, body);
+      fetchData();
     }
-  }, [url, immediate, body]);
+  }, [url, immediate]);
 
-  const refetch = () => fetchData(url, body);
+  const refetch = () => fetchData();
 
   return {
     data,
@@ -122,3 +108,4 @@ export const useFetch = (url, options = {}) => {
 };
 
 export default useFetch;
+

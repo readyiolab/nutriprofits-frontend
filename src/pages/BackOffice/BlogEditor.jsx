@@ -44,13 +44,17 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useFetch } from "@/hooks/useFetch";
 import { useForm } from "@/hooks/useForm";
+import api from "@/config/apiConfig";
 import { toast } from "sonner";
 
 const BlogEditor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
+  const backofficeId = React.useMemo(() => localStorage.getItem("backofficeId") || "1", []);
   const [generatedSlug, setGeneratedSlug] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
   const editorRef = useRef(null);
   const [editorReady, setEditorReady] = useState(false);
 
@@ -70,7 +74,7 @@ const BlogEditor = () => {
     loading: fetchLoading,
     error: fetchError,
   } = useFetch(
-    isEditing ? `/api/blogs/${id}` : null,
+    isEditing ? `/blogs/${id}` : null,
     {
       immediate: isEditing,
       showToast: false,
@@ -92,24 +96,32 @@ const BlogEditor = () => {
     []
   );
 
-  // Handle form submission
   const handleFormSubmit = async (formData) => {
     const method = isEditing ? "PUT" : "POST";
-    const url = isEditing ? `/api/blogs/${id}` : `/api/blogs`;
+    const url = isEditing ? `/blogs/${id}` : `/blogs`;
 
-    const response = await fetch(url, {
-      method,
+    const payload = {
+      ...formData,
+      slug: formData.slug || generatedSlug,
+      backoffice_id: backofficeId,
+    };
+
+    const form = new FormData();
+    form.append("data", JSON.stringify(payload));
+    if (selectedImage) {
+      form.append("image_url", selectedImage);
+    }
+
+    const response = await api({
+      method: method.toLowerCase(),
+      url,
+      data: form,
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
       },
-      credentials: "include",
-      body: JSON.stringify({
-        ...formData,
-        slug: formData.slug || generatedSlug,
-      }),
     });
 
-    const result = await response.json();
+    const result = response.data;
 
     if (result.success) {
       navigate("/backoffice/blog");
@@ -118,7 +130,6 @@ const BlogEditor = () => {
       throw new Error(result.message || "Failed to save blog");
     }
   };
-
   const {
     formData,
     setFormData,
@@ -387,29 +398,56 @@ const BlogEditor = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="image_url">Image URL</Label>
-                  <Input
-                    id="image_url"
-                    placeholder="https://example.com/image.jpg"
-                    value={formData.image_url}
-                    onChange={(e) =>
-                      handleChange("image_url", e.target.value)
-                    }
-                    type="url"
-                  />
-                  <p className="text-sm text-gray-500">
-                    Enter a direct URL to your featured image
-                  </p>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="image_file">Upload Image</Label>
+                    <Input
+                      id="image_file"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setSelectedImage(file);
+                          const reader = new FileReader();
+                          reader.onloadend = () => setImagePreview(reader.result);
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <div className="relative flex items-center py-2">
+                    <div className="flex-grow border-t border-gray-300"></div>
+                    <span className="flex-shrink mx-4 text-gray-400 text-xs uppercase">Or use URL</span>
+                    <div className="flex-grow border-t border-gray-300"></div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="image_url">Image URL</Label>
+                    <Input
+                      id="image_url"
+                      placeholder="https://example.com/image.jpg"
+                      value={formData.image_url}
+                      onChange={(e) => {
+                        handleChange("image_url", e.target.value);
+                        if (e.target.value) {
+                          setSelectedImage(null);
+                          setImagePreview("");
+                        }
+                      }}
+                      type="url"
+                    />
+                  </div>
                 </div>
 
-                {formData.image_url && (
+                {(imagePreview || formData.image_url) && (
                   <div className="border rounded-lg p-4 bg-gray-50">
                     <p className="text-sm font-medium mb-2">Preview:</p>
                     <img
-                      src={formData.image_url}
+                      src={imagePreview || formData.image_url}
                       alt="Preview"
-                      className="max-w-full h-32 object-cover rounded"
+                      className="max-w-full h-48 object-cover rounded shadow-sm"
                       onError={(e) => {
                         e.target.style.display = "none";
                       }}

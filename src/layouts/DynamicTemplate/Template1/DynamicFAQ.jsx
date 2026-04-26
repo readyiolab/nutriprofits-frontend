@@ -1,36 +1,13 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 
 const DynamicFAQ = () => {
+  const backofficeData = useBackofficeData();
   const [openIndex, setOpenIndex] = useState(null);
 
-  const faqs = [
-    {
-      id: 1,
-      question: "What is your shipping policy?",
-      answer: "We offer free shipping on all orders over $50. Standard shipping takes 3-5 business days.",
-    },
-    {
-      id: 2,
-      question: "Do you offer international shipping?",
-      answer: "Yes, we ship to over 100 countries worldwide. International shipping times vary by location.",
-    },
-    {
-      id: 3,
-      question: "What is your return policy?",
-      answer: "We accept returns within 30 days of purchase. Items must be unused and in original packaging.",
-    },
-    {
-      id: 4,
-      question: "How can I track my order?",
-      answer: "Once your order ships, you'll receive a tracking number via email.",
-    },
-    {
-      id: 5,
-      question: "Do you offer gift wrapping?",
-      answer: "Yes, gift wrapping is available for an additional $5 per item.",
-    },
-  ];
+  const page = backofficeData?.faqPageContent || {};
+  const faqs = backofficeData?.faqItems || [];
 
   return (
     <div className="overflow-x-hidden">
@@ -39,14 +16,13 @@ const DynamicFAQ = () => {
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center">
           <div className="p-4 sm:p-6 md:p-8 lg:p-12 text-white order-2 md:order-1">
             <span className="inline-block bg-[#f8b400] text-[#004445] px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
-              FAQ SECTION
+              {page.hero_title || "FAQ SECTION"}
             </span>
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium mb-3 sm:mb-4 leading-tight">
-              Frequently Asked Questions
+              {page.hero_subtitle || "Frequently Asked Questions"}
             </h1>
             <p className="text-sm sm:text-base lg:text-lg text-[#faf5e4] mb-4 sm:mb-6 leading-relaxed">
-              Find quick answers to the most common questions about our
-              products, shipping, returns, and more.
+              {page.hero_description || "Find quick answers to the most common questions about our products, shipping, returns, and more."}
             </p>
             <div className="flex gap-3 sm:gap-4 flex-wrap">
               <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-medium hover:bg-[#ffa500] shadow-lg text-sm sm:text-base transition-all">
@@ -125,18 +101,22 @@ const DynamicFAQ = () => {
         
         <div className="max-w-4xl mx-auto text-center text-white px-4 sm:px-6 relative z-10">
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium mb-3 sm:mb-4 px-4">
-            Still have questions?
+            {page.cta_title || "Still have questions?"}
           </h2>
           <p className="text-[#faf5e4] text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 max-w-2xl mx-auto px-4">
-            Our support team is ready to help you 24/7.
+            {page.cta_description || "Our support team is ready to help you 24/7."}
           </p>
           <div className="flex gap-3 sm:gap-4 justify-center flex-wrap px-4">
-            <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-[#ffa500] cursor-pointer shadow-lg text-sm sm:text-base transition-all">
-              Contact Us
-            </button>
-            <button className="border-2 border-white text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-white hover:text-[#004445] cursor-pointer transition-all text-sm sm:text-base">
-              View All FAQs
-            </button>
+            <a href={page.cta_button_link || "/contact"}>
+              <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-[#ffa500] cursor-pointer shadow-lg text-sm sm:text-base transition-all">
+                {page.cta_button_text || "Contact Us"}
+              </button>
+            </a>
+            <a href={page.cta_secondary_button_link || "/faq"}>
+              <button className="border-2 border-white text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-white hover:text-[#004445] cursor-pointer transition-all text-sm sm:text-base">
+                {page.cta_secondary_button_text || "View All FAQs"}
+              </button>
+            </a>
           </div>
         </div>
       </div>

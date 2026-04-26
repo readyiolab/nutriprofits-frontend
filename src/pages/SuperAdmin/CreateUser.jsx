@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { User, Mail, Globe, Store, CreditCard, ArrowLeft, CheckCircle, AlertCircle, Loader, ExternalLink } from 'lucide-react';
+import { User, Mail, Globe, Store, CreditCard, ArrowLeft, CheckCircle, AlertCircle, Loader, ExternalLink, Copy } from 'lucide-react';
+import api from '@/config/apiConfig';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -72,21 +73,14 @@ const CreateUser = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3001/api/superadmin/backoffice-users', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...formData,
-          template_id: parseInt(formData.template_id)
-        })
+      const response = await api.post('/superadmin/backoffice-users', {
+        ...formData,
+        template_id: parseInt(formData.template_id)
       });
 
-      const result = await response.json();
+      const result = response.data;
 
-      if (response.ok && result.success) {
+      if (result.success) {
         setSuccess(true);
         setCreatedUser(result.data);
         setFormData({
@@ -107,183 +101,219 @@ const CreateUser = () => {
     }
   };
 
-  // Success View (Full Screen)
+  // Success View (Premium Redesign)
   if (success && createdUser) {
+    const setup = createdUser.setup_summary || {};
+    const cms = setup.cms || {};
+    const template = setup.template || {};
+
     return (
-      <div className="min-h-screen bg-slate-50">
-        <div className="max-w-5xl mx-auto px-6 py-12">
-          {/* Success Header */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
-              <CheckCircle className="w-8 h-8 text-emerald-600" />
+      <div className="min-h-screen bg-[#F8FAFC] animate-in fade-in duration-700">
+        <div className="max-w-5xl mx-auto px-4 py-12 md:px-6 lg:py-16">
+          {/* Header Section */}
+          <div className="text-center mb-12 space-y-4">
+            <div className="relative inline-block">
+              <div className="absolute inset-0 bg-emerald-400 blur-2xl opacity-20 rounded-full animate-pulse"></div>
+              <div className="relative inline-flex items-center justify-center w-20 h-20 bg-emerald-500 rounded-2xl shadow-xl shadow-emerald-200/50 mb-2 transform hover:scale-105 transition-transform duration-300">
+                <CheckCircle className="w-10 h-10 text-white" />
+              </div>
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">User Created Successfully</h1>
-            <p className="text-slate-600">The backoffice user has been created and notified via email.</p>
+            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">Account Ready & Configured</h1>
+            <p className="text-lg text-slate-500 max-w-2xl mx-auto font-medium">
+              We've successfully created the backoffice user and provisioned their store with global content.
+            </p>
           </div>
 
-          {/* User Details Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            {/* Main Info Card */}
-            <Card className="lg:col-span-2 border-slate-200 shadow-sm">
-              <CardHeader className="bg-slate-50/50 border-b border-slate-100">
-                <div className="flex items-center gap-2 text-slate-700">
-                  <User className="h-5 w-5" />
-                  <CardTitle className="text-base font-bold">User Details</CardTitle>
-                </div>
-                <CardDescription>Account information and credentials</CardDescription>
-              </CardHeader>
-              <CardContent className="p-6 space-y-6">
-                {/* Basic Info Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <Label className="text-slate-500 text-xs uppercase tracking-wide">Full Name</Label>
-                    <p className="text-slate-900 font-semibold mt-1">{createdUser.name}</p>
-                  </div>
-                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <Label className="text-slate-500 text-xs uppercase tracking-wide">Email Address</Label>
-                    <p className="text-slate-900 font-semibold mt-1 break-all">{createdUser.email}</p>
-                  </div>
-                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <Label className="text-slate-500 text-xs uppercase tracking-wide">Store Name</Label>
-                    <p className="text-slate-900 font-semibold mt-1">{createdUser.store_name}</p>
-                  </div>
-                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                    <Label className="text-slate-500 text-xs uppercase tracking-wide">Subscription Plan</Label>
-                    <div className="mt-1">
-                      <Badge variant="secondary" className="capitalize">
-                        {createdUser.subscription_plan}
-                      </Badge>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Column: Account Details */}
+            <div className="lg:col-span-7 space-y-8">
+              {/* Main Profile Card */}
+              <Card className="overflow-hidden border-none shadow-2xl shadow-slate-200/60 bg-white/80 backdrop-blur-md">
+                <div className="h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-50 rounded-lg">
+                      <User className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl">Account Credentials</CardTitle>
+                      <CardDescription>Primary account information for the user</CardDescription>
                     </div>
                   </div>
-                </div>
-
-                <Separator />
-
-                {/* Store URL */}
-                <div>
-                  <Label className="text-slate-500 text-xs uppercase tracking-wide mb-2 block">Store URL</Label>
-                  <a
-                    href={createdUser.store_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-slate-700 hover:text-slate-900 font-medium hover:underline break-all"
-                  >
-                    {createdUser.store_url}
-                    <ExternalLink className="w-4 h-4 flex-shrink-0" />
-                  </a>
-                </div>
-
-                <Separator />
-
-                {/* Temporary Password */}
-                <div className="p-4 bg-amber-50 rounded-lg border border-amber-100">
-                  <div className="flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="font-semibold text-slate-900 mb-2">Temporary Password</p>
-                      <div className="flex items-center gap-2 mb-2">
-                        <code className="font-mono text-lg font-bold text-slate-900 bg-white px-3 py-2 rounded border border-slate-200 select-all flex-1">
-                          {createdUser.temporary_password}
-                        </code>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-11 w-11 border-slate-200 hover:bg-slate-50"
-                          onClick={() => {
-                            navigator.clipboard.writeText(createdUser.temporary_password);
-                          }}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
+                </CardHeader>
+                <CardContent className="p-8 space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <Label className="text-slate-400 text-xs font-bold uppercase tracking-wider">Full Name</Label>
+                      <p className="text-slate-900 font-bold text-lg">{createdUser.name}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-slate-400 text-xs font-bold uppercase tracking-wider">Access Email</Label>
+                      <p className="text-slate-900 font-bold text-lg truncate" title={createdUser.email}>
+                        {createdUser.email}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-slate-400 text-xs font-bold uppercase tracking-wider">Subdomain</Label>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-100 font-mono text-sm px-3 py-1">
+                          {createdUser.subdomain}
+                        </Badge>
                       </div>
-                      <p className="text-sm text-slate-600">
-                        This password has been sent via email. User should change it after first login.
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-slate-400 text-xs font-bold uppercase tracking-wider">Billing Tier</Label>
+                      <div>
+                        <Badge variant="secondary" className="bg-slate-100 text-slate-700 border-none px-3 py-1 capitalize font-semibold tracking-wide">
+                          {createdUser.subscription_plan} Plan
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Password Security Box */}
+                  <div className="relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                    <div className="relative p-6 bg-white border border-amber-100 rounded-xl">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="space-y-1">
+                          <p className="text-amber-700 font-bold text-sm uppercase tracking-widest flex items-center gap-2">
+                            <KeyRound className="w-4 h-4" /> Temporary Password
+                          </p>
+                          <p className="text-slate-500 text-xs">Login and change this immediately for security.</p>
+                        </div>
+                        <div className="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-100 min-w-[200px]">
+                          <code className="flex-1 font-mono text-xl font-black text-slate-900 px-2 tracking-tighter">
+                            {createdUser.temporary_password || '********'}
+                          </code>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-10 w-10 text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                            onClick={() => {
+                              navigator.clipboard.writeText(createdUser.temporary_password);
+                              // Could add a toast here if available
+                            }}
+                          >
+                            <Copy className="h-5 w-5" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Store Link Section */}
+                  <div className="p-6 bg-slate-900 rounded-xl border border-slate-800 text-white overflow-hidden relative">
+                    <div className="absolute right-0 top-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full"></div>
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+                      <div className="space-y-1 text-center md:text-left">
+                        <p className="text-blue-400 font-bold text-xs uppercase tracking-widest">Live Store URL</p>
+                        <h3 className="text-lg font-bold truncate max-w-[300px] md:max-w-md">
+                          {createdUser.store_url}
+                        </h3>
+                      </div>
+                      <Button 
+                        asChild
+                        className="bg-white text-slate-900 hover:bg-slate-100 border-none font-bold"
+                      >
+                        <a href={createdUser.store_url} target="_blank" rel="noopener noreferrer">
+                          Visit Store <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column: Setup Progress */}
+            <div className="lg:col-span-5 space-y-6">
+              <Card className="border-none shadow-xl bg-white">
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold flex items-center gap-2">
+                    <Loader className="w-5 h-5 text-blue-500 animate-spin" /> Setup Summary
+                  </CardTitle>
+                  <CardDescription>Automatic content provisioning status</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6 pt-2">
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-center">
+                      <p className="text-3xl font-black text-emerald-700">{template.products || 0}</p>
+                      <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-tighter mt-1">Products Copied</p>
+                    </div>
+                    <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 text-center">
+                      <p className="text-3xl font-black text-blue-700">{template.categories || 0}</p>
+                      <p className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter mt-1">Categories Copied</p>
+                    </div>
+                  </div>
+
+                  {/* Checklist */}
+                  <div className="space-y-4 pt-2">
+                    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${cms.about ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+                          <CheckCircle className="w-4 h-4" />
+                        </div>
+                        <span className="text-sm font-semibold text-slate-700">CMS Pages Created</span>
+                      </div>
+                      <Badge variant="ghost" className="text-[10px] text-emerald-600 font-bold">SUCCESS</Badge>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4" />
+                        </div>
+                        <span className="text-sm font-semibold text-slate-700">Site Branding Configured</span>
+                      </div>
+                      <Badge variant="ghost" className="text-[10px] text-emerald-600 font-bold">READY</Badge>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4" />
+                        </div>
+                        <span className="text-sm font-semibold text-slate-700">Analytics Monitoring</span>
+                      </div>
+                      <Badge variant="ghost" className="text-[10px] text-emerald-600 font-bold">ACTIVE</Badge>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                    <div className="flex items-start gap-3">
+                      <Bell className="w-5 h-5 text-slate-400 mt-1" />
+                      <p className="text-sm text-slate-600 leading-relaxed">
+                        A welcome email has been sent to <span className="font-bold text-slate-900">{createdUser.email}</span> with their dashboard login details.
                       </p>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Setup Status Card */}
-            <Card className="border-slate-200 shadow-sm">
-              <CardHeader className="bg-slate-50/50 border-b border-slate-100">
-                <div className="flex items-center gap-2 text-slate-700">
-                  <CheckCircle className="h-5 w-5" />
-                  <CardTitle className="text-base font-bold">Setup Status</CardTitle>
-                </div>
-                <CardDescription>What's been configured</CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Globe className="w-4 h-4 text-emerald-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-900">Subdomain Created</p>
-                      <p className="text-sm text-slate-500">DNS configured on Cloudflare</p>
-                    </div>
-                    <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                  </div>
-                  <Separator />
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-4 h-4 text-emerald-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-900">Welcome Email Sent</p>
-                      <p className="text-sm text-slate-500">Credentials delivered</p>
-                    </div>
-                    <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                  </div>
-                  <Separator />
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Store className="w-4 h-4 text-emerald-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-900">Store Template Applied</p>
-                      <p className="text-sm text-slate-500">Ready to customize</p>
-                    </div>
-                    <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                  </div>
-                  <Separator />
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <CreditCard className="w-4 h-4 text-emerald-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-900">Subscription Activated</p>
-                      <p className="text-sm text-slate-500">Billing cycle started</p>
-                    </div>
-                    <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col md:flex-row gap-3 max-w-2xl mx-auto">
-            <Button
-              size="lg"
-              className="flex-1 bg-slate-900 hover:bg-slate-800 text-white h-12"
-              onClick={() => {
-                setSuccess(false);
-                setCreatedUser(null);
-              }}
-            >
-              Create Another User
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="flex-1 h-12 border-slate-300 hover:bg-slate-50"
-              onClick={() => window.location.href = '/superadmin/tenants'}
-            >
-              View All Users
-            </Button>
+              {/* Navigation Actions */}
+              <div className="flex gap-4">
+                <Button
+                  className="flex-1 h-14 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg ring-offset-2 focus:ring-2"
+                  onClick={() => {
+                    setSuccess(false);
+                    setCreatedUser(null);
+                  }}
+                >
+                  Create Another
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1 h-14 font-bold rounded-xl border-slate-200 hover:bg-slate-50 bg-white"
+                  onClick={() => window.location.href = '/superadmin/tenants'}
+                >
+                  Manage All Users
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

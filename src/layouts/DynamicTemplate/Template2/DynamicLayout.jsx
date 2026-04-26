@@ -17,6 +17,7 @@ const DynamicLayout = () => {
   const branding = backofficeData?.branding || {};
   const storeName = branding.site_name || backofficeData?.backoffice?.store_name || backofficeData?.backoffice?.name || "Store";
   const contact = backofficeData?.contactPageContent || {};
+  const footer = backofficeData?.footerContent || {};
 
   const navLinks = [
     { to: "/", label: "Home" },
@@ -130,53 +131,87 @@ const DynamicLayout = () => {
               <div className="lg:col-span-1">
                 <h3 className="text-3xl font-medium mb-4 font-t2-heading">{storeName}</h3>
                 <p className="text-second text-base leading-relaxed">
-                  Your trusted business partner for quality products and services.
+                  {footer.about_description || "Your trusted business partner for quality products and services."}
                 </p>
               </div>
 
               {/* Quick Links */}
-              <div>
-                <h4 className="text-xl font-medium mb-6 text-first font-t2-heading">Quick Links</h4>
-                <ul className="space-y-4 text-second">
-                  {navLinks.map((link) => (
-                    <li key={link.to}>
-                      <Link to={link.to} className="hover:text-third transition-colors">
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                <h4 className="text-xl font-medium mb-6 text-first font-t2-heading">Links</h4>
+                {footer.footer_links ? (
+                  <div className="flex flex-col gap-6">
+                    {JSON.parse(typeof footer.footer_links === 'string' ? footer.footer_links : JSON.stringify(footer.footer_links)).map((section, idx) => (
+                      <div key={idx}>
+                        <h5 className="text-[10px] uppercase tracking-[0.2em] text-third mb-3 opacity-70 font-bold">{section.section_title}</h5>
+                        <ul className="space-y-3 text-second">
+                          {section.links.map((link, lIdx) => (
+                            <li key={lIdx}>
+                              <Link to={link.url} className="hover:text-third transition-colors">
+                                {link.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <ul className="space-y-4 text-second">
+                    {navLinks.map((link) => (
+                      <li key={link.to}>
+                        <Link to={link.to} className="hover:text-third transition-colors">
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
 
               {/* Contact */}
               <div>
                 <h4 className="text-xl font-medium mb-6 text-first font-t2-heading">Contact Us</h4>
-                <p className="text-second mb-2">{contact.email || "info@example.com"}</p>
-                <p className="text-second mb-2">{contact.phone || "(123) 456-7890"}</p>
-                <p className="text-second">{contact.address || "Nature Valley, Green City"}</p>
+                <p className="text-second mb-2">{footer.contact_email || contact.email || "info@example.com"}</p>
+                <p className="text-second mb-2">{footer.contact_phone || contact.phone || "(123) 456-7890"}</p>
+                <p className="text-second">{footer.contact_address || contact.address || "Nature Valley, Green City"}</p>
               </div>
 
               {/* Social */}
               <div>
                 <h4 className="text-xl font-medium mb-6 text-first font-t2-heading">Follow Us</h4>
                 <div className="flex space-x-4">
-                  <div className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer">
-                    <span className="text-fourth text-2xl font-bold font-t2-heading">f</span>
-                  </div>
-                  <div className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer">
-                    <span className="text-fourth text-2xl font-bold font-t2-heading">X</span>
-                  </div>
-                  <div className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer">
-                    <span className="text-fourth text-2xl font-bold font-t2-heading">in</span>
-                  </div>
+                  {footer.social_links ? (
+                    JSON.parse(typeof footer.social_links === 'string' ? footer.social_links : JSON.stringify(footer.social_links)).map((social, idx) => (
+                      <a
+                        key={idx}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer"
+                        title={social.platform}
+                      >
+                         <span className="text-fourth text-2xl font-bold font-t2-heading">{social.platform[0]}</span>
+                      </a>
+                    ))
+                  ) : (
+                    <>
+                      <div className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer">
+                        <span className="text-fourth text-2xl font-bold font-t2-heading">f</span>
+                      </div>
+                      <div className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer">
+                        <span className="text-fourth text-2xl font-bold font-t2-heading">X</span>
+                      </div>
+                      <div className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer">
+                        <span className="text-fourth text-2xl font-bold font-t2-heading">in</span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
 
             <div className="border-t border-third/30 pt-8 text-center">
-              <p className="text-second text-sm">
-                © {new Date().getFullYear()} {storeName} • All rights reserved
-              </p>
+                <p className="text-second text-sm">
+                  {footer.copyright_text || `© ${new Date().getFullYear()} ${storeName} • All rights reserved`}
+                </p>
             </div>
           </div>
         </footer>

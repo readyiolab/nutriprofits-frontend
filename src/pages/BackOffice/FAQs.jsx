@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { useFetch } from "@/hooks";
 import { toast } from "sonner";
+import api from "@/config/apiConfig";
 
 const FAQs = () => {
   const [view, setView] = React.useState("list"); // 'list' | 'form' | 'content'
@@ -42,6 +43,9 @@ const FAQs = () => {
   const [heroImagePreview, setHeroImagePreview] = React.useState(null);
 
   const backofficeId = React.useMemo(() => localStorage.getItem("backofficeId") || "1", []);
+
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [itemsPerPage] = React.useState(10);
 
   const [pageContent, setPageContent] = React.useState({
     hero_title: "",
@@ -60,28 +64,31 @@ const FAQs = () => {
     question: "",
     answer: "",
     category: "",
-    display_order: 0,
+    sort_order: 0,
     is_active: true,
   });
 
   // Fetch data
   const { data: fetchedPageContent, refetch: refetchPageContent } = useFetch(
-    `http://localhost:3001/api/faq/${backofficeId}/page-content`,
+    `/faq/page-content`,
     { immediate: true, showToast: false }
   );
 
   const { data: faqsData, loading: faqsLoading, refetch: refetchFaqs } = useFetch(
-    `http://localhost:3001/api/faq/${backofficeId}/items`,
+    `/faq/items?page=${currentPage}&limit=${itemsPerPage}&search=${searchQuery}`,
     { immediate: true, showToast: false }
   );
 
-  const { data: categoriesData } = useFetch(
-    `http://localhost:3001/api/faq/${backofficeId}/categories`,
-    { immediate: true, showToast: false }
-  );
-
-  const faqs = Array.isArray(faqsData) ? faqsData : faqsData?.data || [];
-  const categories = Array.isArray(categoriesData) ? categoriesData : categoriesData?.data || [];
+  const faqs = faqsData?.data || [];
+  const pagination = faqsData?.pagination || { total: 0, pages: 0, page: 1 };
+  
+  // Derive unique categories from faqs (Ideally this would be a separate API, but using what's available)
+  const categories = React.useMemo(() => {
+    const cats = faqs
+      .map(f => f.category)
+      .filter(c => c && typeof c === 'string' && c.trim() !== '');
+    return [...new Set(cats)];
+  }, [faqs]);
 
   React.useEffect(() => {
     if (fetchedPageContent) {
@@ -106,7 +113,7 @@ const FAQs = () => {
   const goToList = () => {
     setView("list");
     setEditingFaq(null);
-    setFormData({ question: "", answer: "", category: "", display_order: 0, is_active: true });
+    setFormData({ question: "", answer: "", category: "", sort_order: 0, is_active: true });
   };
 
   const goToForm = (faq = null) => {
@@ -116,12 +123,12 @@ const FAQs = () => {
         question: faq.question || "",
         answer: faq.answer || "",
         category: faq.category || "",
-        display_order: faq.display_order || 0,
+        sort_order: faq.sort_order || 0,
         is_active: faq.is_active ?? true,
       });
     } else {
       setEditingFaq(null);
-      setFormData({ question: "", answer: "", category: "", display_order: 0, is_active: true });
+      setFormData({ question: "", answer: "", category: "", sort_order: 0, is_active: true });
     }
     setView("form");
   };
@@ -142,26 +149,39 @@ const FAQs = () => {
 
   const handleSavePageContent = async () => {
     setSavingPageContent(true);
+    
+    const payload = {
+      ...pageContent,
+      backoffice_id: backofficeId,
+    };
+
     const form = new FormData();
-    Object.keys(pageContent).forEach((key) => {
-      if (key !== "hero_image") form.append(key, pageContent[key] || "");
-    });
-    if (heroImageFile) form.append("hero_image", heroImageFile);
-    else if (!heroImagePreview) form.append("hero_image", "");
+    form.append("data", JSON.stringify(payload));
+    
+    if (heroImageFile) {
+      form.append("hero_image", heroImageFile);
+    } else if (!heroImagePreview) {
+      // If preview is cleared, signal deletion
+      form.append("hero_image", "");
+    }
 
     try {
-      const res = await fetch(`http://localhost:3001/api/faq/${backofficeId}/page-content/upsert`, {
-        method: "POST",
-        credentials: "include",
-        body: form,
+      const response = await api.post(`/faq/page-content/upsert`, form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-      const result = await res.json();
+      
+      const result = response.data;
       if (result.success) {
         toast.success("Page content saved!");
         setHeroImageFile(null);
         refetchPageContent();
-      } else toast.error(result.message || "Failed");
+      } else {
+        toast.error(result.message || "Failed to save content");
+      }
     } catch (err) {
+      console.error("Save page content error:", err);
       toast.error("Save failed");
     } finally {
       setSavingPageContent(false);
@@ -175,25 +195,27 @@ const FAQs = () => {
     }
 
     const url = editingFaq
-      ? `http://localhost:3001/api/faq/${backofficeId}/items/${editingFaq.faq_id}`
-      : `http://localhost:3001/api/faq/${backofficeId}/items`;
+      ? `/faq/items/${editingFaq.faq_id}`
+      : `/faq/items`;
 
-    const method = editingFaq ? "PUT" : "POST";
+    const method = editingFaq ? "put" : "post";
 
     try {
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(formData),
+      const response = await api[method](url, {
+        ...formData,
+        backoffice_id: backofficeId,
       });
-      const result = await res.json();
+      
+      const result = response.data;
       if (result.success) {
         toast.success(editingFaq ? "FAQ updated!" : "FAQ created!");
         goToList();
         refetchFaqs();
-      } else toast.error(result.message);
+      } else {
+        toast.error(result.message || "Operation failed");
+      }
     } catch (err) {
+      console.error("FAQ submit error:", err);
       toast.error("Operation failed");
     }
   };
@@ -201,133 +223,115 @@ const FAQs = () => {
   const handleDelete = async (faqId) => {
     if (!window.confirm("Delete this FAQ?")) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/faq/${backofficeId}/items/${faqId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      const result = await res.json();
+      const response = await api.delete(`/faq/items/${faqId}`);
+      const result = response.data;
       if (result.success) {
         toast.success("Deleted!");
         refetchFaqs();
-      } else toast.error("Delete failed");
+      } else {
+        toast.error("Delete failed");
+      }
     } catch (err) {
-      toast.error("Error");
+      console.error("FAQ delete error:", err);
+      toast.error("Error deleting FAQ");
     }
   };
 
   const handleToggleStatus = async (faqId) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/faq/${backofficeId}/items/${faqId}/toggle-status`, {
-        method: "PATCH",
-        credentials: "include",
-      });
-      const result = await res.json();
+      const response = await api.patch(`/faq/items/${faqId}/toggle-status`);
+      const result = response.data;
       if (result.success) {
         toast.success(result.message);
         refetchFaqs();
       }
     } catch (err) {
+      console.error("FAQ toggle status error:", err);
       toast.error("Toggle failed");
     }
   };
 
-  const filteredFaqs = faqs.filter((f) => {
-    const matchesSearch =
-      f.question?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      f.answer?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || f.category === categoryFilter;
-    const matchesStatus =
-      statusFilter === "all-status" ||
-      (statusFilter === "active" && f.is_active) ||
-      (statusFilter === "inactive" && !f.is_active);
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
-
-  // FULL PAGE FORM VIEW
-  if (view === "form") {
+  // CONTENT VIEW
+  if (view === "content") {
     return (
       <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={goToList}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-xl font-semibold">
-                {editingFaq ? "Edit FAQ" : "Add New FAQ"}
-              </h1>
-              <p className="text-gray-600">
-                {editingFaq ? "Update FAQ details" : "Create a new FAQ"}
-              </p>
-            </div>
+            <Button variant="ghost" onClick={goToList}><ArrowLeft className="h-4 w-4 mr-2" /> Back</Button>
+            <h1 className="text-xl font-semibold text-gray-900">Edit FAQ Page Content</h1>
           </div>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={goToList}>
-              <X className="h-4 w-4 mr-2" /> Cancel
-            </Button>
-            <Button onClick={handleSubmitFaq} className="bg-blue-600 hover:bg-blue-700">
-              <Save className="h-4 w-4 mr-2" />
-              {editingFaq ? "Update" : "Create"} FAQ
-            </Button>
-          </div>
+          <Button onClick={handleSavePageContent} disabled={savingPageContent} className="bg-blue-500 hover:bg-blue-700">
+            {savingPageContent ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+            Save Content
+          </Button>
         </div>
 
-        <div className="max-w-3xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
-            <CardHeader>
-              <CardTitle>FAQ Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label>Category (optional)</Label>
-                <Input
-                  placeholder="e.g., Shipping, Returns, Payment"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                />
+            <CardHeader><CardTitle>Hero Section</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Hero Title</Label>
+                <Input value={pageContent.hero_title} onChange={e => setPageContent({...pageContent, hero_title: e.target.value})} placeholder="Frequently Asked Questions" />
               </div>
-              <div>
-                <Label>Question *</Label>
-                <Input
-                  placeholder="How do I track my order?"
-                  value={formData.question}
-                  onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                />
+              <div className="space-y-2">
+                <Label>Hero Subtitle</Label>
+                <Input value={pageContent.hero_subtitle} onChange={e => setPageContent({...pageContent, hero_subtitle: e.target.value})} placeholder="How can we help?" />
               </div>
-              <div>
-                <Label>Answer *</Label>
-                <Textarea
-                  rows={8}
-                  placeholder="Write your detailed answer..."
-                  value={formData.answer}
-                  onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
-                />
+              <div className="space-y-2">
+                <Label>Hero Description</Label>
+                <Textarea value={pageContent.hero_description} onChange={e => setPageContent({...pageContent, hero_description: e.target.value})} placeholder="Find answers to common questions here." rows={3} />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Display Order</Label>
-                  <Input
-                    type="number"
-                    value={formData.display_order}
-                    onChange={(e) =>
-                      setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })
-                    }
-                  />
+              <div className="space-y-2">
+                <Label>Hero Image/Icon</Label>
+                {heroImagePreview && (
+                  <div className="relative w-32 h-32 mb-2">
+                    <img src={heroImagePreview} alt="Hero" className="w-full h-full object-cover rounded border" />
+                    <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 rounded-full" onClick={() => { setHeroImagePreview(null); setHeroImageFile(null); }}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <Input type="file" accept="image/*" onChange={handleImageChange} className="hidden" id="hero-image-upload" />
+                  <Label htmlFor="hero-image-upload" className="cursor-pointer flex items-center justify-center p-2 border-2 border-dashed rounded-md hover:bg-gray-50 flex-1">
+                    <Upload className="h-4 w-4 mr-2" />
+                    {heroImagePreview ? "Change Image" : "Upload Image"}
+                  </Label>
                 </div>
-                <div>
-                  <Label>Status</Label>
-                  <Select
-                    value={formData.is_active ? "active" : "inactive"}
-                    onValueChange={(v) => setFormData({ ...formData, is_active: v === "active" })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle>Call to Action Section</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>CTA Title</Label>
+                <Input value={pageContent.cta_title} onChange={e => setPageContent({...pageContent, cta_title: e.target.value})} placeholder="Still have questions?" />
+              </div>
+              <div className="space-y-2">
+                <Label>CTA Description</Label>
+                <Textarea value={pageContent.cta_description} onChange={e => setPageContent({...pageContent, cta_description: e.target.value})} placeholder="Can't find what you're looking for?" rows={2} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Primary Button Text</Label>
+                  <Input value={pageContent.cta_button_text} onChange={e => setPageContent({...pageContent, cta_button_text: e.target.value})} placeholder="Contact Support" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Primary Button Link</Label>
+                  <Input value={pageContent.cta_button_link} onChange={e => setPageContent({...pageContent, cta_button_link: e.target.value})} placeholder="/contact" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Secondary Button Text</Label>
+                  <Input value={pageContent.cta_secondary_button_text} onChange={e => setPageContent({...pageContent, cta_secondary_button_text: e.target.value})} placeholder="View All FAQs" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Secondary Button Link</Label>
+                  <Input value={pageContent.cta_secondary_button_link} onChange={e => setPageContent({...pageContent, cta_secondary_button_link: e.target.value})} placeholder="/faq" />
                 </div>
               </div>
             </CardContent>
@@ -337,72 +341,73 @@ const FAQs = () => {
     );
   }
 
-  // FULL PAGE CONTENT EDITOR
-  if (view === "content") {
+  // FORM VIEW
+  if (view === "form") {
     return (
       <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={goToList}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-xl font-semibold">FAQ Page Content</h1>
-              <p className="text-gray-600">Customize hero and CTA sections</p>
-            </div>
+            <Button variant="ghost" onClick={goToList}><ArrowLeft className="h-4 w-4 mr-2" /> Back</Button>
+            <h1 className="text-xl font-semibold text-gray-900">{editingFaq ? "Edit FAQ" : "Add FAQ"}</h1>
           </div>
-          <Button onClick={handleSavePageContent} disabled={savingPageContent} className="bg-blue-500">
-            {savingPageContent ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
-            Save All
+          <Button onClick={handleSubmitFaq} className="bg-blue-500 hover:bg-blue-700">
+            <Save className="h-4 w-4 mr-2" />
+            Save FAQ
           </Button>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader><CardTitle>Hero Section</CardTitle></CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <Label>Hero Image</Label>
-                  <div className="flex items-center gap-4">
-                    <Input id="hero_img_input" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                    <Button variant="outline" onClick={() => document.getElementById("hero_img_input").click()}>
-                      <Upload className="h-4 w-4 mr-2" />
-                      {heroImagePreview ? "Change" : "Upload"} Image
-                    </Button>
-                    {heroImagePreview && (
-                      <Button variant="destructive" size="sm" onClick={() => { setHeroImageFile(null); setHeroImagePreview(null); }}>
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                  {heroImagePreview && (
-                    <img src={heroImagePreview} alt="Preview" className="mt-4 w-full h-64 object-cover rounded-lg border" />
-                  )}
-                  <p className="text-sm text-gray-500 mt-2">Recommended: 1920×600px • Max 5MB</p>
-                </div>
+        <Card className="max-w-3xl">
+          <CardContent className="pt-6 space-y-4">
+            <div className="space-y-2">
+              <Label>Question *</Label>
+              <Input 
+                placeholder="What is..." 
+                value={formData.question} 
+                onChange={e => setFormData({...formData, question: e.target.value})} 
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Answer *</Label>
+              <Textarea 
+                placeholder="The answer is..." 
+                value={formData.answer} 
+                onChange={e => setFormData({...formData, answer: e.target.value})} 
+                rows={6}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Input 
+                  placeholder="e.g. general, billing..." 
+                  value={formData.category} 
+                  onChange={e => setFormData({...formData, category: e.target.value})} 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Sort Order</Label>
+                <Input 
+                  type="number" 
+                  value={formData.sort_order} 
+                  onChange={e => setFormData({...formData, sort_order: parseInt(e.target.value) || 0})} 
+                />
+              </div>
+            </div>
 
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div><Label>Title</Label><Input value={pageContent.hero_title} onChange={(e) => setPageContent({ ...pageContent, hero_title: e.target.value })} /></div>
-                  <div><Label>Subtitle</Label><Input value={pageContent.hero_subtitle} onChange={(e) => setPageContent({ ...pageContent, hero_subtitle: e.target.value })} /></div>
-                </div>
-                <div><Label>Description</Label><Textarea rows={3} value={pageContent.hero_description} onChange={(e) => setPageContent({ ...pageContent, hero_description: e.target.value })} /></div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader><CardTitle>Call-to-Action (CTA)</CardTitle></CardHeader>
-              <CardContent className="space-y-4">
-                <div><Label>Title</Label><Input value={pageContent.cta_title} onChange={(e) => setPageContent({ ...pageContent, cta_title: e.target.value })} placeholder="Still have questions?" /></div>
-                <div><Label>Description</Label><Textarea rows={3} value={pageContent.cta_description} onChange={(e) => setPageContent({ ...pageContent, cta_description: e.target.value })} /></div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div><Label>Button Text</Label><Input value={pageContent.cta_button_text} onChange={(e) => setPageContent({ ...pageContent, cta_button_text: e.target.value })} /></div>
-                  <div><Label>Button Link</Label><Input value={pageContent.cta_button_link} onChange={(e) => setPageContent({ ...pageContent, cta_button_link: e.target.value })} placeholder="/contact" /></div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+            <div className="flex items-center gap-2 pt-2">
+              <input 
+                type="checkbox" 
+                id="is_active" 
+                checked={formData.is_active} 
+                onChange={e => setFormData({...formData, is_active: e.target.checked})}
+                className="w-4 h-4"
+              />
+              <Label htmlFor="is_active">Active (visible on site)</Label>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -432,7 +437,15 @@ const FAQs = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input placeholder="Search FAQs..." className="pl-9" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              <Input 
+                placeholder="Search FAQs..." 
+                className="pl-9" 
+                value={searchQuery} 
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }} 
+              />
             </div>
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
@@ -458,59 +471,101 @@ const FAQs = () => {
       {/* FAQs List */}
       <Card>
         <CardHeader>
-          <CardTitle>FAQ Items ({filteredFaqs.length})</CardTitle>
+          <CardTitle>FAQ Items ({pagination.total})</CardTitle>
         </CardHeader>
         <CardContent>
-          {faqsLoading ? (
+          {faqsLoading && !faqsData ? (
             <div className="py-12 text-center"><Loader2 className="h-8 w-8 animate-spin mx-auto" /></div>
-          ) : filteredFaqs.length === 0 ? (
+          ) : faqs.length === 0 ? (
             <p className="text-center py-12 text-gray-500">No FAQs found. Click "Add FAQ" to create one.</p>
           ) : (
-            <div className="space-y-3">
-              {filteredFaqs.map((faq) => (
-                <div key={faq.faq_id} className="border rounded-lg">
-                  <div
-                    className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
-                    onClick={() => setExpandedId(expandedId === faq.faq_id ? null : faq.faq_id)}
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        {faq.category && <Badge variant="outline">{faq.category}</Badge>}
-                        <Badge className={faq.is_active ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}>
-                          {faq.is_active ? "Active" : "Inactive"}
-                        </Badge>
-                        <span className="text-xs text-gray-500">Order: {faq.display_order}</span>
+            <>
+              <div className="space-y-3 mb-6">
+                {faqs.map((faq) => (
+                  <div key={faq.faq_id} className="border rounded-lg">
+                    <div
+                      className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
+                      onClick={() => setExpandedId(expandedId === faq.faq_id ? null : faq.faq_id)}
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          {faq.category && <Badge variant="outline">{faq.category}</Badge>}
+                          <Badge className={faq.is_active ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}>
+                            {faq.is_active ? "Active" : "Inactive"}
+                          </Badge>
+                          <span className="text-xs text-gray-500">Order: {faq.sort_order}</span>
+                        </div>
+                        <h4 className="font-semibold text-gray-900">{faq.question}</h4>
                       </div>
-                      <h4 className="font-semibold text-gray-900">{faq.question}</h4>
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleToggleStatus(faq.faq_id); }}>
+                          {faq.is_active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); goToForm(faq); }}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleDelete(faq.faq_id); }}>
+                          <Trash2 className="h-4 w-4 text-red-600" />
+                        </Button>
+                        {expandedId === faq.faq_id ? <ChevronUp /> : <ChevronDown />}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleToggleStatus(faq.faq_id); }}>
-                        {faq.is_active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); goToForm(faq); }}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleDelete(faq.faq_id); }}>
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                      </Button>
-                      {expandedId === faq.faq_id ? <ChevronUp /> : <ChevronDown />}
-                    </div>
+                    {expandedId === faq.faq_id && (
+                      <div className="px-4 pb-4 border-t bg-gray-50">
+                        <p className="text-gray-700 whitespace-pre-wrap">{faq.answer}</p>
+                      </div>
+                    )}
                   </div>
-                  {expandedId === faq.faq_id && (
-                    <div className="px-4 pb-4 border-t bg-gray-50">
-                      <p className="text-gray-700 whitespace-pre-wrap">{faq.answer}</p>
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              {pagination.pages > 1 && (
+                <div className="flex items-center justify-between px-2 py-4">
+                  <div className="text-sm text-gray-500">
+                    Showing page {pagination.page} of {pagination.pages} ({pagination.total} total)
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={pagination.page === 1}
+                    >
+                      Previous
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      {[...Array(pagination.pages)].map((_, i) => (
+                        <Button
+                          key={i + 1}
+                          variant={pagination.page === i + 1 ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(i + 1)}
+                          className="w-8 h-8 p-0"
+                        >
+                          {i + 1}
+                        </Button>
+                      ))}
                     </div>
-                  )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.min(pagination.pages, p + 1))}
+                      disabled={pagination.page === pagination.pages}
+                    >
+                      Next
+                    </Button>
+                  </div>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Card><CardContent className="pt-6 text-center"><div className="text-3xl font-bold text-blue-600">{faqs.length}</div><p className="text-sm text-gray-600">Total</p></CardContent></Card>
+        <Card><CardContent className="pt-6 text-center"><div className="text-3xl font-bold text-blue-600">{pagination.total}</div><p className="text-sm text-gray-600">Total</p></CardContent></Card>
         <Card><CardContent className="pt-6 text-center"><div className="text-3xl font-bold text-green-600">{faqs.filter(f => f.is_active).length}</div><p className="text-sm text-gray-600">Active</p></CardContent></Card>
         <Card><CardContent className="pt-6 text-center"><div className="text-3xl font-bold text-gray-600">{faqs.filter(f => !f.is_active).length}</div><p className="text-sm text-gray-600">Inactive</p></CardContent></Card>
         <Card><CardContent className="pt-6 text-center"><div className="text-3xl font-bold text-purple-600">{categories.length}</div><p className="text-sm text-gray-600">Categories</p></CardContent></Card>

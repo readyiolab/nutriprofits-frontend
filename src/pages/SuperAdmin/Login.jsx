@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
+import api from "@/config/apiConfig";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,15 +55,9 @@ export default function SuperAdminLogin() {
   setIsLoading(true);
   setError("");
 
-  try {
-    const res = await fetch("http://localhost:3001/api/superadmin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-      credentials: "include", // IMPORTANT to receive cookie
-    });
-
-    const result = await res.json();
+    try {
+      const response = await api.post("/superadmin/login", data);
+      const result = response.data;
 
     if (result.success) {
       const userData = result.data;

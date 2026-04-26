@@ -1,15 +1,6 @@
 import React from "react";
-import {
-  Plus,
-  Search,
-  ArrowLeft,
-  Save,
-  X,
-  Edit,
-  Trash2,
-  Loader,
-  AlertCircle,
-} from "lucide-react";
+import { Plus, Search, ArrowLeft, Save, X, Edit, Trash2, Loader, AlertCircle } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 
-const API_BASE_URL = "http://localhost:3001/api/backoffice/product-categories";
+import api from "@/config/apiConfig";
 
 const FORM_INITIAL_STATE = {
   name: "",
@@ -56,21 +47,62 @@ const Products = () => {
   const [products, setProducts] = React.useState([]);
   const [categories, setCategories] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [detailLoading, setDetailLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const [pagination, setPagination] = React.useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    limit: 10
+  });
+
+  const backofficeId = React.useMemo(() => {
+    return localStorage.getItem('backofficeId') || '1';
+  }, []);
+
+  React.useEffect(() => {
+    fetchCategories();
+  }, [backofficeId]);
 
   React.useEffect(() => {
     fetchProducts();
-    fetchCategories();
-  }, []);
+  }, [backofficeId, pagination.currentPage, searchTerm, selectedCategory, selectedStatus]);
+
+  // Handle URL Deep-linking for Editing
+  React.useEffect(() => {
+    const editSlug = searchParams.get("edit");
+    if (editSlug && view === "list") {
+      goToForm({ product_slug: editSlug });
+    } else if (!editSlug && view === "form") {
+      goToList();
+    }
+  }, [searchParams]);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/products`, {
-        credentials: "include",
-      });
-      const data = await res.json();
-      setProducts(Array.isArray(data) ? data : data.data || []);
+      const params = {
+        page: pagination.currentPage,
+        limit: pagination.limit,
+        search: searchTerm,
+        categoryId: selectedCategory,
+        status: selectedStatus
+      };
+      
+      const res = await api.get(`/catalog/backoffice/${backofficeId}/products`, { params });
+      const data = res.data;
+      if (data.success) {
+        setProducts(data.data.data || []);
+        setPagination(prev => ({
+          ...prev,
+          totalPages: data.data.pagination.pages,
+          totalItems: data.data.pagination.total
+        }));
+      } else {
+        setProducts([]);
+      }
       setError(null);
     } catch (err) {
       setError("Failed to load products");
@@ -82,11 +114,9 @@ const Products = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/categories`, {
-        credentials: "include",
-      });
-      const data = await res.json();
-      setCategories(Array.isArray(data) ? data : data.data || []);
+      const res = await api.get(`/catalog/backoffice/${backofficeId}/categories`);
+      const data = res.data;
+      setCategories(data.success ? (data.data || []) : []);
     } catch (err) {
       toast.error("Failed to load categories");
     }
@@ -94,14 +124,32 @@ const Products = () => {
 
   const categoryMap = React.useMemo(() => {
     return categories.reduce((map, cat) => {
-      map[cat.id] = cat.category_name;
+      const catId = cat.category_id || cat.id;
+      if (catId) {
+        map[catId] = cat.category_name;
+      }
       return map;
     }, {});
   }, [categories]);
 
-  const goToForm = (product = null) => {
-    if (product) {
-      setEditingProduct(product);
+  const goToForm = async (productSummary = null) => {
+    if (productSummary) {
+      const slug = productSummary.product_slug || productSummary.product_id || productSummary.id;
+      
+      // Update URL if not already there
+      if (searchParams.get("edit") !== slug) {
+        setSearchParams({ edit: slug });
+      }
+
+      setDetailLoading(true);
+      setEditingProduct(productSummary);
+      setView("form");
+      
+      try {
+        const res = await api.get(`/catalog/backoffice/${backofficeId}/products/${slug}`);
+        const product = res.data.data;
+        
+        if (!product) throw new Error("Product data not found");
       
       // Parse highlights
       let highlights = [];
@@ -145,31 +193,40 @@ const Products = () => {
         }
       }
       
-      setFormData({
-        name: product.product_name || "",
-        categoryId: product.category_id?.toString() || "",
-        price: product.product_price || "",
-        stock: product.stock_quantity || "",
-        description: product.product_description || "",
-        fullDescription: product.full_description || "",
-        highlights: highlights,
-        benefits: benefits,
-        ingredients: ingredients,
-        buylink: product.buylink || "",
-        image: product.product_image || "",
-        logoUrl: product.logo_url || "",
-        product_image: null,
-        logo_url: null,
-        rating: product.rating || "",
-      });
+        setFormData({
+          name: product.product_name || "",
+          categoryId: product.category_id?.toString() || "",
+          price: product.product_price || "",
+          stock: product.stock_quantity || "",
+          description: product.product_description || "",
+          fullDescription: product.full_description || "",
+          highlights: highlights,
+          benefits: benefits,
+          ingredients: ingredients,
+          buylink: product.buylink || "",
+          image: product.product_image || "",
+          logoUrl: product.logo_url || "",
+          product_image: null,
+          logo_url: null,
+          rating: product.rating || "",
+        });
+      } catch (err) {
+        toast.error("Failed to load product details");
+        goToList();
+      } finally {
+        setDetailLoading(false);
+      }
     } else {
       setEditingProduct(null);
       setFormData(FORM_INITIAL_STATE);
+      setView("form");
     }
-    setView("form");
   };
 
   const goToList = () => {
+    if (searchParams.has("edit")) {
+      setSearchParams({});
+    }
     setView("list");
     setEditingProduct(null);
     setFormData(FORM_INITIAL_STATE);
@@ -236,33 +293,33 @@ const Products = () => {
     }
 
     setSubmitting(true);
+    const data = {
+      product_name: formData.name,
+      product_price: formData.price,
+      stock_quantity: formData.stock,
+      product_description: formData.description || "",
+      full_description: formData.fullDescription || "",
+      highlights: formData.highlights.filter(h => h.trim()),
+      benefits: formData.benefits.filter(b => b.trim()),
+      ingredients: formData.ingredients.filter(i => i.name && i.name.trim()),
+      buylink: formData.buylink || "",
+      rating: formData.rating || "",
+      category_id: formData.categoryId || null,
+    };
+
+    if (editingProduct) {
+      data.id = editingProduct.product_id || editingProduct.id;
+    }
+
     const form = new FormData();
-    form.append("product_name", formData.name);
-    form.append("product_price", formData.price);
-    form.append("stock_quantity", formData.stock);
-    form.append("product_description", formData.description || "");
-    form.append("full_description", formData.fullDescription || "");
-    form.append("highlights", JSON.stringify(formData.highlights.filter(h => h.trim())));
-    form.append("benefits", JSON.stringify(formData.benefits.filter(b => b.trim())));
-    form.append("ingredients", JSON.stringify(formData.ingredients.filter(i => i.name && i.name.trim())));
-    form.append("buylink", formData.buylink || "");
-    form.append("rating", formData.rating || "");
-    if (formData.categoryId) form.append("category_id", formData.categoryId);
+    form.append("data", JSON.stringify(data));
     if (formData.product_image) form.append("product_image", formData.product_image);
     if (formData.logo_url) form.append("logo_url", formData.logo_url);
 
-    const url = editingProduct
-      ? `${API_BASE_URL}/products/${editingProduct.id}`
-      : `${API_BASE_URL}/products`;
-
     try {
-      const res = await fetch(url, {
-        method: editingProduct ? "PUT" : "POST",
-        credentials: "include",
-        body: form,
-      });
+      const res = await api.post(`/catalog/backoffice/${backofficeId}/products`, form);
+      const result = res.data;
 
-      const result = await res.json();
       if (result.success) {
         toast.success(editingProduct ? "Product updated!" : "Product created!");
         goToList();
@@ -281,11 +338,8 @@ const Products = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this product?")) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/products/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      const result = await res.json();
+      const res = await api.delete(`/catalog/backoffice/${backofficeId}/products/${id}`);
+      const result = res.data;
       if (result.success) {
         toast.success("Product deleted");
         fetchProducts();
@@ -309,19 +363,15 @@ const Products = () => {
     return "Out of Stock";
   };
 
-  const filteredProducts = products.filter((p) => {
-    const matchesSearch = p.product_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || p.category_id === Number(selectedCategory);
-    const matchesStatus =
-      selectedStatus === "all-status" ||
-      (selectedStatus === "in-stock" && p.stock_quantity > 50) ||
-      (selectedStatus === "low-stock" && p.stock_quantity > 10 && p.stock_quantity <= 50) ||
-      (selectedStatus === "out-stock" && p.stock_quantity <= 10);
-
-    return matchesSearch && matchesCategory && matchesStatus;
-  });
-
   if (view === "form") {
+    if (detailLoading) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <Loader className="h-10 w-10 animate-spin text-blue-600 mb-4" />
+          <p className="text-gray-600">Loading product details...</p>
+        </div>
+      );
+    }
     return (
       <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
         <div className="flex items-center justify-between">
@@ -380,11 +430,14 @@ const Products = () => {
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id.toString()}>
-                            {cat.category_name}
-                          </SelectItem>
-                        ))}
+                        {categories.map((cat) => {
+                          const catId = cat.category_id || cat.id;
+                          return (
+                            <SelectItem key={catId} value={catId ? catId.toString() : ""}>
+                              {cat.category_name}
+                            </SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                   </div>
@@ -654,11 +707,14 @@ const Products = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {categories.map((c) => (
-                  <SelectItem key={c.id} value={c.id.toString()}>
-                    {c.category_name}
-                  </SelectItem>
-                ))}
+                {categories.map((c) => {
+                  const cId = c.category_id || c.id;
+                  return (
+                    <SelectItem key={cId} value={cId ? cId.toString() : ""}>
+                      {c.category_name}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
@@ -685,11 +741,12 @@ const Products = () => {
             <div className="py-12 text-center">
               <Loader className="h-8 w-8 animate-spin mx-auto text-blue-600" />
             </div>
-          ) : filteredProducts.length === 0 ? (
+          ) : products.length === 0 ? (
             <p className="text-center py-12 text-gray-500">No products found</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="space-y-4">
+              <div className="overflow-x-auto">
+                <table className="w-full">
                 <thead>
                   <tr className="border-b bg-gray-50 text-left text-sm font-semibold text-gray-700">
                     <th className="py-3 px-4">Product</th>
@@ -702,11 +759,12 @@ const Products = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProducts.map((p) => {
+                  {products.map((p) => {
                     const catName = (p.category_id && categoryMap[p.category_id]) || "Uncategorized";
+                    const pId = p.product_id || p.id;
 
                     return (
-                      <tr key={p.id} className="border-b hover:bg-gray-50">
+                      <tr key={pId} className="border-b hover:bg-gray-50">
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-3">
                             {p.product_image && (
@@ -745,7 +803,7 @@ const Products = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleDelete(p.id)}
+                            onClick={() => handleDelete(pId)}
                             className="text-red-600 hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -757,6 +815,49 @@ const Products = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t">
+              <p className="text-sm text-gray-600">
+                Showing <span className="font-medium">{(pagination.currentPage - 1) * pagination.limit + 1}</span> to{" "}
+                <span className="font-medium">
+                  {Math.min(pagination.currentPage * pagination.limit, pagination.totalItems)}
+                </span> of{" "}
+                <span className="font-medium">{pagination.totalItems}</span> products
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={pagination.currentPage === 1}
+                  onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                >
+                  Previous
+                </Button>
+                <div className="flex items-center gap-1">
+                  {[...Array(pagination.totalPages)].map((_, i) => (
+                    <Button
+                      key={i + 1}
+                      variant={pagination.currentPage === i + 1 ? "default" : "outline"}
+                      size="sm"
+                      className="w-8 h-8 p-0"
+                      onClick={() => setPagination(prev => ({ ...prev, currentPage: i + 1 }))}
+                    >
+                      {i + 1}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={pagination.currentPage === pagination.totalPages}
+                  onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </div>
           )}
         </CardContent>
       </Card>

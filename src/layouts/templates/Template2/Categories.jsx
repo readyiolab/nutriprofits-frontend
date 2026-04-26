@@ -20,6 +20,7 @@ import {
   Brain,
   Dumbbell,
   ShoppingBag,
+  LayoutGrid,
   Zap,
 } from "lucide-react";
 
@@ -110,169 +111,198 @@ const Template2Categories = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      {/* Hero Section with Image */}
-      <div className="relative overflow-hidden">
-        {pageContent.hero_image_url ? (
-          <>
-            <div className="relative h-[400px] md:h-[500px]">
-              <img 
-                src={pageContent.hero_image_url} 
-                alt="Hero" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/40"></div>
+    <div className="min-h-screen bg-slate-50 font-t2-body overflow-hidden">
+      
+      {/* Decorative Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-1/4 -right-40 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/3 -left-40 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative z-10">
+        {/* Modern Hero Section */}
+        <section className="relative bg-slate-950 pt-32 pb-24 overflow-hidden rounded-b-[4rem] shadow-2xl mb-20 min-h-[60vh] flex items-center">
+          {/* Background Image with Overlay */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 scale-105 transition-transform duration-[10s] hover:scale-110"
+            style={{
+              backgroundImage: `url('https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?w=1600&q=80')`,
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/60 to-slate-950"></div>
+
+          {/* Dynamic Glow Backgrounds */}
+          <div className="absolute top-0 right-0 w-[50rem] h-[50rem] bg-emerald-600/20 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 left-0 w-[50rem] h-[50rem] bg-teal-600/10 rounded-full blur-[120px] -translate-x-1/2 translate-y-1/2"></div>
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+
+          <div className="container mx-auto px-4 relative z-10 text-center">
+            <div className="max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-emerald-400 shadow-2xl mb-8 transform transition-all hover:scale-105 hover:bg-white/10">
+                <Sparkles className="w-4 h-4" />
+                <span className="text-xs font-bold tracking-[0.2em] uppercase">Premium Wellness Directory</span>
+              </div>
               
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="container mx-auto px-4">
-                  <div className="max-w-3xl mx-auto text-center text-white">
-                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-                      <Sparkles className="w-4 h-4 text-yellow-300" />
-                      <span className="text-sm font-medium">Explore Categories</span>
-                    </div>
-                    <h1 className="text-5xl md:text-6xl font-medium mb-6 leading-tight">
-                      {pageContent.hero_title}
-                    </h1>
-                    <p className="text-xl text-white/90">
-                      {pageContent.hero_subtitle}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="bg-gray-100 text-gray-800">
-            <div className="container mx-auto px-4 py-20">
-              <div className="max-w-3xl mx-auto text-center">
-                <div className="inline-flex items-center gap-2 bg-gray-200 px-4 py-2 rounded-full mb-6">
-                  <Sparkles className="w-4 h-4 text-gray-600" />
-                  <span className="text-sm font-medium">Explore Categories</span>
-                </div>
-                <h1 className="text-5xl md:text-6xl font-medium mb-6 leading-tight">
-                  {pageContent.hero_title}
-                </h1>
-                <p className="text-xl text-gray-600">
-                  {pageContent.hero_subtitle}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+              <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tight text-white font-t2-heading leading-[1.1]">
+                Explore Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">Expertise</span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed mb-12 drop-shadow-md">
+                Discover targeted solutions for every aspect of your health journey, organized by our specialist categories.
+              </p>
 
-      <div className="container mx-auto px-4 py-12">
-        {/* Section Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-medium text-gray-800 mb-3">
-            {pageContent.categories_title}
-          </h2>
-          <p className="text-gray-600 text-lg">
-            {pageContent.categories_description}
-          </p>
-        </div>
-
-        {/* Search Bar */}
-        <div className="max-w-xl mx-auto mb-12">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search categories..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-6 pr-14 py-4 rounded-full border-2 border-gray-300 focus:border-blue-600 focus:outline-none shadow-md text-base"
-            />
-            <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-black p-3 rounded-full hover:bg-gray-800 transition">
-              <Search className="w-5 h-5 text-white" />
-            </button>
-          </div>
-        </div>
-
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-12">
-          {filteredCategories.map((category) => (
-            <Link
-              key={category.id}
-              to={`/template/${templateId}/products?category=${generateSlug(category.name)}`}
-              className="group block cursor-pointer transform transition-all duration-300 hover:-translate-y-1.5"
-              onMouseEnter={() => setHoveredId(category.id)}
-              onMouseLeave={() => setHoveredId(null)}
-            >
-              <div className="bg-white rounded-2xl overflow-hidden transition-all h-full border border-gray-100 hover:border-blue-200 hover:shadow-lg">
-                {/* Image */}
-                <div className="relative h-44 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 overflow-hidden">
-                  <img
-                    src={category.image || 'https://via.placeholder.com/300'}
-                    alt={category.name}
-                    className="w-full h-full object-contain p-5 group-hover:scale-105 transition-transform duration-500"
+              {/* Refined Search Bar */}
+              <div className="max-w-2xl mx-auto relative group">
+                <div className="absolute inset-0 bg-emerald-500/20 blur-2xl rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative flex items-center">
+                  <Search className="absolute left-6 text-slate-400 w-5 h-5 group-focus-within:text-emerald-400 transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="Search for a health category..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-16 pr-8 py-5 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl focus:bg-white/10 focus:border-emerald-500/50 outline-none transition-all text-white placeholder:text-slate-500 font-medium shadow-2xl"
                   />
-                  
-                  <div className={`absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4`}>
-                    <span className="text-white text-xs font-medium bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">View Products</span>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-4 sm:p-5">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-1.5 group-hover:text-blue-600 transition line-clamp-1 leading-snug">
-                    {category.name}
-                  </h3>
-                  
-                  {category.description && (
-                    <p className="text-xs text-gray-500 mb-3 line-clamp-2 leading-relaxed">
-                      {category.description}
-                    </p>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    {category.product_count !== undefined && (
-                      <span className="text-xs text-gray-400 font-medium">
-                        {category.product_count} Products
-                      </span>
-                    )}
-                    <div className="bg-gray-900 text-white px-3 py-1.5 rounded-lg group-hover:bg-blue-600 group-hover:shadow-md transition-all flex items-center gap-1.5 ml-auto">
-                      <span className="text-xs font-medium">Browse</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </div>
+                  <div className="absolute right-4 p-2 bg-emerald-600 rounded-xl shadow-lg">
+                    <TrendingUp className="w-4 h-4 text-white" />
                   </div>
                 </div>
               </div>
-            </Link>
-          ))}
+            </div>
+          </div>
+        </section>
+
+        <div className="container mx-auto px-4 lg:px-8 py-8 mb-32">
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 px-4">
+            <div className="max-w-2xl">
+              <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4 font-t2-heading tracking-tight leading-tight">
+                {pageContent.categories_title}
+              </h2>
+              <p className="text-slate-500 text-lg font-light leading-relaxed">
+                {pageContent.categories_description}
+              </p>
+            </div>
+            <div className="flex items-center gap-3 text-slate-400 text-sm font-bold uppercase tracking-widest">
+              <LayoutGrid className="w-4 h-4 text-emerald-500" />
+              <span>{filteredCategories.length} Categories Found</span>
+            </div>
+          </div>
+
+          {/* Categories Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {filteredCategories.map((category) => {
+              const IconComp = category.icon || Sparkles;
+              return (
+                <Link
+                  key={category.id}
+                  to={`/template/${templateId}/products?category=${generateSlug(category.name)}`}
+                  className="group relative block h-full transform transition-all duration-500 hover:-translate-y-2"
+                  onMouseEnter={() => setHoveredId(category.id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                >
+                  <div className="h-full bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] hover:border-emerald-100 transition-all duration-500 flex flex-col">
+                    {/* Visual Area */}
+                    <div className="relative h-56 bg-slate-50/50 overflow-hidden flex items-center justify-center p-12">
+                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      
+                      <div className="relative z-10 w-full h-full flex items-center justify-center transform group-hover:scale-110 transition-transform duration-700">
+                        <img
+                          src={category.image || 'https://via.placeholder.com/300'}
+                          alt={category.name}
+                          className="w-full h-full object-contain drop-shadow-2xl"
+                          onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&q=80"; }}
+                        />
+                      </div>
+
+                      {/* Icon Badge */}
+                      <div className="absolute top-6 left-6 w-12 h-12 bg-white rounded-2xl shadow-xl border border-slate-50 flex items-center justify-center transform -rotate-6 group-hover:rotate-0 group-hover:scale-110 transition-all duration-500">
+                        <IconComp className="w-5 h-5 text-emerald-600" />
+                      </div>
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="p-8 flex flex-col flex-1">
+                      <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors leading-tight font-t2-heading">
+                        {category.name}
+                      </h3>
+                      
+                      <p className="text-slate-500 text-[13px] leading-relaxed mb-8 line-clamp-2 font-light">
+                        {category.description || "Discover our premium selection of health and wellness products in this category."}
+                      </p>
+                      
+                      <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                          Explore Collection
+                        </span>
+                        <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center group-hover:bg-emerald-600 transition-all duration-500 transform group-hover:translate-x-1 shadow-lg shadow-slate-900/10">
+                          <ArrowRight className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* No Results */}
+          {filteredCategories.length === 0 && (
+            <div className="bg-white rounded-[3rem] shadow-xl border border-slate-100 p-24 text-center max-w-2xl mx-auto mt-20">
+              <div className="w-24 h-24 bg-slate-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-inner">
+                <Search className="w-10 h-10 text-slate-200" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-4 font-t2-heading">No categories match</h3>
+              <p className="text-slate-500 text-lg font-light leading-relaxed mb-10">
+                We couldn't find any categories matching your search. Please try a different keyword.
+              </p>
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="px-10 py-4 bg-emerald-50 text-emerald-600 font-bold rounded-2xl hover:bg-emerald-100 transition-colors text-[11px] uppercase tracking-widest"
+              >
+                Clear Search
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* No Results */}
-        {filteredCategories.length === 0 && (
-          <div className="text-center py-20">
-            <Search className="w-16 h-16 mx-auto text-gray-400 mb-4 opacity-50" />
-            <h3 className="text-2xl font-bold text-gray-800">No categories found</h3>
-            <p className="text-gray-600 mt-2">Try searching for something else?</p>
+        {/* Premium CTA Section */}
+        <section className="container mx-auto px-4 lg:px-8 mb-32">
+          <div className="relative rounded-[4rem] overflow-hidden">
+            {/* CTA Background */}
+            <div className="absolute inset-0 bg-slate-950"></div>
+            <div className="absolute top-0 right-0 w-[60rem] h-[60rem] bg-emerald-600/10 rounded-full blur-[140px] translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-[40rem] h-[40rem] bg-teal-600/10 rounded-full blur-[100px] -translate-x-1/3 translate-y-1/3"></div>
+            
+            <div className="relative z-10 px-8 py-24 sm:py-32 text-center border border-white/5 rounded-[4rem] bg-white/[0.02] backdrop-blur-3xl overflow-hidden">
+              <div className="max-w-3xl mx-auto">
+                <h3 className="text-4xl sm:text-6xl font-bold mb-8 text-white tracking-tight font-t2-heading leading-tight">
+                  {pageContent.cta_title}
+                </h3>
+                
+                <p className="text-lg sm:text-xl text-slate-400 mb-12 font-light leading-relaxed">
+                  {pageContent.cta_description}
+                </p>
+                
+                <div className="flex flex-col sm:flex-row justify-center gap-6">
+                  <Link
+                    to={`/template/${templateId}${pageContent.cta_button_link}`}
+                    className="bg-emerald-600 text-white font-bold px-12 py-5 rounded-[2rem] hover:bg-emerald-500 hover:shadow-[0_10px_40px_rgba(16,185,129,0.3)] transition-all duration-300 text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 transform hover:-translate-y-1"
+                  >
+                    <ShoppingBag className="w-5 h-5" />
+                    {pageContent.cta_button_text}
+                  </Link>
+                  <Link
+                    to={`/template/${templateId}${pageContent.cta_support_link}`}
+                    className="bg-white/5 text-white border border-white/10 font-bold px-12 py-5 rounded-[2rem] hover:bg-white/10 transition-all duration-300 text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-3"
+                  >
+                    {pageContent.cta_support_text}
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-      </div>
-
-      {/* CTA Section */}
-      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] py-10 sm:py-16 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl shadow-xl mb-10">
-        <div className="container mx-auto px-3 sm:px-4 text-center text-white">
-          <h3 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tight">
-            {pageContent.cta_title}
-          </h3>
-
-          <p className="text-base sm:text-lg md:text-xl text-white/90 mb-8 sm:mb-10 max-w-xl mx-auto leading-relaxed">
-            {pageContent.cta_description}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto px-2">
-            <Link to={`/template/${templateId}${pageContent.cta_button_link}`} className="bg-white text-black font-medium px-8 py-3 sm:px-10 sm:py-4 rounded-full hover:shadow-lg transition text-base sm:text-lg flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto">
-              {pageContent.cta_button_text} 
-              <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
-            </Link>
-
-            <Link to={`/template/${templateId}${pageContent.cta_support_link}`} className="border-2 border-white text-white px-8 py-3 sm:px-10 sm:py-4 rounded-full hover:bg-white hover:text-black transition font-medium text-base sm:text-lg w-full sm:w-auto flex items-center justify-center">
-              {pageContent.cta_support_text}
-            </Link>
-          </div>
-        </div>
+        </section>
       </div>
     </div>
   );

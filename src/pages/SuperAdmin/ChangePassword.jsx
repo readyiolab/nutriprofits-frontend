@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Lock, CheckCircle2, AlertCircle, Loader, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import api from "@/config/apiConfig";
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -95,19 +96,12 @@ const ChangePassword = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3001/api/superadmin/change-password', {
-        method: 'POST',
-        credentials: 'include', // ✅ Send cookies with request
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          currentPassword: formData.currentPassword,
-          newPassword: formData.newPassword
-        })
+      const response = await api.post('/superadmin/change-password', {
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword
       });
 
-      if (response.ok) {
+      if (response.data.success) {
         setIsSuccess(true);
         setFormData({
           currentPassword: '',
@@ -116,8 +110,7 @@ const ChangePassword = () => {
         });
         setTimeout(() => setIsSuccess(false), 4000);
       } else {
-        const result = await response.json();
-        setErrors({ form: result.message || 'Failed to change password' });
+        setErrors({ form: response.data.message || 'Failed to change password' });
       }
     } catch (error) {
       console.error('Failed:', error);

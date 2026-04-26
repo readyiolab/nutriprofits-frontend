@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import api from "@/config/apiConfig";
 
 const SuperAdminProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null); // null = checking
@@ -27,22 +28,15 @@ const SuperAdminProtectedRoute = () => {
 
           // Optionally verify with backend in background
           try {
-            const verifyRes = await fetch("http://localhost:3001/api/superadmin/verify", {
-              method: "GET",
-              credentials: "include",
-              headers: { "Content-Type": "application/json" },
-            });
+            const verifyRes = await api.get("/superadmin/verify");
 
-            if (verifyRes.ok) {
-              const verifyData = await verifyRes.json();
-              if (!verifyData.success) {
-                console.log("⚠️ Backend verification failed - clearing auth");
-                localStorage.removeItem("isAuthenticated");
-                localStorage.removeItem("superadminId");
-                localStorage.removeItem("superadmin_user");
-                localStorage.removeItem("userRole");
-                setIsAuthenticated(false);
-              }
+            if (verifyRes.data && !verifyRes.data.success) {
+              console.log("⚠️ Backend verification failed - clearing auth");
+              localStorage.removeItem("isAuthenticated");
+              localStorage.removeItem("superadminId");
+              localStorage.removeItem("superadmin_user");
+              localStorage.removeItem("userRole");
+              setIsAuthenticated(false);
             }
           } catch (fetchError) {
             console.warn("⚠️ Background verification error:", fetchError.message);

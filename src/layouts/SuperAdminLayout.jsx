@@ -1,5 +1,6 @@
-import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import api from '@/config/apiConfig';
 import {
   LayoutDashboard,
   Users,
@@ -56,15 +57,9 @@ const SuperAdminLayout = () => {
   const handleLogout = async () => {
     try {
       // Call logout endpoint to clear cookie on backend
-      const response = await fetch('http://localhost:3001/api/superadmin/logout', {
-        method: 'POST',
-        credentials: 'include', // Important: Send cookies
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await api.post('/superadmin/logout');
 
-      if (response.ok) {
+      if (response.data.success) {
         // Clear localStorage
         localStorage.removeItem('superadmin_user');
         localStorage.removeItem('superadminId');

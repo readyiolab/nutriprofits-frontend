@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle, Navigation } from "lucide-react";
 
+import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
+
 const DynamicContact = () => {
   const navigate = useNavigate();
-  const { templateId } = useParams();
+  const backofficeData = useBackofficeData();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,43 +15,8 @@ const DynamicContact = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Dynamic page content (from tbl_contact_page_content)
-  const pageContent = {
-    hero_title: "GET IN TOUCH",
-    hero_subtitle: "We'd Love to Hear From You",
-    hero_description: "Whether you have a question, need support, or just want to say hello, we're here to help.",
-    hero_button_text: "Send Message",
-    hero_button_link: "#form",
-    hero_image_url: "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1200&h=600&fit=crop",
-    
-    office_title: "Get in Touch",
-    office_subtitle: "Fill out the form or visit us at our office",
-    office_image_url: null,
-    
-    address_title: "Address",
-    address: "Your Store Office, Business District, Your City, State 12345",
-    
-    email_title: "Email",
-    email: "support@example.com",
-    
-    phone_title: "Phone",
-    phone: "+91 123 456 7890",
-    
-    business_hours_title: "Business Hours",
-    business_hours: "Mon – Fri: 9:00 AM – 6:00 PM\nSat – Sun: Closed",
-    
-    form_title: "Send us a Message",
-    form_description: "Fill out the form below and we'll get back to you as soon as possible.",
-    
-    cta_title: "Need Immediate Help?",
-    cta_description: "Call us directly or visit our office.",
-    cta_button_text: "Call Now",
-    cta_button_link: "tel:+911234567890",
-    cta_secondary_button_text: "Get Directions",
-    cta_secondary_button_link: "https://maps.google.com",
-    
-    map_embed_url: null,
-  };
+  // Dynamic content from backofficeData.contactPageContent
+  const pageContent = backofficeData?.contactPageContent || {};
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -79,7 +46,7 @@ const DynamicContact = () => {
       icon: Phone,
       title: pageContent.phone_title,
       content: pageContent.phone,
-      link: `tel:${pageContent.phone}`,
+      link: `tel:${(pageContent.phone || "").replace(/\D/g, '')}`,
       color: "from-[#303841] to-[#d72323]"
     },
     {

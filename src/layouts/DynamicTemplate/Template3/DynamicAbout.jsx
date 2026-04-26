@@ -2,54 +2,20 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Target, Eye, Heart, Shield, Zap, Users, Award, TrendingUp, CheckCircle } from "lucide-react";
 
+import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
+
 const DynamicAbout = () => {
   const navigate = useNavigate();
-  const { templateId } = useParams();
+  const backofficeData = useBackofficeData();
+  const pageContent = backofficeData?.aboutPageContent || {};
 
-  // Dynamic page content (will come from tbl_about_page_content)
-  const pageContent = {
-    hero_title: "ABOUT US",
-    hero_subtitle: "Building Trust Through Quality & Service",
-    hero_description: "Discover our journey, values, and commitment to delivering excellence in everything we do.",
-    hero_button_text: "Learn More",
-    hero_button_link: "#story",
-    hero_image_url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop",
-    
-    story_title: "Our Story",
-    story_subtitle: "Where It All Began",
-    story_description: "Welcome to our store! We've been serving our customers with dedication and passion. Our journey started with a simple mission: to provide quality products and exceptional service. Over the years, we've grown into a trusted name, always putting our customers first.",
-    story_image_url: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=600&fit=crop",
-    
-    purpose_title: "Our Purpose",
-    purpose_subtitle: "What Drives Us",
-    
-    mission_title: "Our Mission",
-    mission_description: "Delivering excellence in every product and creating lasting relationships with our customers.",
-    
-    vision_title: "Our Vision",
-    vision_description: "To be the most innovative and trusted online store in our industry.",
-    
-    values_title: "Our Values",
-    values_description: "Innovation, Quality, Trust, and Customer-First approach guide everything we do.",
-    
-    why_choose_title: "Why Choose Us",
-    why_choose_subtitle: "We go above and beyond to ensure your satisfaction",
-    features: [
-      "Premium quality products",
-      "24/7 customer support",
-      "Fast and secure shipping",
-      "Easy returns and refunds",
-      "Secure payment options",
-      "Expert product knowledge"
-    ],
-    
-    cta_title: "Ready to Experience the Difference?",
-    cta_description: "Join thousands of satisfied customers who trust us.",
-    cta_button_text: "Start Shopping",
-    cta_button_link: `/template/${templateId}/products`,
-    cta_secondary_button_text: "Contact Us",
-    cta_secondary_button_link: `/template/${templateId}/contact`,
-  };
+  // Parse features JSON safely
+  let parsedFeatures = [];
+  try {
+    parsedFeatures = pageContent.features ? (typeof pageContent.features === 'string' ? JSON.parse(pageContent.features) : pageContent.features) : [];
+  } catch (e) {
+    parsedFeatures = [];
+  }
 
   const stats = [
     { icon: Users, value: "10K+", label: "Happy Customers" },
@@ -217,7 +183,7 @@ const DynamicAbout = () => {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pageContent.features.map((feature, index) => (
+          {parsedFeatures.map((feature, index) => (
             <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
@@ -246,16 +212,16 @@ const DynamicAbout = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
-              onClick={() => navigate(pageContent.cta_button_link)}
+              onClick={() => navigate(pageContent.cta_button_link || "/")}
               className="px-8 py-4 bg-[#d72323] text-white font-semibold rounded-full hover:bg-white hover:text-[#303841] transition-all shadow-lg transform "
             >
-              {pageContent.cta_button_text}
+              {pageContent.cta_button_text || "Start Shopping"}
             </button>
             <button 
-              onClick={() => navigate(pageContent.cta_secondary_button_link)}
+              onClick={() => navigate(pageContent.cta_secondary_button_link || "/contact")}
               className="px-8 py-4 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-[#303841] transition-all transform "
             >
-              {pageContent.cta_secondary_button_text}
+              {pageContent.cta_secondary_button_text || "Contact Us"}
             </button>
           </div>
         </div>

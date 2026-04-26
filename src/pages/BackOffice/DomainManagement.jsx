@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import api from "@/config/apiConfig";
 import {
   Dialog,
   DialogContent,
@@ -79,20 +80,21 @@ const DomainManagement = () => {
   );
 
   const {
-    data: fetchedSettings,
+    data: fetchedProfile,
     loading,
-    refetch: refetchSettings,
+    refetch: refetchProfile,
   } = useFetch(
-    `http://localhost:3001/api/backoffice/${backofficeId}/settings`,
+    `/backoffice/profile`,
     { immediate: true, showToast: false }
   );
 
+  const refetchSettings = refetchProfile;
+
   React.useEffect(() => {
-    if (fetchedSettings && typeof fetchedSettings === "object") {
-      const settingsData = fetchedSettings.settings || fetchedSettings;
-      setSettings((prev) => ({ ...prev, ...settingsData }));
+    if (fetchedProfile) {
+      setSettings((prev) => ({ ...prev, ...fetchedProfile }));
     }
-  }, [fetchedSettings]);
+  }, [fetchedProfile]);
 
   const handleSetupDomain = async () => {
     if (!customDomainInput.trim()) {
@@ -101,19 +103,13 @@ const DomainManagement = () => {
     }
     try {
       setSaving(true);
-      const response = await fetch(
-        `http://localhost:3001/api/backoffice/${backofficeId}/domain`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ customDomain: customDomainInput }),
-        }
-      );
-      const result = await response.json();
+      const response = await api.post(`/domain/setup`, {
+        domain: customDomainInput.trim(),
+      });
+      const result = response.data;
       if (result.success) {
         toast.success("Domain setup initiated! Check your email for DNS instructions.");
-        setDomainVerification(result.verification);
+        setDomainVerification(result.data || result.verification);
         setShowBanner(true);
         setSetupDomainOpen(false);
         setCustomDomainInput("");
@@ -132,15 +128,8 @@ const DomainManagement = () => {
   const handleRemoveDomain = async () => {
     try {
       setSaving(true);
-      const response = await fetch(
-        `http://localhost:3001/api/backoffice/${backofficeId}/domain`,
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        }
-      );
-      const result = await response.json();
+      const response = await api.delete(`/domain/remove`);
+      const result = response.data;
       if (result.success) {
         toast.success("Custom domain removed successfully!");
         setDomainVerification(null);
@@ -427,130 +416,74 @@ const DomainManagement = () => {
         </div>
       </div>
 
-      {/* Verification Steps - Only show if custom domain exists and not verified */}
+      {/* Verification Steps - Compact & Elegant Design */}
       {settings.custom_domain && settings.custom_domain_status !== "verified" && domainVerification && (
-        <Card className="border-slate-200 shadow-sm bg-white">
-          <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-4">
+        <Card className="border-amber-200 shadow-sm bg-amber-50/30 mt-6 overflow-hidden rounded-xl">
+          <div className="bg-amber-100/50 px-6 py-4 flex items-center justify-between border-b border-amber-200/50">
             <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5 text-amber-500" />
+              <Clock className="h-5 w-5 text-amber-600 animate-pulse" />
               <div>
-                <CardTitle className="text-base font-bold text-slate-900">Domain Verification Pending</CardTitle>
-                <CardDescription className="text-slate-500 text-sm">
-                  Your domain <span className="font-medium text-slate-700">{settings.custom_domain}</span> is pending verification.
-                </CardDescription>
+                <h3 className="text-sm font-bold text-amber-900">Verification Pending for {settings.custom_domain}</h3>
+                <p className="text-xs text-amber-700">Add these DNS records to your provider to complete setup. Propagation takes 5-15 mins.</p>
               </div>
             </div>
-          </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            {/* Step 1: TXT Record */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center">1</span>
-                <h4 className="font-semibold text-slate-900">Verify Domain Ownership</h4>
-                <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Required First</span>
-              </div>
-              <p className="text-sm text-slate-500">Add this TXT record to your DNS settings to prove you own the domain:</p>
-              
-              <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-xs text-slate-500 uppercase">Record Type:</span>
-                    <p className="font-mono font-medium">TXT</p>
+            <Button
+              onClick={handleCheckDomain}
+              disabled={checkingDomain}
+              size="sm"
+              className="bg-amber-600 hover:bg-amber-700 text-white shadow-sm h-8 px-4 font-semibold"
+            >
+              {checkingDomain ? <Loader2 className="h-3 w-3 mr-1.5 animate-spin" /> : <Check className="h-3 w-3 mr-1.5" />}
+              Verify Now
+            </Button>
+          </div>
+          <CardContent className="p-0">
+            <div className="divide-y divide-amber-100/50">
+              {/* Record 1: TXT */}
+              <div className="flex flex-col md:flex-row md:items-center py-4 px-6 hover:bg-white/50 transition-colors">
+                <div className="w-56 mb-3 md:mb-0">
+                  <span className="text-xs font-bold text-amber-800 uppercase tracking-widest">TXT Record</span>
+                  <p className="text-xs text-amber-600/80 mt-0.5">Required for ownership</p>
+                </div>
+                <div className="flex-1 flex gap-6">
+                  <div className="w-1/3">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-widest block mb-1.5 font-semibold">Name</span>
+                    <code className="text-xs font-mono font-medium text-slate-700 bg-white border border-slate-200 px-2 py-1 rounded shadow-sm">_igrowbig-verification</code>
                   </div>
-                  <div>
-                    <span className="text-xs text-slate-500 uppercase">Host/Name:</span>
-                    <div className="flex items-center gap-2">
-                      <code className="font-mono text-sm">_igrowbig-verification</code>
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard("_igrowbig-verification")}>
-                        <Copy className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <span className="text-xs text-slate-500 uppercase">Value:</span>
-                    <div className="flex items-center gap-2">
-                      <code className="font-mono text-sm flex-1 truncate">{getVerificationToken() || "Loading..."}</code>
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard(getVerificationToken() || "")}>
-                        <Copy className="h-3 w-3" />
-                      </Button>
+                  <div className="flex-1 overflow-hidden">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-widest block mb-1.5 font-semibold">Value</span>
+                    <div className="flex items-center gap-2 group max-w-full">
+                      <code className="text-xs font-mono font-medium text-slate-700 bg-white border border-slate-200 px-2 py-1 rounded shadow-sm truncate">{getVerificationToken() || "Loading..."}</code>
+                      <button onClick={() => copyToClipboard(getVerificationToken() || "")} className="text-slate-400 hover:text-amber-600 transition-colors flex-shrink-0" title="Copy to clipboard">
+                        <Copy className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <Separator />
-
-            {/* Step 2: CNAME/A Record */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 text-xs font-bold flex items-center justify-center">2</span>
-                <h4 className="font-semibold text-slate-900">Point Your Domain</h4>
-                <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">After Verification</span>
-              </div>
-              <p className="text-sm text-slate-500">Once Step 1 is verified, add ONE of these records:</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* CNAME Option */}
-                <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                  <p className="text-xs font-medium text-slate-700 mb-2">Recommended: CNAME Record</p>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Type:</span>
-                      <span className="font-mono">CNAME</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Host:</span>
-                      <span className="font-mono">@ or www</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Target:</span>
-                      <span className="font-mono">igrowbig.com</span>
-                    </div>
-                  </div>
+              {/* Record 2: CNAME */}
+              <div className="flex flex-col md:flex-row md:items-center py-4 px-6 hover:bg-white/50 transition-colors">
+                <div className="w-56 mb-3 md:mb-0">
+                  <span className="text-xs font-bold text-amber-800 uppercase tracking-widest">CNAME Record</span>
+                  <p className="text-xs text-amber-600/80 mt-0.5">Points your domain to us</p>
                 </div>
-
-                {/* A Record Option */}
-                <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                  <p className="text-xs font-medium text-slate-700 mb-2">Alternative: A Record</p>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Type:</span>
-                      <span className="font-mono">A</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Host:</span>
-                      <span className="font-mono">@</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">IP:</span>
-                      <span className="font-mono">{SERVER_IP}</span>
+                <div className="flex-1 flex gap-6">
+                  <div className="w-1/3">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-widest block mb-1.5 font-semibold">Name</span>
+                    <code className="text-xs font-mono font-medium text-slate-700 bg-white border border-slate-200 px-2 py-1 rounded shadow-sm">@ or www</code>
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-widest block mb-1.5 font-semibold">Target</span>
+                    <div className="flex items-center gap-2 group max-w-full">
+                      <code className="text-xs font-mono font-medium text-slate-700 bg-white border border-slate-200 px-2 py-1 rounded shadow-sm truncate">igrowbig.com</code>
+                      <button onClick={() => copyToClipboard("igrowbig.com")} className="text-slate-400 hover:text-amber-600 transition-colors flex-shrink-0" title="Copy to clipboard">
+                        <Copy className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <Separator />
-
-            {/* Check Status Button */}
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-slate-500">
-                <p>⏱️ DNS propagation takes 5-15 minutes (up to 48 hours)</p>
-                <p className="text-xs">We check every few minutes automatically</p>
-              </div>
-              <Button
-                onClick={handleCheckDomain}
-                disabled={checkingDomain}
-                className="bg-slate-900 hover:bg-slate-800 text-white"
-              >
-                {checkingDomain ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Check className="h-4 w-4 mr-2" />
-                )}
-                Check Now
-              </Button>
             </div>
           </CardContent>
         </Card>

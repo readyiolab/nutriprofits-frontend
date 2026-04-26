@@ -1,63 +1,14 @@
-import { useState, useEffect } from "react";
 import { Sparkles, ChevronDown, MessageCircle, Search } from "lucide-react";
+import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 
 const DynamicFAQ = () => {
+  const backofficeData = useBackofficeData();
   const [openIndex, setOpenIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [loading, setLoading] = useState(true);
 
-  // Page content from tbl_faq_page_content (you can later fetch this)
-  const [pageContent] = useState({
-    hero_title: "Frequently Asked Questions",
-    hero_subtitle: "Got questions? We've got answers",
-    hero_description: "Browse through our most commonly asked questions below",
-    cta_title: "Still Have Questions?",
-    cta_description: "Our support team is here 24/7 to help you",
-    cta_button_text: "Contact Support",
-    cta_button_link: "/contact",
-    cta_secondary_button_text: "Start Live Chat",
-    cta_secondary_button_link: "/chat",
-  });
-
-  // Real dummy FAQs from your tbl_faq_items (backoffice_id = 1)
-  const [faqs] = useState([
-    {
-      question: "What is your shipping policy?",
-      answer: "We offer free standard shipping on all orders over $50. Delivery takes 3-7 business days within the US. Orders below $50 have a flat $6.99 shipping fee.",
-      category: "Shipping",
-      display_order: 1
-    },
-    {
-      question: "Do you offer international shipping?",
-      answer: "Yes, we ship to most countries worldwide. International orders may take 10-21 days depending on location and customs processing.",
-      category: "Shipping",
-      display_order: 2
-    },
-    {
-      question: "What is your return policy?",
-      answer: "We offer a 30-day money-back guarantee on all products. Items must be unopened and in original packaging. Simply contact support to start your return.",
-      category: "Returns",
-      display_order: 3
-    },
-    {
-      question: "How can I track my order?",
-      answer: "Once your order ships, you'll receive a tracking number via email. You can track your package directly on our website or through the carrier's site.",
-      category: "Orders",
-      display_order: 4
-    },
-    {
-      question: "What payment methods do you accept?",
-      answer: "We accept all major credit cards (Visa, Mastercard, Amex), PayPal, Apple Pay, Google Pay, and Shop Pay. All transactions are secure and encrypted.",
-      category: "Payment",
-      display_order: 5
-    }
-  ]);
-
-  useEffect(() => {
-    // Simulate loading
-    setTimeout(() => setLoading(false), 600);
-  }, []);
+  const pageContent = backofficeData?.faqPageContent || {};
+  const faqs = backofficeData?.faqItems || [];
 
   // Get unique categories
   const categories = ["All", ...new Set(faqs.map(f => f.category))];
@@ -72,16 +23,6 @@ const DynamicFAQ = () => {
     })
     .sort((a, b) => a.display_order - b.display_order);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading FAQs...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">

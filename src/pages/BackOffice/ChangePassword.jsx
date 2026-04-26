@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast, Toaster } from "sonner";
+import api from "@/config/apiConfig";
 
 export default function ChangePassword() {
   const [loading, setLoading] = useState(false);
@@ -61,24 +62,12 @@ export default function ChangePassword() {
     setLoading(true);
 
     try {
-      const backofficeId = localStorage.getItem("backoffice_id");
-      
-      const response = await fetch(
-        `http://localhost:3001/api/backoffice/change-password`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            currentPassword: formData.currentPassword,
-            newPassword: formData.newPassword,
-          }),
-        }
-      );
+      const response = await api.post(`/backoffice/change-password`, {
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword,
+      });
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data.success) {
         toast.success("Password changed successfully!");

@@ -12,37 +12,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
+import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
+
 const DynamicFAQ = () => {
   const navigate = useNavigate();
-  const { templateId } = useParams();
+  const backofficeData = useBackofficeData();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  // Dynamic page content
-  const pageContent = {
-    hero_title: "FAQ SECTION",
-    hero_subtitle: "Frequently Asked Questions",
-    hero_description: "Find quick answers to the most common questions about our products and services.",
-    hero_image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&h=600&fit=crop",
-    cta_title: "Still have questions?",
-    cta_description: "Our support team is ready to help you 24/7.",
-    cta_button_text: "Contact Support",
-    cta_button_link: `/template/${templateId}/contact`,
-    cta_secondary_button_text: "View All Products",
-    cta_secondary_button_link: `/template/${templateId}/products`,
-  };
-
-  // FAQ items from DB
-  const faqItems = [
-    { faq_id: 1, question: "What is your shipping policy?", answer: "We offer free standard shipping on all orders over $50. Standard delivery takes 5-7 business days. Express shipping is available at checkout.", category: "Shipping", display_order: 1, is_active: 1 },
-    { faq_id: 2, question: "Do you offer international shipping?", answer: "Yes, we ship to most countries worldwide. International shipping costs and delivery times vary by destination.", category: "Shipping", display_order: 2, is_active: 1 },
-    { faq_id: 3, question: "What is your return policy?", answer: "We offer a 30-day money-back guarantee on all products. Items must be unused and in original packaging.", category: "Returns", display_order: 3, is_active: 1 },
-    { faq_id: 4, question: "How can I track my order?", answer: "Once your order ships, you'll receive a tracking number via email. You can use this to track your package on our website.", category: "Orders", display_order: 4, is_active: 1 },
-    { faq_id: 5, question: "What payment methods do you accept?", answer: "We accept all major credit cards, debit cards, PayPal, and digital wallets. All payments are securely processed.", category: "Payment", display_order: 5, is_active: 1 },
-    { faq_id: 6, question: "How do I cancel or modify my order?", answer: "You can cancel or modify your order within 24 hours of placing it by contacting our support team.", category: "Orders", display_order: 6, is_active: 1 },
-    { faq_id: 7, question: "Do you offer refunds?", answer: "Yes, we offer full refunds for returns within 30 days. The item must be in its original condition.", category: "Returns", display_order: 7, is_active: 1 },
-    { faq_id: 8, question: "Is my payment information secure?", answer: "Yes, we use industry-standard SSL encryption to protect your payment information. We never store your credit card details.", category: "Payment", display_order: 8, is_active: 1 },
-  ];
+  const pageContent = backofficeData?.faqPageContent || {};
+  const faqItems = backofficeData?.faqItems || [];
 
   const categories = ["all", ...new Set(faqItems.map(item => item.category))];
 
@@ -70,7 +49,7 @@ const DynamicFAQ = () => {
       <section className="relative h-[500px] flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${pageContent.hero_image})` }}
+          style={{ backgroundImage: `url(${pageContent.hero_image_url || pageContent.hero_image || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&h=600&fit=crop"})` }}
         />
         <div className="absolute inset-0 bg-black/70" />
         <div className="relative z-10 text-center text-white px-6 max-w-4xl">
@@ -185,17 +164,17 @@ const DynamicFAQ = () => {
             <Button
               size="lg"
               className="bg-red-600 hover:bg-red-700 text-white px-10 rounded-full shadow-lg transform hover:scale-105 transition"
-              onClick={() => navigate(pageContent.cta_button_link)}
+              onClick={() => navigate(pageContent.cta_button_link || "/contact")}
             >
-              {pageContent.cta_button_text}
+              {pageContent.cta_button_text || "Contact Support"}
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-gray-900 hover:bg-white  px-10 rounded-full"
-              onClick={() => navigate(pageContent.cta_secondary_button_link)}
+              className="border-white text-gray-900 hover:bg-white  px-10 rounded-full text-white hover:text-gray-900"
+              onClick={() => navigate(pageContent.cta_secondary_button_link || "/")}
             >
-              {pageContent.cta_secondary_button_text}
+              {pageContent.cta_secondary_button_text || "View All Products"}
             </Button>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import api from '@/config/apiConfig';
 
 const INITIAL_FORM_STATE = {
   hero_title: '',
@@ -43,11 +44,8 @@ const ProductPage = () => {
   const fetchContent = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `http://localhost:3001/api/product-page-content/${backofficeId}/content`,
-        { credentials: 'include' }
-      );
-      const result = await response.json();
+      const response = await api.get(`/pages/product/${backofficeId}`);
+      const result = response.data;
       
       if (result.success && result.data) {
         setFormData({ ...INITIAL_FORM_STATE, ...result.data });
@@ -102,16 +100,8 @@ const ProductPage = () => {
       // Add all form data as JSON string
       formDataToSend.append('data', JSON.stringify(formData));
 
-      const response = await fetch(
-        `http://localhost:3001/api/product-page-content/${backofficeId}/content/upsert`,
-        {
-          method: 'POST',
-          credentials: 'include',
-          body: formDataToSend,
-        }
-      );
-
-      const result = await response.json();
+      const response = await api.post(`/pages/product/${backofficeId}`, formDataToSend);
+      const result = response.data;
 
       if (result.success) {
         showMessage('success', 'Content saved successfully!');

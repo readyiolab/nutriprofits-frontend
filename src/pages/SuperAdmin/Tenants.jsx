@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, ExternalLink, ArrowLeft, Plus, Filter, Loader, AlertCircle, Check, X } from 'lucide-react';
+import api from '@/config/apiConfig';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,16 +54,8 @@ const Tenants = () => {
 
   const fetchBackofficeUsers = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/superadmin/backoffice-users', {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        setUsers(result.data || []);
-      }
+      const response = await api.get('/superadmin/backoffice-users');
+      setUsers(response.data.data || []);
     } catch (error) {
       console.error('Failed to fetch users:', error);
       showAlert('Failed to load users', 'error');
@@ -73,19 +66,8 @@ const Tenants = () => {
 
   const viewUserDetails = async (backofficeId) => {
     try {
-      const response = await fetch(
-        `http://localhost:3001/api/superadmin/backoffice-users/${backofficeId}`,
-        {
-          method: 'GET',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
-
-      if (response.ok) {
-        const result = await response.json();
-        setSelectedUser(result.data);
-      }
+      const response = await api.get(`/superadmin/backoffice-users/${backofficeId}`);
+      setSelectedUser(response.data.data);
     } catch (error) {
       console.error('Failed to fetch user details:', error);
       showAlert('Failed to load user details', 'error');
@@ -100,17 +82,12 @@ const Tenants = () => {
       variant: newStatus === 'active' ? 'default' : 'destructive',
       onConfirm: async () => {
         try {
-          const response = await fetch(
-            `http://localhost:3001/api/superadmin/backoffice-users/${backofficeId}/settings`,
-            {
-              method: 'PUT',
-              credentials: 'include',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ status: newStatus })
-            }
+          const response = await api.put(
+            `/superadmin/backoffice-users/${backofficeId}/settings`,
+            { status: newStatus }
           );
 
-          if (response.ok) {
+          if (response.data.success) {
             fetchBackofficeUsers();
             viewUserDetails(backofficeId);
             showAlert(`User status updated to ${newStatus}`, 'success');
@@ -133,19 +110,14 @@ const Tenants = () => {
 
     setDomainLoading(true);
     try {
-      const response = await fetch(
-        `http://localhost:3001/api/superadmin/backoffice-users/${selectedUser.backoffice_id}/domain`,
-        {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ custom_domain: customDomain.trim() })
-        }
+      const response = await api.post(
+        `/superadmin/backoffice-users/${selectedUser.backoffice_id}/domain`,
+        { custom_domain: customDomain.trim() }
       );
 
-      const result = await response.json();
+      const result = response.data;
 
-      if (response.ok) {
+      if (result.success) {
         showAlert('Custom domain setup initiated! Check user email for DNS instructions.', 'success');
         setShowDomainSetup(false);
         setCustomDomain('');
@@ -169,16 +141,11 @@ const Tenants = () => {
       variant: 'destructive',
       onConfirm: async () => {
         try {
-          const response = await fetch(
-            `http://localhost:3001/api/superadmin/backoffice-users/${backofficeId}/domain`,
-            {
-              method: 'DELETE',
-              credentials: 'include',
-              headers: { 'Content-Type': 'application/json' }
-            }
+          const response = await api.delete(
+            `/superadmin/backoffice-users/${backofficeId}/domain`
           );
 
-          if (response.ok) {
+          if (response.data.success) {
             showAlert('Custom domain removed successfully', 'success');
             viewUserDetails(backofficeId);
             fetchBackofficeUsers();
@@ -402,217 +369,251 @@ const Tenants = () => {
 
         {/* Detail Sheet */}
         <Sheet open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
-          <SheetContent side="right" className="w-full sm:max-w-md border-l p-0 overflow-y-auto">
+          <SheetContent side="right" className="w-full sm:max-w-[600px] border-l p-0 overflow-y-auto bg-slate-50/50">
             {selectedUser && (
-              <div className="flex flex-col h-full bg-slate-50/30">
-                <SheetHeader className="p-6 bg-white border-b sticky top-0 z-10">
-                  <div className="flex justify-between items-start">
+              <div className="flex flex-col h-full bg-transparent">
+                {/* Header Section */}
+                <SheetHeader className="p-8 pb-6 bg-white border-b sticky top-0 z-20 shadow-sm">
+                  <div className="flex justify-between items-start mb-6">
                     <div>
-                      <SheetTitle className="text-xl font-bold">{selectedUser.name}</SheetTitle>
-                      <SheetDescription className="text-slate-500 mt-0.5">{selectedUser.email}</SheetDescription>
+                      <SheetTitle className="text-2xl font-extrabold text-slate-900 tracking-tight">
+                        {selectedUser.name}
+                      </SheetTitle>
+                      <SheetDescription className="text-slate-500 mt-1.5 text-[15px] font-medium">
+                        {selectedUser.email}
+                      </SheetDescription>
                     </div>
-                    <Badge variant={selectedUser.status === 'active' ? 'default' : 'secondary'} className="px-3">
+                    <Badge 
+                      variant={selectedUser.status === 'active' ? 'default' : 'secondary'} 
+                      className={`px-3.5 py-1 text-xs font-bold uppercase tracking-wider rounded-full shadow-sm ${selectedUser.status === 'active' ? 'bg-green-500 hover:bg-green-600' : ''}`}
+                    >
                       {selectedUser.status}
                     </Badge>
                   </div>
-                  <div className="flex gap-2 mt-4">
+                  
+                  <div className="flex gap-3">
                     <Button
                       variant={selectedUser.status === 'active' ? 'destructive' : 'default'}
-                      size="sm"
-                      className="h-8 px-4"
+                      className={`flex-1 font-semibold shadow-sm ${selectedUser.status === 'active' ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-600 hover:bg-blue-700'}`}
                       onClick={() => updateUserStatus(
                         selectedUser.backoffice_id,
                         selectedUser.status === 'active' ? 'inactive' : 'active'
                       )}
                     >
-                      {selectedUser.status === 'active' ? 'Deactivate' : 'Activate'}
+                      {selectedUser.status === 'active' ? 'Deactivate Access' : 'Activate Account'}
                     </Button>
-                    <Button variant="outline" size="sm" className="h-8 px-4" asChild>
+                    <Button variant="outline" className="flex-1 font-semibold shadow-sm border-slate-200 hover:bg-slate-50" asChild>
                       <a href={selectedUser.active_url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-3.5 h-3.5 mr-2" />
-                        Visit Store
+                        <ExternalLink className="w-4 h-4 mr-2 text-slate-500" />
+                        Visit Live Store
                       </a>
                     </Button>
                   </div>
                 </SheetHeader>
 
-                <div className="p-6">
-                  <Tabs defaultValue="overview" className="space-y-6">
-                    <TabsList className="bg-slate-100/50 p-1 rounded-lg border w-full">
-                      <TabsTrigger value="overview" className="flex-1">Overview</TabsTrigger>
-                      <TabsTrigger value="store" className="flex-1">Branding</TabsTrigger>
-                      <TabsTrigger value="domain" className="flex-1">Domain</TabsTrigger>
-                      <TabsTrigger value="support" className="flex-1">Contact</TabsTrigger>
+                {/* Content Section */}
+                <div className="p-8 pt-6">
+                  <Tabs defaultValue="overview" className="space-y-8">
+                    <TabsList className="bg-white/80 backdrop-blur-md p-1.5 rounded-xl border border-slate-200/60 shadow-sm w-full flex">
+                      <TabsTrigger value="overview" className="flex-1 rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-medium">Overview</TabsTrigger>
+                      <TabsTrigger value="store" className="flex-1 rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-medium">Branding</TabsTrigger>
+                      <TabsTrigger value="domain" className="flex-1 rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-medium">Domain</TabsTrigger>
+                      <TabsTrigger value="support" className="flex-1 rounded-lg py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-600 font-medium">Contact</TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="overview" className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <Card className="border-none shadow-sm bg-blue-50/50">
-                          <CardContent className="pt-4 p-4">
-                            <p className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Products</p>
-                            <h3 className="text-xl font-bold text-slate-900 mt-1">{selectedUser.stats?.products || 0}</h3>
+                    <TabsContent value="overview" className="space-y-6 mt-0">
+                      <div className="grid grid-cols-2 gap-5">
+                        <Card className="border-slate-200 shadow-sm bg-gradient-to-br from-blue-50/50 to-white">
+                          <CardContent className="p-5">
+                            <p className="text-[11px] text-blue-600 font-bold uppercase tracking-widest mb-2">Total Products</p>
+                            <h3 className="text-3xl font-black text-slate-900 tracking-tight">{selectedUser.stats?.products || 0}</h3>
                           </CardContent>
                         </Card>
-                        <Card className="border-none shadow-sm bg-purple-50/50">
-                          <CardContent className="pt-4 p-4">
-                            <p className="text-[10px] text-purple-600 font-bold uppercase tracking-wider">Categories</p>
-                            <h3 className="text-xl font-bold text-slate-900 mt-1">{selectedUser.stats?.categories || 0}</h3>
+                        <Card className="border-slate-200 shadow-sm bg-gradient-to-br from-purple-50/50 to-white">
+                          <CardContent className="p-5">
+                            <p className="text-[11px] text-purple-600 font-bold uppercase tracking-widest mb-2">Categories</p>
+                            <h3 className="text-3xl font-black text-slate-900 tracking-tight">{selectedUser.stats?.categories || 0}</h3>
                           </CardContent>
                         </Card>
                       </div>
 
-                      <Card className="border shadow-none">
-                        <CardHeader className="pb-3 border-b bg-slate-50/50">
-                          <CardTitle className="text-sm">Account Information</CardTitle>
+                      <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
+                        <CardHeader className="py-4 border-b bg-slate-50/50">
+                          <CardTitle className="text-[13px] uppercase tracking-wider font-bold text-slate-600">Account Information</CardTitle>
                         </CardHeader>
-                        <CardContent className="grid grid-cols-2 gap-y-4 pt-4">
-                          <div>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase">Backoffice ID</p>
-                            <p className="text-sm font-semibold text-slate-900">{selectedUser.backoffice_id}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase">Created At</p>
-                            <p className="text-sm font-semibold text-slate-900">{new Date(selectedUser.created_at).toLocaleDateString()}</p>
-                          </div>
-                          <div className="col-span-2">
-                            <p className="text-[10px] text-slate-400 font-bold uppercase">Subscription Plan</p>
-                            <div className="mt-1">
-                              <Badge variant="outline" className="capitalize">{selectedUser.subscription_plan} Plan</Badge>
+                        <CardContent className="p-6">
+                          <div className="grid grid-cols-2 gap-y-6">
+                            <div>
+                              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-1.5">Tenant ID</p>
+                              <p className="font-mono text-sm font-semibold text-slate-700 bg-slate-100/50 p-1.5 rounded w-fit">{selectedUser.backoffice_id}</p>
+                            </div>
+                            <div>
+                              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-1.5">Date Joined</p>
+                              <p className="text-sm font-semibold text-slate-800">{new Date(selectedUser.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                            </div>
+                            <div className="col-span-2 pt-2 border-t border-slate-100">
+                              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-3">Active Subscription</p>
+                              <div className="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg">
+                                <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                                <span className="text-sm font-bold capitalize text-slate-800 tracking-wide">{selectedUser.subscription_plan} Plan</span>
+                              </div>
                             </div>
                           </div>
                         </CardContent>
                       </Card>
                     </TabsContent>
 
-                    <TabsContent value="store" className="space-y-4">
-                      <Card className="border shadow-none">
-                        <CardContent className="p-6 space-y-6">
-                          <div className="flex items-center gap-6">
-                            <div className="w-24 h-24 bg-white rounded-xl flex items-center justify-center border border-dashed border-slate-200 overflow-hidden shadow-inner">
+                    <TabsContent value="store" className="space-y-6 mt-0">
+                      <Card className="border-slate-200 shadow-sm overflow-hidden">
+                        <CardHeader className="py-4 border-b bg-slate-50/50">
+                          <CardTitle className="text-[13px] uppercase tracking-wider font-bold text-slate-600">Store Branding</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-6">
+                          <div className="flex items-center gap-6 pb-6">
+                            <div className="w-24 h-24 bg-slate-50 rounded-2xl flex items-center justify-center border border-dashed border-slate-300 overflow-hidden shrink-0">
                               {selectedUser.branding?.logo_url ? (
-                                <img src={selectedUser.branding.logo_url} alt="Logo" className="max-w-full max-h-full object-contain p-2" />
+                                <img src={selectedUser.branding.logo_url} alt="Logo" className="w-full h-full object-contain p-2 hover:scale-105 transition-transform duration-300" />
                               ) : (
-                                <Plus className="w-6 h-6 text-slate-300" />
+                                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">No Logo</span>
                               )}
                             </div>
-                            <div className="space-y-2">
-                              <label className="text-[10px] text-slate-400 font-bold uppercase">Store Name</label>
-                              <p className="text-lg font-bold text-slate-900">{selectedUser.store_name}</p>
+                            <div className="flex-1">
+                              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-1">Store Name</p>
+                              <p className="text-xl font-bold text-slate-900 tracking-tight">{selectedUser.store_name}</p>
                             </div>
                           </div>
-                          <Separator className="opacity-50" />
-                          <div className="grid grid-cols-2 gap-4">
+                          
+                          <Separator className="bg-slate-100" />
+                          
+                          <div className="grid grid-cols-2 gap-6 pt-6">
                             <div>
-                              <p className="text-[10px] text-slate-400 font-bold uppercase mb-2">Primary Color</p>
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg shadow-sm border border-white" style={{ backgroundColor: selectedUser.branding?.primary_color || '#3b82f6' }}></div>
-                                <span className="font-mono text-sm font-medium">{selectedUser.branding?.primary_color || '#3b82f6'}</span>
+                              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-3">Theme Color</p>
+                              <div className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100 w-fit">
+                                <div 
+                                  className="w-6 h-6 rounded-md shadow-sm border border-slate-200" 
+                                  style={{ backgroundColor: selectedUser.branding?.primary_color || '#3b82f6' }}
+                                ></div>
+                                <span className="font-mono text-xs font-bold text-slate-700 uppercase tracking-widest">
+                                  {selectedUser.branding?.primary_color || '#3B82F6'}
+                                </span>
                               </div>
                             </div>
                             <div>
-                              <p className="text-[10px] text-slate-400 font-bold uppercase mb-2">Active Template</p>
-                              <Badge variant="outline">Template {selectedUser.template_id}</Badge>
+                              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-3">Store Template</p>
+                              <Badge variant="outline" className="px-3 py-1.5 text-xs font-bold bg-slate-50 border-slate-200 text-slate-700">
+                                Template ID: {selectedUser.template_id}
+                              </Badge>
                             </div>
                           </div>
                         </CardContent>
                       </Card>
                     </TabsContent>
 
-                    <TabsContent value="domain" className="space-y-4">
-                      <Card className="border shadow-none">
-                        <CardHeader className="pb-3 border-b bg-slate-50/50">
-                          <CardTitle className="text-sm">Connectivity</CardTitle>
+                    <TabsContent value="domain" className="space-y-6 mt-0">
+                      <Card className="border-slate-200 shadow-sm overflow-hidden">
+                        <CardHeader className="py-4 border-b bg-slate-50/50">
+                          <CardTitle className="text-[13px] uppercase tracking-wider font-bold text-slate-600">Connectivity</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-4 space-y-4">
-                          <div className="p-3 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-between">
-                            <div>
-                              <p className="text-[10px] text-slate-400 font-bold uppercase">System Subdomain</p>
-                              <p className="text-sm font-medium mt-0.5">{selectedUser.subdomain}</p>
-                            </div>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => window.open(selectedUser.active_url, '_blank')}>
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </Button>
-                          </div>
-
-                          {selectedUser.custom_domain ? (
-                            <div className="p-4 rounded-lg bg-blue-50/30 border border-blue-100 space-y-3">
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <p className="text-[10px] text-blue-600 font-bold uppercase tracking-tight">Custom Domain</p>
-                                  <h4 className="text-md font-bold text-slate-900 mt-1">{selectedUser.custom_domain}</h4>
-                                </div>
-                                <Badge variant={selectedUser.custom_domain_status === 'verified' ? 'default' : 'secondary'} className="text-[10px] h-5">
-                                  {selectedUser.custom_domain_status}
-                                </Badge>
-                              </div>
-                              <Button variant="outline" size="sm" className="w-full text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => removeCustomDomain(selectedUser.backoffice_id)}>
-                                Remove Custom Domain
+                        <CardContent className="p-6 space-y-6">
+                          <div>
+                            <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-2">System Subdomain</p>
+                            <div className="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-200 rounded-xl group hover:border-blue-200 transition-colors">
+                              <p className="text-sm font-semibold text-slate-800">{selectedUser.subdomain}</p>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 group-hover:text-blue-600 group-hover:bg-blue-50" onClick={() => window.open(selectedUser.active_url, '_blank')}>
+                                <ExternalLink className="w-4 h-4" />
                               </Button>
                             </div>
-                          ) : (
-                            <div className="text-center py-6 border-2 border-dashed rounded-xl bg-white">
-                              {!showDomainSetup ? (
-                                <div className="space-y-3">
-                                  <p className="text-xs text-slate-500">Enable brand authority with a custom domain</p>
-                                  <Button variant="secondary" size="sm" className="h-8" onClick={() => setShowDomainSetup(true)}>
-                                    <Plus className="w-3.5 h-3.5 mr-2" />
-                                    Setup Domain
-                                  </Button>
+                          </div>
+
+                          <div>
+                            <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-2">Custom Domain</p>
+                            {selectedUser.custom_domain ? (
+                              <div className="p-5 rounded-xl bg-blue-50/50 border border-blue-100 flex items-center justify-between shadow-sm">
+                                <div>
+                                  <div className="flex items-center gap-3">
+                                    <h4 className="text-base font-bold text-slate-900 tracking-tight">{selectedUser.custom_domain}</h4>
+                                    <Badge variant={selectedUser.custom_domain_status === 'verified' ? 'default' : 'outline'} className={`lowercase h-5 px-2 py-0 ${selectedUser.custom_domain_status === 'verified' ? 'bg-green-500' : 'bg-amber-100 text-amber-700 border-amber-200 font-bold'}`}>
+                                      {selectedUser.custom_domain_status}
+                                    </Badge>
+                                  </div>
                                 </div>
-                              ) : (
-                                <div className="px-4 space-y-3 text-left">
-                                  <div className="space-y-1.5">
-                                    <label className="text-xs font-semibold">Enter domain name</label>
+                                <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-100 font-semibold h-8" onClick={() => removeCustomDomain(selectedUser.backoffice_id)}>
+                                  Remove
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="p-6 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 text-center transition-all hover:bg-slate-50">
+                                {!showDomainSetup ? (
+                                  <div className="flex flex-col items-center justify-center space-y-3">
+                                    <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center mb-1">
+                                      <ExternalLink className="w-5 h-5 text-blue-500" />
+                                    </div>
+                                    <p className="text-[13px] font-medium text-slate-600">Connect a custom domain to establish brand authority.</p>
+                                    <Button variant="default" size="sm" className="h-9 mt-2 font-semibold shadow-sm bg-slate-800 hover:bg-slate-900" onClick={() => setShowDomainSetup(true)}>
+                                      <Plus className="w-4 h-4 mr-1.5" />
+                                      Add Custom Domain
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <div className="text-left max-w-sm mx-auto animate-in fade-in zoom-in-95 duration-200">
+                                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Enter Domain Name</label>
                                     <Input 
-                                      placeholder="store.yourdomain.com" 
+                                      placeholder="e.g. store.yourbrand.com" 
                                       value={customDomain} 
                                       onChange={(e) => setCustomDomain(e.target.value)} 
-                                      className="h-9 text-sm"
+                                      className="h-10 text-sm border-slate-300 shadow-sm focus-visible:ring-blue-500 mb-4"
+                                      autoFocus
                                     />
+                                    <div className="flex gap-3">
+                                      <Button className="flex-1 h-9 font-semibold shadow-sm" onClick={setupCustomDomain} disabled={domainLoading}>
+                                        {domainLoading ? <Loader className="w-3.5 h-3.5 animate-spin mr-2" /> : <Check className="w-3.5 h-3.5 mr-2" />}
+                                        Verify & Connect
+                                      </Button>
+                                      <Button variant="outline" className="flex-1 h-9 font-semibold" onClick={() => { setShowDomainSetup(false); setCustomDomain(''); }}>Cancel</Button>
+                                    </div>
                                   </div>
-                                  <div className="flex gap-2">
-                                    <Button className="flex-1 h-8 text-xs" onClick={setupCustomDomain} disabled={domainLoading}>
-                                      {domainLoading ? <Loader className="w-3 h-3 animate-spin mr-2" /> : 'Confirm'}
-                                    </Button>
-                                    <Button variant="ghost" className="h-8 text-xs" onClick={() => setShowDomainSetup(false)}>Cancel</Button>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </CardContent>
                       </Card>
                     </TabsContent>
 
-                    <TabsContent value="support" className="space-y-4">
-                      <Card className="border shadow-none">
+                    <TabsContent value="support" className="space-y-6 mt-0">
+                      <Card className="border-slate-200 shadow-sm overflow-hidden">
+                        <CardHeader className="py-4 border-b bg-slate-50/50">
+                          <CardTitle className="text-[13px] uppercase tracking-wider font-bold text-slate-600">Support Information</CardTitle>
+                        </CardHeader>
                         <CardContent className="p-6">
-                          <div className="space-y-6">
-                            <div className="flex gap-4">
-                              <div className="bg-slate-100 p-2.5 rounded-lg h-fit">
-                                <AlertCircle className="w-4 h-4 text-slate-600" />
+                          <div className="grid grid-cols-1 gap-6">
+                            <div className="flex items-start gap-4">
+                              <div className="bg-blue-50 border border-blue-100 p-2.5 rounded-xl shrink-0 mt-0.5">
+                                <AlertCircle className="w-4 h-4 text-blue-600" />
                               </div>
                               <div>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Support Email</p>
-                                <p className="text-sm font-semibold text-slate-900 mt-1">{selectedUser.contact?.email || selectedUser.email}</p>
+                                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-1">Customer Support Email</p>
+                                <p className="text-sm font-semibold text-slate-900">{selectedUser.contact?.email || selectedUser.email}</p>
                               </div>
                             </div>
-                            <div className="flex gap-4">
-                              <div className="bg-slate-100 p-2.5 rounded-lg h-fit">
-                                <Plus className="w-4 h-4 text-slate-600 rotate-45" />
+                            <Separator className="bg-slate-100" />
+                            <div className="flex items-start gap-4">
+                              <div className="bg-purple-50 border border-purple-100 p-2.5 rounded-xl shrink-0 mt-0.5">
+                                <Plus className="w-4 h-4 text-purple-600 rotate-45" />
                               </div>
                               <div>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Phone Number</p>
-                                <p className="text-sm font-semibold text-slate-900 mt-1">{selectedUser.contact?.phone || 'Not provided'}</p>
+                                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-1">Business Phone Contact</p>
+                                <p className="text-sm font-semibold text-slate-900">{selectedUser.contact?.phone || 'Not provided'}</p>
                               </div>
                             </div>
-                            <div className="flex gap-4">
-                              <div className="bg-slate-100 p-2.5 rounded-lg h-fit">
-                                <Filter className="w-4 h-4 text-slate-600" />
+                            <Separator className="bg-slate-100" />
+                            <div className="flex items-start gap-4">
+                              <div className="bg-emerald-50 border border-emerald-100 p-2.5 rounded-xl shrink-0 mt-0.5">
+                                <Filter className="w-4 h-4 text-emerald-600" />
                               </div>
                               <div>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Business Address</p>
-                                <p className="text-sm font-semibold text-slate-900 mt-1 leading-relaxed">
+                                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-1">Registered Address</p>
+                                <p className="text-sm font-semibold text-slate-900 leading-relaxed max-w-sm">
                                   {selectedUser.contact?.address || 'Mumbai, MH, India'}
                                 </p>
                               </div>

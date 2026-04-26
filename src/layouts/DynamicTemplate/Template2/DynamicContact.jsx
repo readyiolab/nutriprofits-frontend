@@ -1,55 +1,19 @@
-import { useState, useEffect } from "react";
 import { Sparkles, Mail, Phone, MapPin, Clock, Send, MessageCircle, ShoppingBag } from "lucide-react";
+import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 
 const DynamicContact = () => {
+  const backofficeData = useBackofficeData();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     subject: "",
     message: ""
   });
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Dynamic content from your tbl_contact_page_content
-  const [pageContent, setPageContent] = useState({
-    hero_title: "Get In Touch",
-    hero_subtitle: "We'd love to hear from you",
-    hero_description: "Have a question about our products? Need help with an order? Our team is here to help 24/7.",
-    
-    office_title: "Visit Our Office",
-    office_subtitle: "We're here to help in person too",
-    
-    address_title: "Address",
-    address: "123 Wellness Avenue, Suite 500<br/>Los Angeles, CA 90210<br/>United States",
-    
-    email_title: "Email Us",
-    email: "support@khushidon.com",
-    
-    phone_title: "Call Us",
-    phone: "+1 (555) 123-4567",
-    
-    business_hours_title: "Business Hours",
-    business_hours: "Monday - Friday: 9:00 AM - 6:00 PM<br/>Saturday: 10:00 AM - 4:00 PM<br/>Sunday: Closed",
-    
-    form_title: "Send Us a Message",
-    form_description: "Fill out the form below and we'll get back to you within 24 hours",
-    
-    cta_title: "Ready to Transform Your Health?",
-    cta_description: "Join thousands who trust us for premium wellness supplements",
-    cta_button_text: "Shop Now",
-    cta_button_link: "/products",
-    cta_secondary_button_text: "Live Chat",
-    cta_secondary_button_link: "/chat",
-    
-    map_embed_url: "https://www.google.com/maps/embed?pb=..."
-  });
-
-  useEffect(() => {
-    // Simulate loading (replace with real API call later)
-    setTimeout(() => setLoading(false), 600);
-  }, []);
+  // Dynamic content from backofficeData.contactPageContent
+  const pageContent = backofficeData?.contactPageContent || {};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -202,7 +166,7 @@ const DynamicContact = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-lg">{pageContent.phone_title}</p>
-                    <a href={`tel:${pageContent.phone.replace(/\D/g, '')}`} className="text-white/90 hover:text-white transition">
+                    <a href={`tel:${(pageContent.phone || "").replace(/\D/g, '')}`} className="text-white/90 hover:text-white transition">
                       {pageContent.phone}
                     </a>
                   </div>

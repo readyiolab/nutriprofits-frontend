@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useFetch } from "@/hooks";
+import api from "@/config/apiConfig";
 import { toast } from "sonner";
 
 const INITIAL_STATE = {
@@ -168,8 +169,10 @@ const SiteBranding = () => {
   const [faviconPreview, setFaviconPreview] = useState(null);
   const [activeTab, setActiveTab] = useState("identity");
 
+  const backofficeId = localStorage.getItem("backofficeId") || "1";
+
   const { data, loading, error, refetch } = useFetch(
-    "http://localhost:3001/api/backoffice/branding",
+    `/site/branding/${backofficeId}`,
     { immediate: true, showToast: false }
   );
 
@@ -242,16 +245,8 @@ const SiteBranding = () => {
     if (formData.favicon) fd.append("favicon", formData.favicon);
 
     try {
-      const response = await fetch("http://localhost:3001/api/backoffice/branding", {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        credentials: "include",
-        body: fd,
-      });
-
-      const res = await response.json();
+      const response = await api.post(`/site/branding/${backofficeId}`, fd);
+      const res = response.data;
 
       if (res.success) {
         toast.success("Branding updated successfully!");

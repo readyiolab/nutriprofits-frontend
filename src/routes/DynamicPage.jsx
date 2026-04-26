@@ -18,6 +18,7 @@ import T2Contact from "../layouts/DynamicTemplate/Template2/DynamicContact";
 import T2BlogList from "../layouts/DynamicTemplate/Template2/DynamicBlogList";
 import T2BlogDetail from "../layouts/DynamicTemplate/Template2/DynamicBlogDetail";
 import T2Products from "../layouts/DynamicTemplate/Template2/DynamicProducts";
+import T2ProductDetail from "../layouts/DynamicTemplate/Template2/DynamicProductDetail";
 
 // Template3 pages
 import T3About from "../layouts/DynamicTemplate/Template3/DynamicAbout";
@@ -26,10 +27,11 @@ import T3Contact from "../layouts/DynamicTemplate/Template3/DynamicContact";
 import T3BlogList from "../layouts/DynamicTemplate/Template3/DynamicBlogList";
 import T3BlogDetail from "../layouts/DynamicTemplate/Template3/DynamicBlogDetail";
 import T3Products from "../layouts/DynamicTemplate/Template3/DynamicProducts";
+import T3ProductDetail from "../layouts/DynamicTemplate/Template3/DynamicProductDetail";
 
 /**
  * Maps template IDs to their page components.
- * Products, ProductDetail, and Categories use Template1 as default
+ * Categories use Template1 as default
  * since Template2 and Template3 don't have those pages yet.
  */
 const templatePages = {
@@ -45,7 +47,7 @@ const templatePages = {
   },
   2: {
     products: T2Products,
-    productDetail: T1ProductDetail,
+    productDetail: T2ProductDetail,
     categories: T1Categories,
     about: T2About,
     faq: T2FAQ,
@@ -55,7 +57,7 @@ const templatePages = {
   },
   3: {
     products: T3Products,
-    productDetail: T1ProductDetail,
+    productDetail: T3ProductDetail,
     categories: T1Categories,
     about: T3About,
     faq: T3FAQ,

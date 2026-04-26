@@ -34,6 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useFetch } from "@/hooks";
+import api from "@/config/apiConfig";
 import { toast } from "sonner";
 
 const SOCIAL_PLATFORMS = [
@@ -171,8 +172,10 @@ const FooterContent = () => {
     is_active: true,
   });
 
+  const backofficeId = localStorage.getItem("backofficeId") || "1";
+
   const { data: footerData, loading, error, refetch } = useFetch(
-    "http://localhost:3001/api/backoffice/footer",
+    `/site/footer/${backofficeId}`,
     { immediate: true, showToast: false }
   );
 
@@ -210,17 +213,8 @@ const FooterContent = () => {
     setSubmitting(true);
 
     try {
-      const res = await fetch("http://localhost:3001/api/backoffice/footer", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        credentials: "include",
-        body: JSON.stringify(formData),
-      });
-
-      const result = await res.json();
+      const response = await api.post(`/site/footer/${backofficeId}`, formData);
+      const result = response.data;
 
       if (result.success) {
         toast.success("Footer content saved successfully!");

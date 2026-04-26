@@ -1,81 +1,18 @@
-import { useState, useEffect } from "react";
 import { ArrowRight, Sparkles, ShoppingBag, MessageCircle } from "lucide-react";
+import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 
 const DynamicAbout = () => {
-  const [loading, setLoading] = useState(true);
-  const [pageContent, setPageContent] = useState({
-    hero_title: "ABOUT US",
-    hero_subtitle: "Building Trust Through Quality & Service",
-    hero_description: "Discover our journey, values, and commitment to delivering excellence in every product.",
-    hero_button_text: "Learn More",
-    hero_button_link: "#story",
+  const backofficeData = useBackofficeData();
+  const pageContent = backofficeData?.aboutPageContent || {};
 
-    story_title: "Our Story",
-    story_subtitle: "Where It All Began",
-    story_description:
-      "Welcome to khushidon's Store! We've been serving our valued customers since 2020 with premium health and wellness supplements. Our journey began with a simple belief: everyone deserves access to high-quality, science-backed products that truly make a difference.",
-    story_image_url: null,
-
-    purpose_title: "Our Purpose",
-    purpose_subtitle: "What Drives Us",
-
-    mission_title: "Our Mission",
-    mission_description: "Delivering excellence in every product and creating a seamless, trustworthy shopping experience for health-conscious individuals worldwide.",
-
-    vision_title: "Our Vision",
-    vision_description: "To be the most innovative and trusted online store for premium health supplements, empowering people to live their healthiest lives.",
-
-    values_title: "Our Values",
-    values_description: "Innovation, Quality, Trust, and Customer-First approach guide everything we do.",
-
-    why_choose_title: "Why Choose Us",
-    why_choose_subtitle: "We go above and beyond to ensure your satisfaction",
-    features: [
-      "Premium quality products",
-      "24/7 customer support",
-      "Fast & secure shipping",
-      "100% satisfaction guarantee",
-      "Science-backed formulations",
-      "Transparent ingredients"
-    ],
-
-    cta_title: "Ready to Experience the Difference?",
-    cta_description: "Join thousands of satisfied customers who trust khushidon's Store for their wellness journey.",
-    cta_button_text: "Start Shopping",
-    cta_button_link: "/products",
-    cta_secondary_button_text: "Contact Us",
-    cta_secondary_button_link: "/contact",
-  });
-
-  // Fetch real data from backend (uncomment when API is ready)
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('/api/about-page-content');
-        const result = await response.json();
-        if (result.success && result.data) {
-          setPageContent(prev => ({ ...prev, ...result.data }));
-        }
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching about page:", err);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading about us...</p>
-        </div>
-      </div>
-    );
+  // Parse features JSON safely
+  let parsedFeatures = [];
+  try {
+    parsedFeatures = pageContent.features ? (typeof pageContent.features === 'string' ? JSON.parse(pageContent.features) : pageContent.features) : [];
+  } catch (e) {
+    parsedFeatures = [];
   }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
@@ -177,13 +114,13 @@ const DynamicAbout = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {pageContent.features.map((feature, index) => (
+          {parsedFeatures.map((feature, index) => (
             <div
               key={index}
               className="bg-white rounded-xl shadow-lg p-8 text-center hover:shadow-2xl hover:border hover:border-black transition-all"
             >
               <div className="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                Check
+                 ✓
               </div>
               <p className="text-lg font-medium text-gray-800">{feature}</p>
             </div>

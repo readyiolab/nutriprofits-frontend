@@ -16,7 +16,7 @@ export const getDomainInfo = () => {
     hostname === "localhost" ||
     hostname === "127.0.0.1" ||
     hostname.endsWith('.vercel.app') ||
-    // Identify common LAN IP patterns or explicit check for the user's current IP
+    // Identify common LAN IP patterns
     /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
 
   return {
@@ -31,15 +31,15 @@ export const getDomainInfo = () => {
 /**
  * Extract subdomain from hostname
  * @param {string} hostname - Full hostname
- * @returns {string} Subdomain name
+ * @returns {string|null} Subdomain name
  */
 export const getSubdomain = (hostname = window.location.hostname) => {
   const baseDomain = import.meta.env.VITE_BASE_DOMAIN || "igrowbig.com";
-  
+
   if (hostname.endsWith(`.${baseDomain}`)) {
     return hostname.replace(`.${baseDomain}`, "");
   }
-  
+
   return null;
 };
 
@@ -78,15 +78,17 @@ export const isCustomDomainAccess = () => {
 };
 
 /**
- * Get API base URL for current domain
+ * Get API base URL — uses the same env var as apiConfig.js
  * @returns {string} API base URL
  */
 export const getApiBaseUrl = () => {
-  return import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+  return import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 };
 
 /**
- * Make API call with proper domain headers
+ * Make API call with proper domain headers.
+ * For most cases, prefer using the `useFetch` hook or `api` instance from apiConfig.
+ * This is for cases where you need custom Host headers (e.g., tenant resolution).
  * @param {string} endpoint - API endpoint
  * @param {Object} options - Fetch options
  * @returns {Promise} API response
@@ -97,13 +99,14 @@ export const apiCall = async (endpoint, options = {}) => {
 
   const headers = {
     "Content-Type": "application/json",
-    "Host": hostname,
+    "X-Tenant-Domain": hostname,
     ...options.headers,
   };
 
   const response = await fetch(`${baseUrl}${endpoint}`, {
     ...options,
     headers,
+    credentials: "include",
   });
 
   if (!response.ok) {
@@ -122,4 +125,4 @@ export default {
   isCustomDomainAccess,
   getApiBaseUrl,
   apiCall,
-};
+};

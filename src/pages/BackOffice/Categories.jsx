@@ -31,9 +31,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useFetch } from "@/hooks";
 import { toast } from "sonner";
+import api from "@/config/apiConfig";
 
-// FIX: Use correct API base URL with backoffice context
-const API_BASE_URL = "http://localhost:3001/api/backoffice/product-categories";
+// Use backoffice ID from localStorage
+const backofficeId = localStorage.getItem("backofficeId") || "1";
 
 const FORM_INITIAL_STATE = {
   name: "",
@@ -56,7 +57,7 @@ const Categories = () => {
     loading,
     error,
     refetch: refetchCategories,
-  } = useFetch(`${API_BASE_URL}/categories`, {
+  } = useFetch(`/catalog/backoffice/${backofficeId}/categories`, {
     immediate: true,
     showToast: false,
     credentials: "include",
@@ -73,7 +74,7 @@ const Categories = () => {
     refetch: refetchProducts,
   } = useFetch(
     selectedCategory
-      ? `${API_BASE_URL}/products/category/${selectedCategory.id}`
+      ? `/catalog/backoffice/${backofficeId}/products?categoryId=${selectedCategory.category_id || selectedCategory.id}`
       : null,
     { immediate: false, showToast: false, credentials: "include" }
   );
@@ -89,7 +90,7 @@ const Categories = () => {
 
   const goToForm = (category = null) => {
     if (category) {
-      setEditingId(category.id);
+      setEditingId(category.category_id || category.id);
       setFormData({
         name: category.category_name || "",
         description: category.category_description || "",
@@ -118,26 +119,21 @@ const Categories = () => {
 
       setSubmitting(true);
 
+      const data = {
+        category_name: formData.name.trim(),
+        category_description: formData.description || null,
+      };
+
+      if (editingId) data.id = editingId;
+
       const form = new FormData();
-      form.append("category_name", formData.name.trim());
-      if (formData.description) {
-        form.append("category_description", formData.description);
-      }
+      form.append("data", JSON.stringify(data));
       if (formData.category_image instanceof File) {
         form.append("category_image", formData.category_image);
       }
 
-      const url = editingId
-        ? `${API_BASE_URL}/categories/${editingId}`
-        : `${API_BASE_URL}/categories`;
-
-      const response = await fetch(url, {
-        method: editingId ? "PUT" : "POST",
-        credentials: "include",
-        body: form,
-      });
-
-      const result = await response.json();
+      const response = await api.post(`/catalog/backoffice/${backofficeId}/categories`, form);
+      const result = response.data;
 
       if (result.success) {
         toast.success(editingId ? "Category updated!" : "Category created!");
@@ -158,11 +154,8 @@ const Categories = () => {
     if (!window.confirm("Delete this category?")) return;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/categories/${categoryId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      const result = await res.json();
+      const res = await api.delete(`/catalog/backoffice/${backofficeId}/categories/${categoryId}`);
+      const result = res.data;
 
       if (result.success) {
         toast.success("Category deleted");
@@ -294,8 +287,10 @@ const Categories = () => {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <Card key={product.id} className="overflow-hidden">
+            {products.map((product) => {
+              const pId = product.product_id || product.id;
+              return (
+              <Card key={pId} className="overflow-hidden">
                 {product.product_image && (
                   <img
                     src={product.product_image}
@@ -315,7 +310,7 @@ const Categories = () => {
                   </Badge>
                 </CardContent>
               </Card>
-            ))}
+            )})}
           </div>
         )}
       </div>
@@ -389,9 +384,11 @@ const Categories = () => {
 
       {!loading && filteredCategories.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCategories.map((category) => (
+          {filteredCategories.map((category) => {
+            const catId = category.category_id || category.id;
+            return (
             <Card
-              key={category.id}
+              key={catId}
               className="hover:shadow-md transition-shadow overflow-hidden"
             >
               <CardHeader className="pb-3">
@@ -425,7 +422,7 @@ const Categories = () => {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-red-600"
-                        onClick={() => handleDelete(category.id)}
+                        onClick={() => handleDelete(catId)}
                       >
                         <Trash2 className="h-4 w-4 mr-2" /> Delete
                       </DropdownMenuItem>
@@ -444,7 +441,7 @@ const Categories = () => {
                 </div>
               </CardContent>
             </Card>
-          ))}
+          )})}
         </div>
       )}
     </div>

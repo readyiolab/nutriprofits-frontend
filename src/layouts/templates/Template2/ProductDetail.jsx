@@ -9,6 +9,7 @@ import {
   ShoppingBag,
   Dot,
   ArrowRight,
+  Sparkles,
   Minus,
   Plus,
   Trash2
@@ -3437,237 +3438,244 @@ const ProductDetailTemplate2 = () => {
   }
 
   return (
-    <div className="min-h-screen ">
-      {/* Hero Section with Gradient */}
-      <div className="relative bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] text-white py-8">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-white/90 hover:text-white font-medium mb-4 transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back to Products
-          </button>
-        </div>
+    <div className="min-h-screen bg-slate-50 font-t2-body overflow-hidden">
+      
+      {/* Decorative Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-1/4 -right-40 w-[40rem] h-[40rem] bg-emerald-500/5 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-1/3 -left-40 w-[40rem] h-[40rem] bg-teal-500/5 rounded-full blur-[100px]"></div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16 justify-center items-center space-y-8 lg:space-y-0">
-          {/* LEFT - Product Image */}
-          <div className="lg:sticky lg:top-8 h-fit">
-            <div className="relative p-8">
-              {/* Badge */}
-              <div className="absolute top-6 right-6 bg-black text-white px-4 py-2 rounded-full text-sm font-medium z-10">
-                {product.category}
-              </div>
+      <div className="relative z-10">
+        {/* Modern Hero Section */}
+        <section className="relative bg-slate-950 pt-24 pb-12 overflow-hidden rounded-b-[4rem] shadow-2xl mb-12">
+          {/* Dynamic Glow Backgrounds */}
+          <div className="absolute top-0 right-0 w-[50rem] h-[50rem] bg-emerald-600/10 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 left-0 w-[50rem] h-[50rem] bg-teal-600/10 rounded-full blur-[120px] -translate-x-1/2 translate-y-1/2"></div>
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
 
-              {/* Image */}
-              <div className="aspect-square flex items-center justify-center">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-contain "
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT - Product Info */}
-          <div className="space-y-8">
-            {/* Header */}
-            <div>
-              <h1 className="text-2xl md:text-3xl font-medium text-black mb-4">
-                {product.name}
-              </h1>
-              <p className="text-lg text-black leading-relaxed mb-6">
-                {product.fullDescription || product.description}
-              </p>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full max-w-4xl h-[1px] bg-black my-12 mx-auto"></div>
-
-        {/* Tabs Section */}
-        {/* Tab Buttons - Responsive Horizontal Scroll on Mobile */}
-      <div className="overflow-x-auto scrollbar-hide mb-8 -mx-4 px-4">
-        <div className="flex justify-start sm:justify-center gap-3 min-w-max sm:min-w-0">
-          {tabs.map(tab => (
+          <div className="container mx-auto px-4 relative z-10">
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`
-                px-6 py-3 font-semibold capitalize whitespace-nowrap transition-all duration-300
-                rounded-full border-2
-                ${
-                  activeTab === tab
-                    ? "bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] text-white  shadow-lg"
-                    : "bg-transparent text-black border-transparent hover:border-black/30 hover:bg-black/5"
-                }
-              `}
-              aria-selected={activeTab === tab}
-              role="tab"
+              onClick={onBack}
+              className="group flex items-center gap-3 text-slate-400 hover:text-emerald-400 font-bold text-xs uppercase tracking-[0.2em] transition-all cursor-pointer mb-8"
             >
-              {tab}
+              <div className="w-8 h-8 rounded-full border border-slate-800 flex items-center justify-center group-hover:border-emerald-500/50 group-hover:bg-emerald-500/10 transition-all">
+                <ArrowLeft className="w-4 h-4" />
+              </div>
+              Back to Collection
             </button>
-          ))}
-        </div>
-      </div>
 
-      {/* Tab Content */}
-      <div className="min-h-[400px] animate-fadeIn">
-        {/* Highlights Tab */}
-        {activeTab === "highlights" && product.highlights && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 gap-5">
-            {product.highlights.map((highlight, idx) => (
-              <div
-                key={idx}
-                className="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 
-                         hover:border-green-500/50 hover:shadow-md transition-all duration-300"
-              >
-                <div className="flex items-start gap-4">
-                  <Dot className="w-7 h-7 text-black flex-shrink-0 mt-0.5" />
-                  <p className="text-gray-800 leading-relaxed text-base">
-                    {highlight}
-                  </p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-4">
+                  {product.category}
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold text-white font-t2-heading tracking-tight leading-tight">
+                  {product.name}
+                </h1>
+              </div>
+              <div className="flex items-center gap-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating || 5) ? 'text-emerald-400 fill-emerald-400' : 'text-slate-800'}`} />
+                ))}
+                <span className="text-white/60 font-bold ml-2">({product.rating || "5.0"})</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="container mx-auto px-4 lg:px-8 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-24 items-start">
+            {/* LEFT - Product Image */}
+            <div className="lg:sticky lg:top-32">
+              <div className="relative rounded-[3rem] bg-white shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-slate-100 overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <div className="p-12 md:p-20 aspect-square flex items-center justify-center transform group-hover:scale-105 transition-transform duration-700">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.1)]"
+                    onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=800&q=80"; }}
+                  />
+                </div>
+                
+                {/* Image Decoration */}
+                <div className="absolute bottom-8 left-8 right-8 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-between opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                  <span className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Premium Pharmaceutical Grade</span>
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
 
-        {/* Benefits Tab */}
-        {activeTab === "benefits" && product.benefits && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {product.benefits.map((benefit, idx) => (
-              <div
-                key={idx}
-                className="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 
-                         hover:border-green-500/50 hover:shadow-md transition-all duration-300"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="bg-black text-white rounded-full w-9 h-9 flex items-center justify-center flex-shrink-0 font-bold text-sm">
-                    {idx + 1}
+            {/* RIGHT - Product Info */}
+            <div className="space-y-12">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-slate-900 font-t2-heading tracking-tight">The Science of Wellness</h2>
+                <p className="text-lg text-slate-500 font-light leading-relaxed">
+                  {product.fullDescription || product.description}
+                </p>
+                
+                <div className="grid grid-cols-2 gap-4 pt-6">
+                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
+                    <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-1">Authenticity</p>
+                    <p className="text-sm font-bold text-slate-900">100% Certified</p>
                   </div>
-                  <p className="text-gray-800 leading-relaxed text-base">
-                    {benefit}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Ingredients Tab */}
-        {activeTab === "ingredients" && product.ingredients && (
-          <div className="space-y-5">
-            {product.ingredients.map((ingredient, idx) => (
-              <div
-                key={idx}
-                className="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-6 
-                         hover:border-green-500/50 hover:shadow-md transition-all duration-300"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                  <div className="text-black font-bold text-lg sm:w-12 sm:text-center">
-                    {idx + 1}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-lg font-semibold text-black mb-2">
-                      {ingredient.name}
-                    </h4>
-                    <p className="text-gray-700 leading-relaxed">
-                      {ingredient.description}
-                    </p>
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Dispatch</p>
+                    <p className="text-sm font-bold text-slate-900">Worldwide</p>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-        <div className="mt-2 text-center py-10">
-          <a 
-            href={product.buyLink || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full max-w-lg mx-auto bg-gradient-to-r from-blue-600 to-blue-900 text-white px-12 py-6 rounded-3xl font-bold shadow-2xl shadow-blue-900/20 flex items-center justify-center gap-4 hover:shadow-blue-900/40 hover:-translate-y-1 transition-all active:translate-y-0 text-xl"
-          >
-            <ShoppingBag className="w-6 h-6" />
-            Learn More & Buy Now
-          </a>
-        </div>
+              {/* Tabs Section */}
+              <div className="space-y-8">
+                <div className="flex gap-4 border-b border-slate-100 overflow-x-auto scrollbar-hide pb-1">
+                  {tabs.map(tab => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`pb-4 px-2 text-[11px] font-bold uppercase tracking-[0.2em] transition-all relative ${
+                        activeTab === tab ? "text-emerald-600" : "text-slate-400 hover:text-slate-600"
+                      }`}
+                    >
+                      {tab}
+                      {activeTab === tab && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 rounded-full"></div>
+                      )}
+                    </button>
+                  ))}
+                </div>
 
-        {/* RELATED PRODUCTS */}
-        {(() => {
-          let relatedProducts = products
-            .filter(p => p.category === product.category && p.id !== product.id);
+                <div className="min-h-[300px] animate-fadeIn">
+                  {activeTab === "highlights" && product.highlights && (
+                    <div className="grid grid-cols-1 gap-4">
+                      {product.highlights.map((highlight, idx) => (
+                        <div key={idx} className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-emerald-100 transition-all group">
+                          <div className="w-6 h-6 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-600 transition-colors">
+                            <Sparkles className="w-3 h-3 text-emerald-600 group-hover:text-white" />
+                          </div>
+                          <p className="text-slate-600 text-sm leading-relaxed">{highlight}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-          if (relatedProducts.length < 4) {
-            const otherProducts = products
-              .filter(p => p.category !== product.category && p.id !== product.id)
-              .slice(0, 4 - relatedProducts.length);
-            relatedProducts = [...relatedProducts, ...otherProducts];
-          }
-          
-          relatedProducts = relatedProducts.slice(0, 4);
-          
-          if (relatedProducts.length === 0) return null;
-          
-          return (
-            <div className="mt-20 border-t border-blue-100 pt-16">
-              <div className="text-center mb-12">
-                 <span className="text-blue-500 font-bold tracking-widest uppercase text-xs mb-3 block">Complete Your Routine</span>
-                 <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Complementary Solutions</h2>
-                 <div className="w-20 h-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded-full shadow-lg shadow-blue-500/20"></div>
+                  {activeTab === "benefits" && product.benefits && (
+                    <div className="grid grid-cols-1 gap-4">
+                      {product.benefits.map((benefit, idx) => (
+                        <div key={idx} className="flex items-start gap-4 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-emerald-100 transition-all group">
+                          <div className="w-6 h-6 rounded-lg bg-slate-900 flex items-center justify-center flex-shrink-0 text-white text-[10px] font-bold group-hover:bg-emerald-600 transition-colors">
+                            {idx + 1}
+                          </div>
+                          <p className="text-slate-600 text-sm leading-relaxed">{benefit}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {activeTab === "ingredients" && product.ingredients && (
+                    <div className="space-y-4">
+                      {product.ingredients.map((ingredient, idx) => (
+                        <div key={idx} className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:border-emerald-100 transition-all group">
+                          <div className="flex justify-between items-start mb-3">
+                            <h4 className="font-bold text-slate-900 text-sm group-hover:text-emerald-600 transition-colors">{ingredient.name}</h4>
+                            <div className="text-[10px] font-bold text-emerald-500/50">#{idx + 1}</div>
+                          </div>
+                          <p className="text-slate-500 text-xs leading-relaxed">{ingredient.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {relatedProducts.map((rp) => (
-                  <div
-                    key={rp.id}
-                    onClick={() => navigate(`/template/${templateId}/products/${rp.id}`)}
-                    className="group bg-white rounded-3xl overflow-hidden shadow-lg shadow-blue-900/5 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 border border-transparent hover:border-blue-100 flex flex-col h-full cursor-pointer"
-                  >
-                    <div className="relative aspect-[4/3] overflow-hidden flex items-center justify-center p-6">
-                      <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                      <img
-                        src={rp.image}
-                        alt={rp.name}
-                        className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-700 drop-shadow-sm"
-                        onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/400x400.png?text=Product";
-                        }}
-                      />
-                      {/* Floating Badge */}
-                      <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-[10px] font-bold text-blue-600 px-3 py-1 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                         {rp.category || 'Featured'}
+              {/* Buy Button */}
+              <div className="pt-8">
+                <a 
+                  href={product.buyLink || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative flex items-center justify-center gap-4 w-full bg-slate-950 text-white py-6 rounded-2xl font-bold uppercase tracking-[0.2em] text-[11px] overflow-hidden shadow-2xl shadow-slate-950/20 hover:shadow-emerald-500/20 transition-all duration-500 hover:-translate-y-1 active:translate-y-0"
+                >
+                  <div className="absolute inset-0 bg-emerald-600 translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+                  <ShoppingBag className="w-5 h-5 relative z-10" />
+                  <span className="relative z-10">Secure Purchase & Details</span>
+                </a>
+                <p className="text-center text-[10px] font-bold text-slate-400 mt-6 uppercase tracking-widest flex items-center justify-center gap-2">
+                  <Shield className="w-3 h-3 text-emerald-500" />
+                  SSL Secured & Encrypted Transaction
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* RELATED PRODUCTS */}
+          {(() => {
+            let relatedProducts = products
+              .filter(p => p.category === product.category && p.id !== product.id);
+
+            if (relatedProducts.length < 4) {
+              const otherProducts = products
+                .filter(p => p.category !== product.category && p.id !== product.id)
+                .slice(0, 4 - relatedProducts.length);
+              relatedProducts = [...relatedProducts, ...otherProducts];
+            }
+            
+            relatedProducts = relatedProducts.slice(0, 4);
+            
+            if (relatedProducts.length === 0) return null;
+            
+            return (
+              <div className="mt-32 pt-24 border-t border-slate-100">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 px-4">
+                  <div>
+                    <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-[0.3em] mb-4 block">Complete Your Routine</span>
+                    <h2 className="text-3xl md:text-5xl font-bold text-slate-900 font-t2-heading tracking-tight leading-tight">Complementary Solutions</h2>
+                  </div>
+                  <div className="w-24 h-1 bg-emerald-100 rounded-full"></div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                  {relatedProducts.map((rp) => (
+                    <div
+                      key={rp.id}
+                      onClick={() => navigate(`/template/${templateId}/products/${rp.id}`)}
+                      className="group bg-white rounded-[2.5rem] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] hover:border-emerald-100 transition-all duration-500 border border-slate-100 flex flex-col h-full cursor-pointer transform hover:-translate-y-2"
+                    >
+                      <div className="relative aspect-[4/4] overflow-hidden flex items-center justify-center p-10 bg-slate-50/50">
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <img
+                          src={rp.image}
+                          alt={rp.name}
+                          className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-700 drop-shadow-xl"
+                          onError={(e) => { e.target.src = "https://via.placeholder.com/400x400.png?text=Product"; }}
+                        />
+                        {/* Floating Badge */}
+                        <div className="absolute top-6 left-6 bg-slate-950 text-[9px] font-bold text-white px-3 py-1.5 rounded-lg shadow-xl uppercase tracking-widest">
+                           {rp.category || 'Original'}
+                        </div>
+                      </div>
+                      
+                      <div className="p-8 flex flex-col flex-1">
+                        <h3 className="text-lg font-bold text-slate-900 mb-4 leading-tight group-hover:text-emerald-600 transition-colors line-clamp-2 font-t2-heading">
+                          {rp.name}
+                        </h3>
+                        
+                         <div className="mt-auto pt-6 flex items-center justify-between border-t border-slate-50">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest group-hover:text-slate-900 transition-colors">View Product</span>
+                            <div className="w-10 h-10 rounded-full bg-slate-50 text-slate-900 flex items-center justify-center group-hover:bg-slate-950 group-hover:text-white transition-all duration-500 shadow-sm">
+                               <ArrowRight className="w-4 h-4" />
+                            </div>
+                         </div>
                       </div>
                     </div>
-                    
-                    <div className="p-5 flex flex-col flex-1">
-                      <h3 className="text-lg font-bold text-slate-800 mb-2 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
-                        {rp.name}
-                      </h3>
-                      
-                       <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-50">
-                          <span className="text-slate-800 font-bold">Learn More</span>
-                          <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                             <ArrowRight className="w-4 h-4" />
-                          </div>
-                       </div>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })()}
+            );
+          })()}
+        </div>
       </div>
-
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import api from '@/config/apiConfig';
 
 const INITIAL_FORM_STATE = {
   hero_title: '',
@@ -55,11 +56,8 @@ const About = () => {
   const fetchContent = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `http://localhost:3001/api/about-page-content/${backofficeId}/content`,
-        { credentials: 'include' }
-      );
-      const result = await response.json();
+      const response = await api.get(`/pages/about/${backofficeId}`);
+      const result = response.data;
       
       if (result.success && result.data) {
         setFormData({ ...INITIAL_FORM_STATE, ...result.data });
@@ -137,16 +135,8 @@ const About = () => {
 
       formDataToSend.append('data', JSON.stringify(formData));
 
-      const response = await fetch(
-        `http://localhost:3001/api/about-page-content/${backofficeId}/content/upsert`,
-        {
-          method: 'POST',
-          credentials: 'include',
-          body: formDataToSend,
-        }
-      );
-
-      const result = await response.json();
+      const response = await api.post(`/pages/about/${backofficeId}`, formDataToSend);
+      const result = response.data;
 
       if (result.success) {
         showMessage('success', 'Content saved successfully!');

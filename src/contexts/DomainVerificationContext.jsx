@@ -17,7 +17,7 @@ export const DomainVerificationProvider = ({ children }) => {
     refetch: refetchDomainStatus,
     loading,
   } = useFetch(
-    `http://localhost:3001/api/backoffice/${backofficeId}/domain`,
+    `/domain/status`,
     { immediate: true, showToast: false }
   );
 

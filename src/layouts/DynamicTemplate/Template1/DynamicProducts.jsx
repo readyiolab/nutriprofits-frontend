@@ -8,6 +8,9 @@ const DynamicProducts = () => {
   const navigate = useNavigate();
   const { categorySlug } = useParams();
   const backofficeData = useBackofficeData();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [displayedCount, setDisplayedCount] = useState(8);
+  const [isLoading, setIsLoading] = useState(false);
 
   const productsPerBatch = 8;
   const productsRef = useRef(null);
@@ -388,23 +391,23 @@ const DynamicProducts = () => {
 
         <div className="text-center max-w-3xl mx-auto relative z-10">
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium mb-3 sm:mb-4 px-4">
-            Ready to Transform Your Health?
+            {productPageContent.cta_title || "Ready to Transform Your Health?"}
           </h2>
           <p className="text-[#faf5e4] text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 max-w-2xl mx-auto px-4">
-            Join thousands of satisfied customers who have found their perfect wellness solution.
+            {productPageContent.cta_description || "Join thousands of satisfied customers who have found their perfect wellness solution."}
           </p>
           <div className="flex gap-3 sm:gap-4 justify-center flex-wrap px-4">
             <Link
-              to="/"
+              to={productPageContent.cta_button_link || "/"}
               className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-[#ffa500] cursor-pointer shadow-lg text-sm sm:text-base transition-all"
             >
-              Start Shopping
+              {productPageContent.cta_button_text || "Start Shopping"}
             </Link>
             <Link
-              to="/contact"
+              to={productPageContent.cta_secondary_button_link || "/contact"}
               className="border-2 border-white text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-white hover:text-[#004445] cursor-pointer transition-all text-sm sm:text-base"
             >
-              Contact Support
+              {productPageContent.cta_secondary_button_text || "Contact Support"}
             </Link>
           </div>
         </div>

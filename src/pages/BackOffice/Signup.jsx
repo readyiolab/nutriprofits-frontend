@@ -99,7 +99,7 @@ const Signup = () => {
 
               <div className="flex items-center space-x-2">
                 <Checkbox id="terms" required checked={formData.terms}
-                  onCheckedChange={(checked) => setFormData({...formData, terms})} />
+                  onCheckedChange={(checked) => setFormData({ ...formData, terms: Boolean(checked) })} />
                 <label htmlFor="terms" className="text-sm text-gray-600">
                   I agree to the <Link to="/terms" className="text-black hover:underline">Terms & Conditions</Link>
                 </label>

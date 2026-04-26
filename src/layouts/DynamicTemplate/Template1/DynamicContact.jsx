@@ -1,7 +1,10 @@
 import { MapPin, PhoneCall } from "lucide-react";
 import { useState } from "react";
+import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 
 const DynamicContact = () => {
+  const backofficeData = useBackofficeData();
+  const contact = backofficeData?.contactPageContent || {};
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,10 +18,10 @@ const DynamicContact = () => {
   };
 
   const contactInfo = {
-    address: "123 Business Avenue\nSuite 100, Downtown\nGorakhpur, Uttar Pradesh 273001",
-    email: "support@example.com",
-    phone: "+91 123 456 7890",
-    hours: "Mon – Fri: 9:00 AM – 6:00 PM\nSat – Sun: Closed",
+    address: contact.address || "123 Business Avenue\nSuite 100, Downtown\nGorakhpur, Uttar Pradesh 273001",
+    email: contact.email || "support@example.com",
+    phone: contact.phone || "+91 123 456 7890",
+    hours: contact.hours || "Mon – Fri: 9:00 AM – 6:00 PM\nSat – Sun: Closed",
   };
 
   return (
@@ -29,13 +32,13 @@ const DynamicContact = () => {
           {/* Left Content */}
           <div className="p-4 sm:p-6 md:p-8 lg:p-12 text-white order-2 md:order-1">
             <span className="inline-block bg-[#f8b400] text-[#004445] px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
-              GET IN TOUCH
+              {contact.hero_title || "GET IN TOUCH"}
             </span>
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium mb-3 sm:mb-4 leading-tight">
-              We'd Love to Hear From You
+              {contact.hero_subtitle || "We'd Love to Hear From You"}
             </h1>
             <p className="text-sm sm:text-base lg:text-lg text-[#faf5e4] mb-4 sm:mb-6 leading-relaxed">
-              Whether you have a question, need support, or just want to say hi—our team is ready to help.
+              {contact.hero_description || "Whether you have a question, need support, or just want to say hi—our team is ready to help."}
             </p>
             <div className="flex gap-3 sm:gap-4 flex-wrap">
               <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg font-medium hover:bg-[#ffa500] transition-all transform hover:scale-105 shadow-lg text-sm sm:text-base">
@@ -210,10 +213,10 @@ const DynamicContact = () => {
         
         <div className="max-w-4xl mx-auto text-center text-white px-4 sm:px-6 relative z-10">
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium mb-3 sm:mb-4">
-            Need Immediate Help?
+            {contact.cta_title || "Need Immediate Help?"}
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-[#faf5e4] mb-6 sm:mb-8">
-            Call us directly or drop by our office in USA
+            {contact.cta_description || "Call us directly or drop by our office."}
           </p>
           <div className="flex gap-3 sm:gap-4 justify-center flex-wrap px-4">
             <button className="bg-[#f8b400] text-[#004445] px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-[#ffa500] cursor-pointer shadow-lg text-sm sm:text-base transition-all">

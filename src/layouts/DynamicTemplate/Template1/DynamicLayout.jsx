@@ -18,6 +18,7 @@ const DynamicLayout = () => {
   const branding = backofficeData?.branding || {};
   const storeName = branding.site_name || backofficeData?.backoffice?.store_name || backofficeData?.backoffice?.name || "Store";
   const contact = backofficeData?.contactPageContent || {};
+  const footer = backofficeData?.footerContent || {};
 
   const navigationLinks = [
     { to: "/", label: "Home" },
@@ -150,50 +151,77 @@ const DynamicLayout = () => {
                 <span className="text-lg sm:text-xl font-bold font-t1-heading">{storeName}</span>
               </div>
               <p className="text-[#faf5e4]/80 text-sm">
-                Your trusted business partner for quality products and services.
+                {footer.about_description || "Your trusted business partner for quality products and services."}
               </p>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h4 className="font-semibold mb-4 text-base sm:text-lg font-t1-heading">Quick Links</h4>
-              <ul className="space-y-2 text-[#faf5e4]/80 text-sm">
-                <li className="hover:text-[#f8b400] transition-colors cursor-pointer">
-                  <Link to="/">Home</Link>
-                </li>
-                <li className="hover:text-[#f8b400] transition-colors cursor-pointer">
-                  <Link to="/categories">Categories</Link>
-                </li>
-                <li className="hover:text-[#f8b400] transition-colors cursor-pointer">
-                  <Link to="/about">About Us</Link>
-                </li>
-                <li className="hover:text-[#f8b400] transition-colors cursor-pointer">
-                  <Link to="/faq">FAQ's</Link>
-                </li>
-              </ul>
+              <h4 className="font-semibold mb-4 text-base sm:text-lg font-t1-heading">Links</h4>
+              {footer.footer_links ? (
+                <div className="flex flex-col gap-6">
+                  {JSON.parse(typeof footer.footer_links === 'string' ? footer.footer_links : JSON.stringify(footer.footer_links)).map((section, idx) => (
+                    <div key={idx}>
+                      <h5 className="text-xs font-bold uppercase tracking-widest text-[#f8b400] mb-2">{section.section_title}</h5>
+                      <ul className="space-y-2 text-[#faf5e4]/80 text-sm">
+                        {section.links.map((link, lIdx) => (
+                          <li key={lIdx} className="hover:text-[#f8b400] transition-colors cursor-pointer">
+                            <Link to={link.url}>{link.label}</Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <ul className="space-y-2 text-[#faf5e4]/80 text-sm">
+                  {navigationLinks.map((link) => (
+                    <li key={link.to} className="hover:text-[#f8b400] transition-colors cursor-pointer">
+                      <Link to={link.to}>{link.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             {/* Contact Info */}
             <div>
               <h4 className="font-semibold mb-4 text-base sm:text-lg font-t1-heading">Contact Info</h4>
-              <p className="text-[#faf5e4]/80 mb-2 text-sm">{contact.email || "info@example.com"}</p>
-              <p className="text-[#faf5e4]/80 mb-2 text-sm">{contact.phone || "(123) 456-7890"}</p>
-              <p className="text-[#faf5e4]/80 text-sm">{contact.address || "123 Business St, City"}</p>
+              <p className="text-[#faf5e4]/80 mb-2 text-sm">{footer.contact_email || contact.email || "info@example.com"}</p>
+              <p className="text-[#faf5e4]/80 mb-2 text-sm">{footer.contact_phone || contact.phone || "(123) 456-7890"}</p>
+              <p className="text-[#faf5e4]/80 text-sm">{footer.contact_address || contact.address || "123 Business St, City"}</p>
             </div>
 
             {/* Social Media */}
             <div>
               <h4 className="font-semibold mb-4 text-base sm:text-lg font-t1-heading">Follow Us</h4>
               <div className="flex space-x-4">
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-[#f8b400]/50 transition-colors cursor-pointer">
-                  <span className="text-black font-semibold">f</span>
-                </div>
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-[#f8b400]/50 transition-colors cursor-pointer">
-                  <span className="text-black font-semibold">𝕏</span>
-                </div>
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-[#f8b400]/50 transition-colors cursor-pointer">
-                  <span className="text-black font-semibold">in</span>
-                </div>
+                {footer.social_links ? (
+                  JSON.parse(typeof footer.social_links === 'string' ? footer.social_links : JSON.stringify(footer.social_links)).map((social, idx) => (
+                    <a
+                      key={idx}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-[#f8b400]/50 transition-colors cursor-pointer"
+                      title={social.platform}
+                    >
+                      <span className="text-black font-semibold">{social.platform[0]}</span>
+                    </a>
+                  ))
+                ) : (
+                  <>
+                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-[#f8b400]/50 transition-colors cursor-pointer">
+                      <span className="text-black font-semibold">f</span>
+                    </div>
+                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-[#f8b400]/50 transition-colors cursor-pointer">
+                      <span className="text-black font-semibold">𝕏</span>
+                    </div>
+                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-[#f8b400]/50 transition-colors cursor-pointer">
+                      <span className="text-black font-semibold">in</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -201,7 +229,7 @@ const DynamicLayout = () => {
           {/* Footer Bottom */}
           <div className="text-center border-t border-[#2c786c]/50 pt-6 sm:pt-8">
             <p className="text-[#faf5e4]/80 text-xs sm:text-sm">
-              © {new Date().getFullYear()} {storeName}. All rights reserved.
+              {footer.copyright_text || `© ${new Date().getFullYear()} ${storeName}. All rights reserved.`}
             </p>
           </div>
         </div>

@@ -12,6 +12,33 @@ const apiClient = axios.create({
   withCredentials: true, // CRITICAL: Send cookies with requests
 });
 
+/**
+ * Utility to get a cookie value by name
+ */
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+};
+
+// Add request interceptor to include CSRF token for state-changing methods
+apiClient.interceptors.request.use(
+  (config) => {
+    // Methods that require CSRF protection
+    const stateChangingMethods = ['post', 'put', 'delete', 'patch'];
+    
+    if (stateChangingMethods.includes(config.method?.toLowerCase())) {
+      const csrfToken = getCookie('csrf_token');
+      if (csrfToken) {
+        config.headers['X-CSRF-Token'] = csrfToken;
+      }
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // No token interceptor needed - cookies are automatically sent with withCredentials: true
 
 // Add response interceptor for error handling

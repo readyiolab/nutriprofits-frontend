@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
 import { Users, Store, TrendingUp, DollarSign, Activity, ArrowUp, Calendar } from 'lucide-react';
+import api from '@/config/apiConfig';
+import { useState, useEffect } from 'react';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -22,47 +23,32 @@ const Dashboard = () => {
 
 
 
- const fetchDashboardData = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/superadmin/backoffice-users', {
-        method: 'GET',
-        credentials: 'include', // ✅ Important: Include cookies in request
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await api.get('/superadmin/backoffice-users');
+      const result = response.data;
+      const users = result.data || [];
+      
+      // Calculate stats
+      setStats({
+        totalUsers: users.length,
+        activeUsers: users.filter(u => u.status === 'active').length,
       });
 
-      if (response.status === 401) {
-        // Unauthorized - let Protected Route handle it
-        // Clear localStorage so Protected Route can catch it
+      // Get recent 5 users
+      setRecentUsers(users.slice(0, 5));
+      setError(null);
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+      if (error.response?.status === 401) {
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('superadminId');
         localStorage.removeItem('superadmin_user');
         localStorage.removeItem('userRole');
         setError('Session expired. Please login again.');
-        return;
-      }
-
-      if (response.ok) {
-        const result = await response.json();
-        const users = result.data || [];
-        
-        // Calculate stats
-        setStats({
-          totalUsers: users.length,
-          activeUsers: users.filter(u => u.status === 'active').length,
-        });
-
-        // Get recent 5 users
-        setRecentUsers(users.slice(0, 5));
-        setError(null);
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Failed to fetch dashboard data');
+        setError(error.response?.data?.message || 'Network error. Please check your connection.');
       }
-    } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
-      setError('Network error. Please check your connection.');
     } finally {
       setLoading(false);
     }

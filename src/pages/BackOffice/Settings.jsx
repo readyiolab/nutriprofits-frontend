@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useFetch } from "@/hooks";
+import api from "@/config/apiConfig";
 import { useDomainVerification } from "@/contexts/DomainVerificationContext";
 
 const Settings = () => {
@@ -80,26 +81,25 @@ const Settings = () => {
 
   // Fetch settings using custom hook
   const {
-    data: fetchedSettings,
+    data: fetchedProfile,
     loading,
-    refetch: refetchSettings,
+    refetch: refetchProfile,
   } = useFetch(
-    `http://localhost:3001/api/backoffice/${backofficeId}/settings`,
+    `/backoffice/profile`,
     { immediate: true, showToast: false }
   );
 
+  const refetchSettings = refetchProfile;
+
   // Update settings when fetched
   React.useEffect(() => {
-    console.log("Fetched Settings:", fetchedSettings);
-    if (fetchedSettings && typeof fetchedSettings === "object") {
-      // API returns { success, message, settings: {...} }
-      const settingsData = fetchedSettings.settings || fetchedSettings;
+    if (fetchedProfile) {
       setSettings((prevSettings) => ({
         ...prevSettings,
-        ...settingsData,
+        ...fetchedProfile,
       }));
     }
-  }, [fetchedSettings]);
+  }, [fetchedProfile]);
 
   const handleSaveSettings = async () => {
     try {
@@ -110,23 +110,16 @@ const Settings = () => {
         store_name: settings.store_name,
       };
 
-      const response = await fetch(
-        `http://localhost:3001/api/backoffice/${backofficeId}/settings`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // Include cookies in request
-          body: JSON.stringify(updateData),
-        }
+      const response = await api.put(
+        `/backoffice/profile`,
+        updateData
       );
 
-      const result = await response.json();
+      const result = response.data;
 
       if (result.success) {
         toast.success("Settings saved successfully!");
-        setSettings(result.settings);
+        setSettings(prev => ({ ...prev, ...result.data }));
         refetchSettings();
       } else {
         toast.error(result.message || "Failed to save settings");
@@ -148,19 +141,12 @@ const Settings = () => {
     try {
       setSaving(true);
 
-      const response = await fetch(
-        `http://localhost:3001/api/backoffice/${backofficeId}/domain`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // Include cookies in request
-          body: JSON.stringify({ customDomain: customDomainInput }),
-        }
+      const response = await api.post(
+        `/domain/setup`,
+        { domain: customDomainInput.trim() }
       );
 
-      const result = await response.json();
+      const result = response.data;
 
       if (result.success) {
         toast.success(
@@ -186,16 +172,8 @@ const Settings = () => {
     try {
       setSaving(true);
 
-      const response = await fetch(
-        `http://localhost:3001/api/backoffice/${backofficeId}/domain`,
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include", // Include cookies in request
-        }
-      );
-
-      const result = await response.json();
+      const response = await api.delete(`/domain/remove`);
+      const result = response.data;
 
       if (result.success) {
         toast.success("Custom domain removed successfully!");

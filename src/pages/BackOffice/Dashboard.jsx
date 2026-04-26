@@ -7,13 +7,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
+import api from '@/config/apiConfig';
+
 const Dashboard = () => {
   const [productCount, setProductCount] = useState(null);
   const [categoryCount, setCategoryCount] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const API_BASE_URL = 'http://localhost:3001/api/backoffice/product-categories';
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -23,15 +23,12 @@ const Dashboard = () => {
 
         // Fetch both in parallel for speed
         const [productsRes, categoriesRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/products`, { credentials: 'include' }),
-          fetch(`${API_BASE_URL}/categories`, { credentials: 'include' }),
+          api.get(`/catalog/products`),
+          api.get(`/catalog/categories`),
         ]);
 
-        if (!productsRes.ok) throw new Error('Failed to load products');
-        if (!categoriesRes.ok) throw new Error('Failed to load categories');
-
-        const productsData = await productsRes.json();
-        const categoriesData = await categoriesRes.json();
+        const productsData = productsRes.data;
+        const categoriesData = categoriesRes.data;
 
         // Safely extract arrays
         const products = Array.isArray(productsData)

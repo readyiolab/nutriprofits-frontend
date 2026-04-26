@@ -46,6 +46,13 @@ import { toast } from "sonner";
 const BlogList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(10);
+
+  const backofficeId = React.useMemo(
+    () => localStorage.getItem("backofficeId") || "1",
+    []
+  );
 
   // Fetch blogs
   const {
@@ -53,25 +60,13 @@ const BlogList = () => {
     loading,
     error,
     refetch,
-  } = useFetch("/api/blogs/my-blogs", {
+  } = useFetch(`/blogs/my-blogs?backofficeId=${backofficeId}&page=${currentPage}&limit=${limit}&search=${searchTerm}`, {
     immediate: true,
     showToast: false,
   });
 
   const blogs = blogsData?.blogs || [];
-
-  const filteredBlogs = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return blogs;
-    }
-    const term = searchTerm.toLowerCase();
-    return blogs.filter(
-      (blog) =>
-        blog.title?.toLowerCase().includes(term) ||
-        blog.author?.toLowerCase().includes(term) ||
-        blog.status?.toLowerCase().includes(term)
-    );
-  }, [blogs, searchTerm]);
+  const pagination = blogsData?.pagination || { total: 0, pages: 0 };
 
   // Delete blog
   const { fetchData: deleteBlog, loading: deleteLoading } = useFetch("", {
@@ -84,7 +79,7 @@ const BlogList = () => {
   });
 
   const handleDelete = async (blogId) => {
-    await deleteBlog(`/api/blogs/${blogId}`);
+    await deleteBlog(`/blogs/${blogId}`);
   };
 
   const getStatusBadge = (status) => {
@@ -110,7 +105,7 @@ const BlogList = () => {
     });
   };
 
-  if (loading) {
+  if (loading && !blogsData) {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
@@ -179,7 +174,7 @@ const BlogList = () => {
             All Blog Posts
           </CardTitle>
           <CardDescription>
-            {blogsData?.count || 0} total blog posts
+            {pagination.total} total blog posts
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -190,13 +185,16 @@ const BlogList = () => {
               <Input
                 placeholder="Search blogs..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="pl-10"
               />
             </div>
           </div>
 
-          {filteredBlogs.length === 0 ? (
+          {blogs.length === 0 ? (
             <div className="text-center py-16">
               <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
@@ -218,96 +216,138 @@ const BlogList = () => {
               )}
             </div>
           ) : (
-            <div className="border rounded-lg">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Author</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredBlogs.map((blog) => (
-                    <TableRow key={blog.blog_id}>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {blog.title}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            /{blog.slug}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(blog.status)}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-gray-400" />
-                          {blog.author || "Unknown"}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-gray-400" />
-                          {formatDate(blog.created_at)}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center gap-2 justify-end">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              navigate(`/backoffice/blog/edit/${blog.blog_id}`)
-                            }
-                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                disabled={deleteLoading}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Delete blog post?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This action cannot be undone. This will
-                                  permanently delete "{blog.title}" and remove
-                                  it from your blog.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDelete(blog.blog_id)}
-                                  className="bg-red-600 hover:bg-red-700"
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </TableCell>
+            <>
+              <div className="border rounded-lg mb-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Author</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {blogs.map((blog) => (
+                      <TableRow key={blog.blog_id}>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {blog.title}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              /{blog.slug}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>{getStatusBadge(blog.status)}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4 text-gray-400" />
+                            {blog.author || "Unknown"}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-gray-400" />
+                            {formatDate(blog.created_at)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center gap-2 justify-end">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                navigate(`/backoffice/blog/edit/${blog.blog_id}`)
+                              }
+                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  disabled={deleteLoading}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Delete blog post?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete "{blog.title}" and remove
+                                    it from your blog.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDelete(blog.blog_id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination Controls */}
+              {pagination.pages > 1 && (
+                <div className="flex items-center justify-between px-2 py-4">
+                  <div className="text-sm text-gray-500">
+                    Showing page {pagination.page} of {pagination.pages} ({pagination.total} total)
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={pagination.page === 1}
+                    >
+                      Previous
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      {[...Array(pagination.pages)].map((_, i) => (
+                        <Button
+                          key={i + 1}
+                          variant={pagination.page === i + 1 ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(i + 1)}
+                          className="w-8 h-8 p-0"
+                        >
+                          {i + 1}
+                        </Button>
+                      ))}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.min(pagination.pages, p + 1))}
+                      disabled={pagination.page === pagination.pages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
