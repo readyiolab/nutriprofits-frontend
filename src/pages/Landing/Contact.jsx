@@ -43,7 +43,7 @@ const Contact = () => {
       icon: <Mail className="h-8 w-8 text-blue-600" />,
       title: "Email",
       description: "We'll respond within 24 hours",
-      detail: "support@shophub.com",
+      detail: "support@nutriprofits.com",
       action: "Send Email"
     },
     {

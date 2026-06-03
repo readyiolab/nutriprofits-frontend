@@ -25,38 +25,36 @@ const Template2BlogDetail = () => {
 
       <div className="relative z-10">
         {/* Navigation & Header Section */}
-        <section className="relative bg-slate-950 pt-32 pb-32 overflow-hidden rounded-b-[4rem] shadow-2xl mb-24">
-          <div className="absolute top-0 right-0 w-[50rem] h-[50rem] bg-emerald-600/10 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-[50rem] h-[50rem] bg-teal-600/10 rounded-full blur-[120px] -translate-x-1/2 translate-y-1/2"></div>
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+        <section className="relative bg-slate-50 pt-32 pb-32 overflow-hidden border-b border-slate-100 shadow-sm mb-24">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50/90"></div>
 
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto">
               {/* Breadcrumb */}
-              <nav className="flex items-center gap-3 text-[10px] font-bold text-emerald-400/60 uppercase tracking-[0.2em] mb-12">
-                <Link to={`/template/${templateId}`} className="hover:text-emerald-400 transition-colors">Intelligence</Link>
-                <ChevronRight className="w-3 h-3" />
-                <Link to={`/template/${templateId}/blog`} className="hover:text-emerald-400 transition-colors">Archives</Link>
-                <ChevronRight className="w-3 h-3" />
-                <span className="text-white/40 truncate max-w-[200px]">{blog.title}</span>
+              <nav className="flex items-center gap-3 text-[10px] font-bold text-emerald-600 uppercase tracking-[0.2em] mb-12">
+                <Link to={`/template/${templateId}`} className="hover:text-emerald-700 transition-colors">Intelligence</Link>
+                <ChevronRight className="w-3 h-3 text-slate-300" />
+                <Link to={`/template/${templateId}/blog`} className="hover:text-emerald-700 transition-colors">Archives</Link>
+                <ChevronRight className="w-3 h-3 text-slate-300" />
+                <span className="text-slate-400 truncate max-w-[200px]">{blog.title}</span>
               </nav>
 
-              <Link to={`/template/${templateId}/blog`} className="inline-flex items-center gap-2 text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-8 hover:gap-4 transition-all duration-300">
+              <Link to={`/template/${templateId}/blog`} className="inline-flex items-center gap-2 text-emerald-600 text-[10px] font-bold uppercase tracking-widest mb-8 hover:gap-4 transition-all duration-300">
                 <ArrowLeft className="w-4 h-4" /> Return to Archives
               </Link>
 
-              <h1 className="text-4xl md:text-6xl font-bold text-white mb-10 font-t2-heading leading-[1.1] tracking-tight">
+              <h1 className="text-3xl md:text-5xl font-bold text-slate-900 mb-10 font-t2-heading leading-[1.1] tracking-tight">
                 {blog.title}
               </h1>
 
-              <div className="flex flex-wrap items-center gap-8 border-t border-white/5 pt-8">
+              <div className="flex flex-wrap items-center gap-8 border-t border-slate-200/60 pt-8">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">
                     {blog.author.charAt(0)}
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-white uppercase tracking-widest">{blog.author}</p>
-                    <p className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest opacity-60">Lead Analyst</p>
+                    <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">{blog.author}</p>
+                    <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">Lead Analyst</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -94,7 +92,7 @@ const Template2BlogDetail = () => {
                   
                   {/* Author Card Footer */}
                   <div className="mt-20 pt-12 border-t border-slate-100 flex items-center gap-8">
-                    <div className="w-20 h-20 rounded-[2rem] bg-slate-950 flex items-center justify-center text-emerald-400 text-3xl font-bold font-t2-heading shadow-xl">
+                    <div className="w-20 h-20 rounded-[2rem] bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700 text-3xl font-bold font-t2-heading shadow-sm">
                       {blog.author.charAt(0)}
                     </div>
                     <div>
@@ -108,10 +106,10 @@ const Template2BlogDetail = () => {
 
               {/* Sidebar Info */}
               <aside className="space-y-8">
-                <div className="p-8 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-600/20 rounded-full blur-2xl"></div>
-                  <h4 className="text-lg font-bold mb-4 font-t2-heading relative z-10">Quick Summary</h4>
-                  <p className="text-slate-400 text-sm font-light leading-relaxed relative z-10">
+                <div className="p-8 rounded-[2.5rem] bg-emerald-50/50 text-slate-900 border border-emerald-100/50 shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl"></div>
+                  <h4 className="text-lg font-bold mb-4 font-t2-heading relative z-10 text-slate-900">Quick Summary</h4>
+                  <p className="text-slate-500 text-sm font-light leading-relaxed relative z-10">
                     This analysis covers critical strategies for optimizing human health through evidence-based supplementation and lifestyle adjustments.
                   </p>
                 </div>

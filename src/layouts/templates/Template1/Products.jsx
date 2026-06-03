@@ -77,7 +77,6 @@ const Template1Products = () => {
   };
 
   // Handle category selection
-  // Handle category selection
   const handleCategorySelect = (catName) => {
     setSelectedCategory(catName);
     setDisplayedCount(8);
@@ -91,41 +90,47 @@ const Template1Products = () => {
 
   return (
     <div className="min-h-screen bg-[#faf5e4]">
-      {/* HERO BANNER */}
-      <div className="bg-gradient-to-r from-[#004445] to-[#2c786c] text-white mb-12">
-        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center py-12">
-          {/* Left Content */}
-          <div className="p-6 md:p-12">
-            <span className="inline-block bg-[#f8b400] text-[#004445] px-4 py-1 rounded-full text-sm font-medium mb-4">
-              PREMIUM WELLNESS
-            </span>
-            <h1 className="text-4xl md:text-5xl font-medium mb-4 leading-tight">
-              Elevate Your Health with Science-Backed Supplements
+      {/* HERO BANNER - FULL BACKGROUND WITH LEFT CONTENT */}
+      <div className="relative min-h-[85vh] sm:min-h-[70vh] flex items-center mb-12 overflow-hidden mt-0 pt-24 sm:pt-0">
+        {/* Full Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
+          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=1600&auto=format&fit=crop&q=80')` }}
+        />
+        
+        {/* Gradient Overlay for Readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#004445]/95 via-[#004445]/80 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#faf5e4]/20 via-transparent to-transparent"></div>
+
+        <div className="container mx-auto px-4 relative z-10 w-full">
+          <div className="max-w-2xl  p-6 sm:p-10  ">
+            <div className="inline-flex items-center gap-2 bg-[#f8b400]/20 backdrop-blur-md border border-[#f8b400]/50 text-[#f8b400] px-4 py-1.5 rounded-full text-sm font-bold mb-6 tracking-wider uppercase shadow-lg shadow-[#f8b400]/10">
+              <span className="w-2 h-2 rounded-full bg-[#f8b400] animate-pulse"></span>
+              Premium Wellness
+            </div>
+            
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-[1.1] text-white font-t1-heading drop-shadow-lg">
+              Elevate Your <span className="text-[#f8b400]">Health</span> with Science-Backed Supplements
             </h1>
-            <p className="text-lg mb-6 text-[#faf5e4]/90 leading-relaxed">
+            
+            <p className="text-lg sm:text-xl mb-8 text-[#faf5e4]/90 leading-relaxed font-light drop-shadow-md">
               Discover clinically formulated products trusted by thousands to
               support weight loss, energy, immunity, and total wellness.
             </p>
+            
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-[#f8b400] text-[#004445] px-8 py-3 rounded-lg font-medium hover:bg-[#ffa500] transition-all flex items-center justify-center gap-2 shadow-lg">
+              <button className="bg-gradient-to-r from-[#f8b400] to-[#ffa500] text-[#004445] px-8 py-4 rounded-full font-bold hover:shadow-[0_0_30px_rgba(248,180,0,0.4)] transition-all flex items-center justify-center gap-3 transform hover:-translate-y-1 text-lg">
                 Explore Products <ArrowRight className="w-5 h-5" />
               </button>
-              <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:text-[#004445] transition-all">
+              <button className="bg-white/10 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-bold hover:bg-white hover:text-[#004445] transition-all flex items-center justify-center transform hover:-translate-y-1 text-lg">
                 View Best Sellers
               </button>
             </div>
           </div>
-
-          {/* Right Image */}
-          <div className="h-64 md:h-full min-h-96 relative overflow-hidden https://plus.unsplash.com/premium_photo-1681701714081-9b792cb865ce?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8d2VsbG5lc3MlMjBwcm9kdWN0fGVufDB8fDB8fHww">
-            <img
-              src="https://images.unsplash.com/photo-1615396899839-c99c121888b0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHByb2R1Y3R8ZW58MHx8MHx8fDA%3D"
-              alt="Featured Product"
-              className="w-full h-full object-contain drop-shadow-2xl scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-          </div>
         </div>
+        
+        {/* Decorative elements */}
+        <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-[#faf5e4] to-transparent"></div>
       </div>
 
       <div className="container mx-auto px-4">

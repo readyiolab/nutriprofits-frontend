@@ -1,10 +1,10 @@
-import React from "react";
+import React, { lazy } from "react";
 import { useBackofficeData } from "./DynamicTemplateLoader";
 
-// Import all template layouts
-import Template1Layout from "../layouts/DynamicTemplate/Template1/DynamicLayout";
-import Template2Layout from "../layouts/DynamicTemplate/Template2/DynamicLayout";
-import Template3Layout from "../layouts/DynamicTemplate/Template3/DynamicLayout";
+// Import template layouts lazily
+const Template1Layout = lazy(() => import("../layouts/DynamicTemplate/Template1/DynamicLayout"));
+const Template2Layout = lazy(() => import("../layouts/DynamicTemplate/Template2/DynamicLayout"));
+const Template3Layout = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicLayout"));
 
 /**
  * Selects and renders the correct DynamicTemplate Layout based on

@@ -1,8 +1,9 @@
 import { Dot, Minus, Plus, Trash2, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 import { findProductBySlug, getProductSlug, getCategorySlug, findCategoryBySlug } from "../../../utils/slug";
+import { apiCall } from "../../../utils/domain";
 
 const DynamicProductDetail = () => {
   const { productSlug, categorySlug } = useParams();
@@ -13,7 +14,36 @@ const DynamicProductDetail = () => {
   const allProducts = backofficeData?.backofficeProducts || [];
   const categories = backofficeData?.backofficeCategories || [];
 
-  const product = findProductBySlug(allProducts, productSlug);
+  const initialProduct = findProductBySlug(allProducts, productSlug);
+  const [product, setProduct] = useState(initialProduct);
+  const [loadingDetail, setLoadingDetail] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const fetchDetail = async () => {
+      try {
+        setLoadingDetail(true);
+        const response = await apiCall(`/backoffice-public/products/slug/${productSlug}`);
+        if (response.success && active) {
+          setProduct(response.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch product details:", err);
+      } finally {
+        if (active) setLoadingDetail(false);
+      }
+    };
+    fetchDetail();
+    return () => {
+      active = false;
+    };
+  }, [productSlug]);
+
+  useEffect(() => {
+    if (initialProduct && (!product || product.id !== initialProduct.id)) {
+      setProduct(initialProduct);
+    }
+  }, [initialProduct]);
 
   const productCategory = product
     ? categories.find((c) => c.id === product.category_id)
@@ -55,6 +85,17 @@ const DynamicProductDetail = () => {
   }
   
   relatedProducts = relatedProducts.slice(0, 4);
+
+  if (loadingDetail && (!product || !product.full_description)) {
+    return (
+      <div className="min-h-screen bg-[#faf5e4] flex items-center justify-center pt-24">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#004445] mx-auto"></div>
+          <p className="text-[#004445] font-medium">Loading product details...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (

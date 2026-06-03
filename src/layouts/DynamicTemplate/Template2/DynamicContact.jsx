@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Sparkles, Mail, Phone, MapPin, Clock, Send, MessageCircle, ShoppingBag } from "lucide-react";
 import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 
@@ -18,239 +19,266 @@ const DynamicContact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setSuccess(true);
+    
+    try {
+      const response = await fetch('/api/contact-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      if (response.ok) {
+        setSuccess(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        setTimeout(() => setSuccess(false), 5000);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+    
     setSubmitting(false);
-    setTimeout(() => setSuccess(false), 5000);
-    setFormData({ name: "", email: "", subject: "", message: "" });
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading contact info...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      {/* Hero Section - Same as All Other Pages */}
-      <div className="relative overflow-hidden bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] text-white">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Sparkles className="w-4 h-4 text-yellow-300" />
-              <span className="text-sm font-medium">Contact Us</span>
-            </div>
-            <h1 className="text-5xl md:text-6xl font-medium mb-6 leading-tight">
-              {pageContent.hero_title}
-            </h1>
-            <p className="text-xl text-white/90 mb-6 max-w-2xl mx-auto">
-              {pageContent.hero_subtitle}
-            </p>
-            <p className="text-lg text-white/80 max-w-3xl mx-auto">
-              {pageContent.hero_description}
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-slate-50 font-t2-body overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-1/4 -right-40 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/3 -left-40 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Main Contact Section */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
-          {/* Contact Form */}
-          <div className="bg-white rounded-3xl shadow-2xl p-10 border border-purple-100">
-            <h2 className="text-3xl font-bold text-gray-800 mb-3">
-              {pageContent.form_title}
-            </h2>
-            <p className="text-gray-600 mb-8">{pageContent.form_description}</p>
+      <div className="relative z-10 pt-6">
+        {/* PREMIUM ENTERPRISE DARK CONTRAST HERO */}
+        <section className="relative bg-gradient-to-br from-[#064e3b] via-[#043e2f] to-[#022e22] text-white pt-28 pb-20 overflow-hidden border-b border-[#064e3b]/80 shadow-md min-h-[55vh] flex items-center w-full">
+          {/* Subtle background overlay image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10 mix-blend-overlay scale-105"
+            style={{
+              backgroundImage: `url('https://images.unsplash.com/photo-1521791136364-798a7bc0d267?w=1600&q=80')`,
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#043e2f]/90 via-[#043e2f]/50 to-transparent"></div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  required
-                  className="w-full px-6 py-4 rounded-xl border border-gray-300 focus:border-black focus:outline-none transition text-base"
-                />
-                <input
-                  type="email"
-                  placeholder="Your Email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  required
-                  className="w-full px-6 py-4 rounded-xl border border-gray-300 focus:border-black focus:outline-none transition text-base"
-                />
-              </div>
+          <div className="container mx-auto px-6 relative z-10 w-full">
+            <div className="grid lg:grid-cols-12 gap-12 items-center">
+              {/* Left Column - Contact Intro */}
+              <div className="lg:col-span-7 text-left">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 mb-6 shadow-sm">
+                  <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-xs font-bold tracking-wider uppercase">Connect With Our Experts</span>
+                </div>
+                
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-tight text-white font-t2-heading leading-tight">
+                  {pageContent.hero_title || "Get In Touch"}
+                </h1>
+                
+                <p className="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-4">
+                  {pageContent.hero_subtitle || "We'd love to hear from you"}
+                </p>
+                
+                <p className="text-base text-emerald-100/80 font-light leading-relaxed mb-8 max-w-xl font-light">
+                  {pageContent.hero_description || "Have a question about our products? Need help with an order? Our team is here to help."}
+                </p>
 
-              <input
-                type="text"
-                placeholder="Subject"
-                value={formData.subject}
-                onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                required
-                className="w-full px-6 py-4 rounded-xl border border-gray-300 focus:border-black focus:outline-none transition text-base"
-              />
-
-              <textarea
-                rows="6"
-                placeholder="Your Message..."
-                value={formData.message}
-                onChange={(e) => setFormData({...formData, message: e.target.value})}
-                required
-                className="w-full px-6 py-4 rounded-xl border border-gray-300 focus:border-black focus:outline-none transition text-base resize-none"
-              ></textarea>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full bg-black text-white py-5 rounded-xl font-bold text-lg hover:shadow-2xl hover:bg-gray-900 transition flex items-center justify-center gap-3 disabled:opacity-70"
-              >
-                {submitting ? (
-                  <>Sending...</>
-                ) : success ? (
-                  <>Message Sent Successfully!</>
-                ) : (
-                  <>
-                    Send Message <Send className="w-5 h-5" />
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
-
- 
-          <div className="space-y-8">
-            {/* Office Info Card */}
-            <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] rounded-3xl shadow-2xl p-10 text-white">
-              <h3 className="text-2xl font-bold mb-2">{pageContent.office_title}</h3>
-              <p className="text-white/90 mb-8">{pageContent.office_subtitle}</p>
-
-              <div className="space-y-6">
-                <div className="flex items-start gap-5">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6" />
+                <div className="inline-flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/25 p-3 px-5 rounded-2xl">
+                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-300">
+                    <Clock className="w-4 h-4" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-lg">{pageContent.address_title}</p>
-                    <p className="text-white/90 leading-relaxed" dangerouslySetInnerHTML={{ __html: pageContent.address }} />
+                  <div className="text-left">
+                    <p className="text-white font-bold text-xs">Response Time</p>
+                    <p className="text-emerald-300 text-[10px] font-semibold uppercase tracking-wider">Under 24 Hours</p>
                   </div>
                 </div>
+              </div>
 
-                <div className="flex items-start gap-5">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6" />
+              {/* Right Column - Image visual */}
+              <div className="lg:col-span-5 hidden lg:flex flex-col items-center justify-center relative">
+                <div className="relative w-full max-w-[380px] aspect-square rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl p-2 bg-gradient-to-tr from-white/5 to-white/10 backdrop-blur-sm">
+                  <img
+                    src="https://images.unsplash.com/photo-1521791136364-798a7bc0d267?w=800&q=80"
+                    alt="Customer Support Visual"
+                    className="w-full h-full object-cover rounded-[1.8rem]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#043e2f]/50 to-transparent"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="container mx-auto px-6 py-12 mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            {/* Contact Form */}
+            <div className="relative group" id="form">
+              <div className="relative bg-white rounded-2xl shadow-sm p-8 md:p-10 border border-slate-200/60 overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-[4rem] -mr-6 -mt-6 transition-transform group-hover:scale-105"></div>
+                
+                <div className="relative z-10">
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-2 font-t2-heading">
+                    {pageContent.form_title || "Send Us a Message"}
+                  </h2>
+                  <p className="text-slate-500 font-light mb-8 text-xs leading-relaxed">
+                    {pageContent.form_description || "Fill out the form below and we'll get back to you within 24 hours"}
+                  </p>
+
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="John Doe"
+                          value={formData.name}
+                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-300 font-medium"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                        <input
+                          type="email"
+                          required
+                          placeholder="john@example.com"
+                          value={formData.email}
+                          onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-300 font-medium"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Subject</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Inquiry about products..."
+                        value={formData.subject}
+                        onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-300 font-medium"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Message</label>
+                      <textarea
+                        rows="4"
+                        required
+                        placeholder="Tell us how we can help..."
+                        value={formData.message}
+                        onChange={(e) => setFormData({...formData, message: e.target.value})}
+                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 outline-none transition-all text-sm text-slate-900 placeholder:text-slate-300 font-medium resize-none"
+                      ></textarea>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="group relative w-full bg-emerald-600 text-white py-3.5 rounded-xl font-bold uppercase tracking-wider text-[10px] overflow-hidden shadow-sm hover:bg-emerald-700 transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70"
+                    >
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        {submitting ? "Sending..." : success ? "Inquiry Delivered!" : (
+                          <>Dispatch Message <Send className="w-3.5 h-3.5" /></>
+                        )}
+                      </span>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {/* Info Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Address Card */}
+                <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-emerald-100 transition-all duration-300">
+                  <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center mb-4 border border-emerald-100">
+                    <MapPin className="w-5 h-5 text-emerald-600" />
                   </div>
-                  <div>
-                    <p className="font-semibold text-lg">{pageContent.email_title}</p>
-                    <a href={`mailto:${pageContent.email}`} className="text-white/90 hover:text-white transition underline">
+                  <h4 className="text-base font-bold text-slate-900 mb-2 font-t2-heading">{pageContent.address_title || "Address"}</h4>
+                  <p className="text-slate-500 text-xs leading-relaxed font-light" dangerouslySetInnerHTML={{ __html: pageContent.address || "" }} />
+                </div>
+
+                {/* Contact Info Card */}
+                <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-emerald-100 transition-all duration-300">
+                  <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center mb-4 border border-emerald-100">
+                    <Mail className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <h4 className="text-base font-bold text-slate-900 mb-2 font-t2-heading">Digital Connection</h4>
+                  {pageContent.email && (
+                    <a href={`mailto:${pageContent.email}`} className="text-emerald-600 text-xs font-semibold hover:underline block mb-1">
                       {pageContent.email}
                     </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-5">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-lg">{pageContent.phone_title}</p>
-                    <a href={`tel:${(pageContent.phone || "").replace(/\D/g, '')}`} className="text-white/90 hover:text-white transition">
+                  )}
+                  {pageContent.phone && (
+                    <a href={`tel:${pageContent.phone.replace(/\D/g, '')}`} className="text-slate-500 text-xs hover:text-slate-700 transition-colors">
                       {pageContent.phone}
                     </a>
-                  </div>
+                  )}
                 </div>
+              </div>
 
-                <div className="flex items-start gap-5">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-6 h-6" />
+              {/* Hours & Presence */}
+              <div className="p-6 rounded-2xl bg-emerald-50/50 border border-emerald-100/50 relative overflow-hidden group">
+                <div className="relative z-10 flex items-start gap-4">
+                  <div className="w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center flex-shrink-0 text-emerald-600 border border-emerald-100">
+                    <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-semibold text-lg">{pageContent.business_hours_title}</p>
-                    <p className="text-white/90 leading-relaxed" dangerouslySetInnerHTML={{ __html: pageContent.business_hours }} />
+                    <h4 className="text-sm font-bold text-slate-900 font-t2-heading mb-1">{pageContent.business_hours_title || "Business Hours"}</h4>
+                    <p className="text-slate-500 text-xs leading-relaxed font-light" dangerouslySetInnerHTML={{ __html: pageContent.business_hours || "" }} />
                   </div>
+                </div>
+              </div>
+
+              {/* Map/Office Image */}
+              <div className="rounded-2xl overflow-hidden h-48 bg-slate-200 border border-slate-200 shadow-sm relative group">
+                <div className="absolute inset-0 bg-cover bg-center opacity-40 group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url(${pageContent.office_image_url || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80'})` }}></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent"></div>
+                <div className="relative z-10 p-4 absolute bottom-4 left-4 bg-white/90 backdrop-blur rounded-xl border border-slate-100">
+                  <p className="text-slate-800 font-bold text-[10px] uppercase tracking-wider">Office Headquarters</p>
                 </div>
               </div>
             </div>
-
-            {/* Map (Optional) */}
-            {pageContent.map_embed_url && (
-              <div className="bg-white rounded-3xl shadow-2xl overflow-hidden h-80">
-                <iframe
-                  src={pageContent.map_embed_url}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Our Location"
-                ></iframe>
-              </div>
-            )}
           </div>
         </div>
+
+        {/* Premium CTA Section */}
+        <section className="bg-white py-24 border-t border-slate-100">
+          <div className="container mx-auto px-6 max-w-5xl">
+            <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-emerald-50 via-teal-50/40 to-slate-50 border border-emerald-100/50 p-12 md:p-16 text-center shadow-sm">
+              <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-slate-900 tracking-tight font-t2-heading leading-tight">
+                {pageContent.cta_title}
+              </h3>
+              
+              <p className="text-sm text-slate-600 mb-8 max-w-lg mx-auto font-light leading-relaxed">
+                {pageContent.cta_description}
+              </p>
+              
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                {pageContent.cta_button_text && (
+                  <a
+                    href={pageContent.cta_button_link || "/products"}
+                    className="bg-emerald-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider shadow-sm"
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    {pageContent.cta_button_text}
+                  </a>
+                )}
+                {pageContent.cta_secondary_button_text && (
+                  <a
+                    href={pageContent.cta_secondary_button_link || "/chat"}
+                    className="bg-white text-slate-700 border border-slate-200 font-bold px-6 py-3 rounded-lg hover:bg-slate-50 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    {pageContent.cta_secondary_button_text}
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-
-      {/* CTA Section */}
-      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)]
-     py-12 sm:py-20 mb-10 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl 
-     shadow-2xl overflow-hidden">
-
-  <div className="container mx-auto px-3 sm:px-4 text-center text-white">
-
-    <h3 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tigh">
-      {pageContent.cta_title}
-    </h3>
-
-    <p className="text-base sm:text-xl text-white/90 mb-8 sm:mb-12 
-                  max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
-      {pageContent.cta_description}
-    </p>
-
-    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
-
-      {/* Primary button */}
-      <a
-        href={pageContent.cta_button_link}
-        className="bg-white text-black font-medium 
-                   px-6 py-3 sm:px-10 sm:py-5 rounded-full 
-                   hover:shadow-2xl transition 
-                   text-base sm:text-lg 
-                   flex items-center justify-center gap-3 
-                   w-full sm:w-auto mx-auto sm:mx-0"
-      >
-        {pageContent.cta_button_text} 
-        <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
-      </a>
-
-      {/* Secondary button */}
-      <a
-        href={pageContent.cta_secondary_button_link}
-        className="border-2 border-white text-white 
-                   px-6 py-3 sm:px-10 sm:py-5 rounded-full 
-                   hover:bg-white hover:text-black transition 
-                   font-medium text-base sm:text-lg 
-                   flex items-center justify-center gap-3 
-                   w-full sm:w-auto mx-auto sm:mx-0"
-      >
-        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" /> {pageContent.cta_secondary_button_text}
-      </a>
-    </div>
-  </div>
-</div>
-
     </div>
   );
 };

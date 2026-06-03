@@ -49,58 +49,63 @@ const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
   };
 
   return (
-    <nav className={`sticky top-0 z-50 transition-all duration-300 ${
-      scrolled ? 'bg-[#eeeeee]/70 backdrop-blur-lg shadow-lg' : 'bg-[#eeeeee] shadow-sm'
+    <nav className={`sticky top-0 z-50 transition-all duration-300 border-t-[6px] border-[#d72323] ${
+      scrolled ? 'bg-[#303841]/95 backdrop-blur-md shadow-lg py-2' : 'bg-[#303841] py-4'
     }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link to={`/template/${templateId}/products`} className="text-2xl font-bold text-[#303841] hover:text-[#d72323] transition-colors font-t3-heading">
-              LOGO
+          
+          {/* Left Column: Logo */}
+          <div className="flex-1 flex justify-start">
+            <Link to={`/template/${templateId}/products`} className="flex flex-col items-start group">
+               <div className="text-3xl font-black text-white tracking-tighter group-hover:text-[#d72323] transition-colors font-t3-heading leading-none">
+                 T3
+               </div>
+               <span className="text-[10px] font-bold text-gray-400 tracking-[0.3em] uppercase mt-1">Studio</span>
             </Link>
           </div>
 
-          {/* Desktop Center Menu */}
-          <div className="hidden md:flex items-center justify-center flex-1">
-            <div className="flex space-x-2 bg-white/50 backdrop-blur-sm rounded-full px-6 py-2 border border-white/20 shadow-sm">
-              {navItems.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.path.replace(":id", templateId)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 font-t3-heading tracking-wide ${
-                    isActive(item.path)
-                      ? "text-[#d72323] bg-white shadow-sm"
-                      : "text-[#303841] hover:text-[#d72323] hover:bg-white/60"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+          {/* Center Column: Navigation (Desktop) */}
+          <div className="hidden md:flex items-center justify-center space-x-8">
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                to={item.path.replace(":id", templateId)}
+                className={`text-xs font-bold uppercase tracking-widest transition-all duration-300 relative group font-mono ${
+                  isActive(item.path)
+                    ? "text-[#d72323]"
+                    : "text-gray-300 hover:text-[#d72323]"
+                }`}
+              >
+                {item.label}
+                <span className={`absolute -bottom-1.5 left-0 h-[3px] bg-[#d72323] transition-all duration-300 ${
+                  isActive(item.path) ? "w-full" : "w-0 group-hover:w-full"
+                }`}></span>
+              </Link>
+            ))}
           </div>
 
-          {/* Desktop Contact Button */}
-          <div className="hidden md:block flex-shrink-0">
+          {/* Right Column: Action (Desktop) */}
+          <div className="hidden md:flex items-center justify-end flex-1">
             <Link
               to={`/template/${templateId}/contact`}
-              className="px-6 py-2.5 bg-gradient-to-r from-[#d72323] to-[#303841] text-white font-semibold text-sm rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-t3-heading tracking-wide"
+              className="px-6 py-2.5 bg-[#d72323] text-white text-xs font-bold uppercase tracking-widest rounded-none hover:bg-white hover:text-[#303841] transition-all duration-300 shadow-md shadow-[#d72323]/20 font-mono"
             >
               Contact
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center justify-end flex-1">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-md text-[#303841] hover:bg-white/50 transition-colors"
+              className="p-2 text-white hover:text-[#d72323] transition-colors"
               aria-label="Toggle menu"
             >
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  strokeLinecap="square"
+                  strokeLinejoin="miter"
                   strokeWidth={2}
                   d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
                 />
@@ -113,18 +118,18 @@ const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
         {mobileMenuOpen && (
           <div
             ref={mobileMenuRef}
-            className="md:hidden absolute top-full left-0 right-0 bg-[#eeeeee]/95 backdrop-blur-lg shadow-xl border-t border-gray-200"
+            className="md:hidden absolute top-full left-0 right-0 bg-[#303841] shadow-2xl border-t border-slate-700/50"
           >
-            <div className="px-4 py-6 space-y-3">
-              <div className="bg-white/50 backdrop-blur-sm rounded-3xl px-3 py-3 border border-white/20 shadow-sm space-y-2">
+            <div className="px-6 py-8 space-y-6">
+              <div className="flex flex-col space-y-4">
                 {navItems.map((item) => (
                   <Link
                     key={item.label}
                     to={item.path.replace(":id", templateId)}
-                    className={`block px-6 py-3 text-sm rounded-full text-center font-medium transition-all duration-200 font-t3-heading tracking-wide ${
+                    className={`block py-2.5 text-base font-bold tracking-wider transition-all duration-200 border-l-4 pl-4 font-mono uppercase ${
                       isActive(item.path)
-                        ? "text-[#d72323] bg-white shadow-sm"
-                        : "text-[#303841] hover:text-[#d72323] hover:bg-white/60"
+                        ? "text-[#d72323] border-[#d72323] bg-white/5"
+                        : "text-gray-300 border-transparent hover:border-[#d72323] hover:text-white"
                     }`}
                   >
                     {item.label}
@@ -133,9 +138,9 @@ const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
               </div>
               <Link
                 to={`/template/${templateId}/contact`}
-                className="block w-full text-center px-6 text-sm py-3 bg-gradient-to-r from-[#d72323] to-[#303841] text-white font-semibold rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-t3-heading tracking-wide"
+                className="block w-full text-center py-4 bg-[#d72323] text-white text-sm font-bold uppercase tracking-widest hover:bg-white hover:text-[#303841] transition-all duration-300 font-mono"
               >
-                Contact
+                Contact Us
               </Link>
             </div>
           </div>

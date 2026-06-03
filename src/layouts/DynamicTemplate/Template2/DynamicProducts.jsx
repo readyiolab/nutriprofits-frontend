@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { Search, ArrowRight, LayoutGrid, ChevronRight, X, Sparkles } from "lucide-react";
+import { Search, ArrowRight, LayoutGrid, ChevronRight, Sparkles, Check } from "lucide-react";
 import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 import { getProductSlug, getCategorySlug, findCategoryBySlug } from "../../../utils/slug";
 
@@ -54,7 +54,7 @@ const DynamicProducts = () => {
     setTimeout(() => {
       setDisplayedCount((prev) => prev + productsPerBatch);
       setIsLoading(false);
-    }, 500);
+    }, 400);
   };
 
   const handleSearchChange = (e) => {
@@ -63,67 +63,124 @@ const DynamicProducts = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      {/* MODERN HERO SECTION (Glass/Gradient) */}
-      <div className="relative overflow-hidden bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] min-h-[50vh] md:min-h-[60vh] text-white flex items-center justify-center">
-        {/* Abstract shapes */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl -ml-10 -mb-10"></div>
-        <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]"></div>
+    <div className="min-h-screen bg-slate-50 font-t2-body">
+      {/* PREMIUM ENTERPRISE DARK CONTRAST HERO */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-[#064e3b] via-[#043e2f] to-[#022e22] text-white min-h-[55vh] flex items-center border-b border-[#064e3b]/80 shadow-md pt-24 pb-20">
+        {/* Subtle background overlay image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10 mix-blend-overlay"
+          style={{
+            backgroundImage: `url('${productPageContent.hero_image_url || 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1600&q=80'}')`,
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#043e2f]/90 via-[#043e2f]/50 to-transparent"></div>
 
-        <div className="relative z-10 container mx-auto px-4 text-center">
-            <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-sm font-medium mb-6 animate-fade-in-up">
-              <Sparkles className="w-4 h-4 text-yellow-300" />
-              {productPageContent.hero_badge || "Premium Collection"}
-            </span>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight tracking-tight">
-              {activeCategory
-                ? activeCategory.category_name
-                : productPageContent.hero_title || "Wellness Redefined"}
-            </h1>
-            <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed mb-8">
-               {activeCategory
-                ? activeCategory.category_description || `Explore our exclusive ${activeCategory.category_name} collection.`
-                : productPageContent.hero_description || "Experience the perfect balance of nature and science with our premium supplements."}
-            </p>
+        <div className="relative z-10 container mx-auto px-6 w-full">
+          <div className="grid lg:grid-cols-12 gap-12 items-center">
+            {/* Left Column - Product info */}
+            <div className="lg:col-span-7 text-left">
+              <span className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full text-xs font-semibold text-emerald-300 mb-6 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                {productPageContent.hero_badge || "Premium Collection"}
+              </span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-tight text-white font-t2-heading leading-tight">
+                {activeCategory
+                  ? activeCategory.category_name
+                  : productPageContent.hero_title || "Wellness Redefined"}
+              </h1>
+              <p className="text-base text-emerald-100/80 font-light leading-relaxed mb-8 max-w-xl">
+                 {activeCategory
+                  ? activeCategory.category_description || `Explore our exclusive ${activeCategory.category_name} collection.`
+                  : productPageContent.hero_description || "Experience the perfect balance of nature and science with our premium supplements."}
+              </p>
+
+              {/* Trust Badges Checkbox list */}
+              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-8 pt-6 border-t border-white/15 text-xs text-emerald-200/80">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-emerald-400" />
+                  </div>
+                  <span className="font-semibold uppercase tracking-wider">GMP Certified Facility</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-[#064e3b] bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-emerald-400" />
+                  </div>
+                  <span className="font-semibold uppercase tracking-wider">3rd Party Lab Verified</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-[#064e3b] bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-emerald-400" />
+                  </div>
+                  <span className="font-semibold uppercase tracking-wider">Pure & Organic Standard</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Premium image overlay */}
+            <div className="lg:col-span-5 hidden lg:flex flex-col items-center justify-center relative">
+              <div className="relative w-full max-w-[400px] aspect-square rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl p-2 bg-gradient-to-tr from-white/5 to-white/10 backdrop-blur-sm">
+                <img
+                  src={productPageContent.hero_image_url || "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80"}
+                  alt="Premium Collection visual"
+                  className="w-full h-full object-cover rounded-[1.8rem]"
+                  onError={(e) => {
+                    e.target.src = "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80";
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#043e2f]/50 to-transparent"></div>
+                
+                {/* Floating badge */}
+                <div className="absolute bottom-6 left-6 right-6 p-4 bg-[#043e2f]/90 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 text-emerald-400 font-bold">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-white text-xs font-bold font-t2-heading">Formulated by Experts</p>
+                    <p className="text-emerald-300 text-[10px] uppercase tracking-wider font-semibold">Quality Guaranteed</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 -mt-20 relative z-20 pb-20">
+      <div className="container mx-auto px-6 py-10 relative z-20">
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           
           {/* SIDEBAR NAVIGATION (Desktop) */}
-          <aside className="hidden lg:block w-72 flex-shrink-0 sticky top-24 self-start h-fit max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar pr-2">
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl shadow-blue-900/5 border border-white/60 overflow-hidden">
-               <div className="p-6 border-b border-blue-50 bg-blue-50/50">
-                  <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                     <LayoutGrid className="w-5 h-5 text-blue-600" />
+          <aside className="hidden lg:block w-72 flex-shrink-0 sticky top-24 self-start h-fit max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+               <div className="p-5 border-b border-slate-100 bg-slate-50/50">
+                  <h3 className="font-bold text-slate-800 flex items-center gap-2 text-base font-t2-heading">
+                     <LayoutGrid className="w-4 h-4 text-emerald-600" />
                      Collections
                   </h3>
                </div>
                 <nav className="p-3 flex flex-col gap-1 max-h-[calc(100vh-320px)] overflow-y-auto custom-scrollbar">
                   <Link
                      to="/"
-                     className={`px-4 py-3 rounded-2xl transition-all flex justify-between items-center group ${
+                     className={`px-4 py-2.5 rounded-xl transition-all flex justify-between items-center ${
                         !categorySlug
-                           ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                           : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
+                           ? "bg-emerald-600 text-white shadow-sm font-semibold"
+                           : "text-slate-600 hover:bg-slate-50 hover:text-emerald-600"
                      }`}
                   >
-                     <span className="font-semibold text-sm">All Products</span>
+                     <span className="text-sm">All Products</span>
                      {!categorySlug && <ChevronRight className="w-4 h-4" />}
                   </Link>
                   {categories.map((cat) => (
                      <Link
                         key={cat.id}
                         to={`/categories/${getCategorySlug(cat)}`}
-                        className={`px-4 py-3 rounded-2xl transition-all flex justify-between items-center group ${
+                        className={`px-4 py-2.5 rounded-xl transition-all flex justify-between items-center ${
                            categorySlug === getCategorySlug(cat)
-                              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                              : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
+                              ? "bg-emerald-600 text-white shadow-sm font-semibold"
+                              : "text-slate-600 hover:bg-slate-50 hover:text-emerald-600"
                         }`}
                      >
-                        <span className="font-semibold text-sm">{cat.category_name}</span>
+                        <span className="text-sm">{cat.category_name}</span>
                         {categorySlug === getCategorySlug(cat) && <ChevronRight className="w-4 h-4" />}
                      </Link>
                   ))}
@@ -131,13 +188,13 @@ const DynamicProducts = () => {
             </div>
 
             {/* Stats Widget */}
-            <div className="mt-6 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl shadow-blue-900/20">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16"></div>
+            <div className="mt-5 bg-slate-900 rounded-2xl p-5 text-white relative overflow-hidden shadow-md">
+               <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-xl -mr-12 -mt-12"></div>
                <div className="relative z-10">
-                  <p className="text-blue-100 text-xs font-bold uppercase tracking-wider mb-1">Total Products</p>
-                  <h4 className="text-4xl font-bold">{allProducts.length}</h4>
-                  <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2 text-xs font-medium text-blue-100">
-                     <Sparkles className="w-3 h-3 text-yellow-300" />
+                  <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">Catalog Size</p>
+                  <h4 className="text-3xl font-bold font-t2-heading text-white">{allProducts.length} Products</h4>
+                  <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-1.5 text-xs text-slate-300">
+                     <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
                      Premium Quality Guaranteed
                   </div>
                </div>
@@ -148,26 +205,26 @@ const DynamicProducts = () => {
           <div className="flex-1 w-full" ref={productsRef} style={{ scrollMarginTop: '120px' }}>
             
             {/* MOBILE CATEGORY BAR (Horizontal) */}
-            <div className="lg:hidden mb-8">
-               <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="lg:hidden mb-6">
+               <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide">
                   <Link
                      to="/"
-                     className={`flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
+                     className={`flex-shrink-0 px-5 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
                         !categorySlug
-                           ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                           : "bg-white text-slate-600 border border-blue-100"
+                           ? "bg-emerald-600 text-white shadow-sm"
+                           : "bg-white text-slate-600 border border-slate-200"
                      }`}
                   >
-                     All
+                     All Products
                   </Link>
                   {categories.map((cat) => (
                      <Link
                         key={cat.id}
                         to={`/categories/${getCategorySlug(cat)}`}
-                        className={`flex-shrink-0 px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
+                        className={`flex-shrink-0 px-5 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
                            categorySlug === getCategorySlug(cat)
-                              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                              : "bg-white text-slate-600 border border-blue-100"
+                              ? "bg-emerald-600 text-white shadow-sm"
+                              : "bg-white text-slate-600 border border-slate-200"
                         }`}
                      >
                         {cat.category_name}
@@ -177,25 +234,25 @@ const DynamicProducts = () => {
             </div>
 
             {/* SEARCH BAR */}
-            <div className="bg-white/60 backdrop-blur-xl rounded-3xl shadow-lg shadow-blue-900/5 border border-white/60 p-2 mb-8 flex items-center gap-2">
-               <div className="h-12 w-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                  <Search className="w-5 h-5" />
+            <div className="bg-white rounded-2xl shadow-sm p-4 mb-6 border border-slate-100 flex items-center gap-3">
+               <div className="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
+                  <Search className="w-4 h-4" />
                </div>
                <input
                   type="text"
                   placeholder="Search products..."
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="flex-1 bg-transparent border-none focus:ring-0 text-slate-700 placeholder-slate-400 font-medium"
+                  className="flex-1 bg-transparent border-none focus:ring-0 text-slate-700 placeholder-slate-400 text-sm outline-none"
                />
-               <div className="hidden sm:block px-6 py-2 bg-white rounded-xl text-xs font-bold text-slate-500 border border-blue-50">
+               <div className="hidden sm:block px-4 py-2 bg-slate-50 rounded-lg text-xs font-bold text-slate-500 border border-slate-100">
                   {filteredProducts.length} Results
                </div>
             </div>
 
             {/* PRODUCT GRID */}
             {filteredProducts.length > 0 ? (
-               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                   {displayedProducts.map((product) => {
                     const slug = getProductSlug(product);
                     const productLink = activeCategory
@@ -206,35 +263,33 @@ const DynamicProducts = () => {
                       <div
                         key={product.id}
                         onClick={() => navigate(productLink)}
-                        className="group bg-white rounded-3xl overflow-hidden shadow-lg shadow-blue-900/5 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 cursor-pointer border border-transparent hover:border-blue-100 flex flex-col h-full"
+                        className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-emerald-500/10 transition-all duration-300 border border-slate-100 cursor-pointer flex flex-col h-full"
                       >
-                        <div className="relative aspect-[4/3] overflow-hidden flex items-center justify-center p-6">
-                          <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="relative aspect-square overflow-hidden flex items-center justify-center p-6 bg-slate-50/50 border-b border-slate-100/50">
                           <img
                             src={product.product_image}
                             alt={product.product_name}
-                            className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-700 drop-shadow-sm"
+                            className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500 drop-shadow-sm"
                             onError={(e) => { e.target.src = "https://via.placeholder.com/400?text=Product"; }}
                           />
-                          {/* Floating Badge */}
-                          <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-xs font-bold text-blue-600 px-3 py-1 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 delay-100">
-                             Learn More
+                          <div className="absolute top-2 left-2 bg-white/90 backdrop-blur text-[10px] font-bold text-emerald-600 px-2.5 py-1 rounded-full border border-slate-100 opacity-0 group-hover:opacity-100 transition-opacity">
+                             View Details
                           </div>
                         </div>
                         
                         <div className="p-5 flex flex-col flex-1">
-                          <div className="text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-2">
+                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                              {categories.find(c => c.id === product.category_id)?.category_name || "Collection"}
                           </div>
-                          <h3 className="text-lg font-bold text-slate-800 mb-2 leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+                          <h3 className="text-base font-bold text-slate-800 mb-2 leading-snug group-hover:text-emerald-600 transition-colors line-clamp-2 font-t2-heading">
                             {product.product_name}
                           </h3>
-                          <p className="text-slate-500 text-xs line-clamp-2 mb-4 flex-1">
+                          <p className="text-slate-500 text-xs line-clamp-2 mb-4">
                             {product.product_description}
                           </p>
                           
-                           <button className="w-full py-2.5 rounded-xl bg-blue-50 text-blue-600 text-sm font-semibold group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 flex items-center justify-center gap-2 mt-auto">
-                            Learn More <ArrowRight className="w-4 h-4" />
+                           <button className="w-full py-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold group-hover:bg-emerald-600 group-hover:border-emerald-600 group-hover:text-white transition-all flex items-center justify-center gap-1.5 mt-auto">
+                            Learn More <ArrowRight className="w-3.5 h-3.5" />
                            </button>
                         </div>
                       </div>
@@ -242,16 +297,18 @@ const DynamicProducts = () => {
                   })}
                </div>
             ) : (
-               <div className="text-center py-20 bg-white/40 backdrop-blur-md rounded-3xl border border-white/60">
-                  <p className="text-2xl text-slate-400 font-light">No products found matching your criteria.</p>
-                  <button onClick={() => {setSearchQuery(""); navigate("/");}} className="mt-4 text-blue-600 font-medium hover:underline">Clear Filters</button>
+               <div className="text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm max-w-lg mx-auto">
+                  <Search className="w-10 h-10 text-slate-300 mx-auto mb-4" />
+                  <p className="text-lg text-slate-800 font-bold font-t2-heading">No products found</p>
+                  <p className="text-slate-500 text-sm mt-1">Try refining your keyword or category filter.</p>
+                  <button onClick={() => {setSearchQuery(""); navigate("/");}} className="mt-4 text-emerald-600 font-semibold text-sm hover:text-emerald-700">Clear Search</button>
                </div>
             )}
 
             {/* Load More */}
             {hasMoreProducts && (
-               <div className="flex justify-center mt-12">
-                 <button onClick={handleLoadMore} disabled={isLoading} className="px-8 py-3 bg-white border border-blue-100 text-blue-600 font-semibold rounded-full shadow-lg shadow-blue-900/5 hover:bg-blue-50 transition-all">
+               <div className="flex justify-center mt-10">
+                 <button onClick={handleLoadMore} disabled={isLoading} className="bg-slate-900 text-white text-xs uppercase tracking-widest font-bold px-8 py-3.5 rounded-lg hover:bg-emerald-600 transition-colors shadow-sm">
                     {isLoading ? "Loading..." : "Load More Products"}
                  </button>
                </div>

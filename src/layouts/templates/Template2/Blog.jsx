@@ -27,49 +27,60 @@ const Template2Blog = () => {
       </div>
 
       <div className="relative z-10">
-        {/* Modern Hero Section */}
-        <section className="relative bg-slate-950 pt-32 pb-24 overflow-hidden rounded-b-[4rem] shadow-2xl mb-20 min-h-[60vh] flex items-center">
-          {/* Background Image with Overlay */}
+        {/* PREMIUM ENTERPRISE DARK CONTRAST HERO */}
+        <section className="relative bg-gradient-to-br from-[#064e3b] via-[#043e2f] to-[#022e22] text-white pt-28 pb-20 overflow-hidden border-b border-[#064e3b]/80 shadow-md min-h-[55vh] flex items-center mb-20 w-full">
+          {/* Subtle background overlay image */}
           <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 scale-105 transition-transform duration-[10s] hover:scale-110"
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10 mix-blend-overlay scale-105"
             style={{
               backgroundImage: `url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1600&q=80')`,
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/60 to-slate-950"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#043e2f]/90 via-[#043e2f]/50 to-transparent"></div>
 
-          {/* Dynamic Glow Backgrounds */}
-          <div className="absolute top-0 right-0 w-[50rem] h-[50rem] bg-emerald-600/20 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-[50rem] h-[50rem] bg-teal-600/10 rounded-full blur-[120px] -translate-x-1/2 translate-y-1/2"></div>
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+          <div className="container mx-auto px-6 relative z-10 w-full">
+            <div className="grid lg:grid-cols-12 gap-12 items-center">
+              {/* Left Column - Search & Title */}
+              <div className="lg:col-span-7 text-left">
+                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 mb-6 shadow-sm">
+                  <BookOpen className="w-4 h-4 text-emerald-400" />
+                  <span className="text-xs font-bold tracking-wider uppercase">Insights & Innovations</span>
+                </div>
+                
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-tight text-white font-t2-heading leading-tight">
+                  Wellness <span className="text-emerald-400 font-normal italic">Intelligence</span>
+                </h1>
+                
+                <p className="text-base text-emerald-100/80 font-light leading-relaxed mb-8 max-w-xl">
+                  Discover the latest breakthroughs in health science, nutrition advice, and natural supplement strategies curated by our experts.
+                </p>
 
-          <div className="container mx-auto px-4 relative z-10 text-center">
-            <div className="max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-emerald-400 shadow-2xl mb-8 transform transition-all hover:scale-105 hover:bg-white/10">
-                <BookOpen className="w-4 h-4" />
-                <span className="text-xs font-bold tracking-[0.2em] uppercase">Insights & Innovations</span>
+                {/* Refined Search Bar */}
+                <div className="max-w-xl relative group">
+                  <div className="absolute -inset-0.5 bg-emerald-500/20 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+                  <div className="relative flex items-center bg-white border border-slate-200/20 rounded-2xl px-5 py-3 shadow-md">
+                    <Search className="w-5 h-5 text-emerald-600 mr-2 flex-shrink-0" />
+                    <input 
+                      type="text" 
+                      placeholder="Search the knowledge base..." 
+                      value={searchTerm} 
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full bg-transparent border-none focus:ring-0 text-slate-800 placeholder:text-slate-400 px-2 font-medium text-sm outline-none"
+                    />
+                    <div className="hidden md:block bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-widest px-5 py-2.5 rounded-lg shadow-sm">Search</div>
+                  </div>
+                </div>
               </div>
-              
-              <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tight text-white font-t2-heading leading-[1.1]">
-                Wellness Intelligence
-              </h1>
-              
-              <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed mb-12 drop-shadow-md">
-                Discover the latest breakthroughs in health science and natural supplement strategies.
-              </p>
 
-              <div className="max-w-2xl mx-auto relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                <div className="relative flex items-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-4 shadow-2xl">
-                  <Search className="w-5 h-5 text-emerald-400" />
-                  <input 
-                    type="text" 
-                    placeholder="Search the knowledge base..." 
-                    value={searchTerm} 
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 text-white placeholder:text-slate-500 px-4 font-light text-lg"
+              {/* Right Column - Image visual */}
+              <div className="lg:col-span-5 hidden lg:flex flex-col items-center justify-center relative">
+                <div className="relative w-full max-w-[380px] aspect-square rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl p-2 bg-gradient-to-tr from-white/5 to-white/10 backdrop-blur-sm">
+                  <img
+                    src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&q=80"
+                    alt="Wellness Intelligence Visual"
+                    className="w-full h-full object-cover rounded-[1.8rem]"
                   />
-                  <div className="hidden md:block bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-lg shadow-lg">Search</div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#043e2f]/50 to-transparent"></div>
                 </div>
               </div>
             </div>
@@ -89,7 +100,7 @@ const Template2Blog = () => {
                       alt={filteredBlogs[0].title} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
                     />
-                    <div className="absolute top-8 left-8 bg-slate-950/80 backdrop-blur-md px-4 py-2 rounded-xl text-emerald-400 text-[10px] font-bold uppercase tracking-[0.2em] border border-white/10">
+                    <div className="absolute top-8 left-8 bg-emerald-600 px-4 py-2 rounded-xl text-white text-[10px] font-bold uppercase tracking-[0.2em] shadow-md">
                       Editor's Pick
                     </div>
                   </div>

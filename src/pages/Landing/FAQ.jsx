@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, HelpCircle, ShoppingCart, CreditCard, Truck, RotateCcw, Shield, MessageCircle } from 'lucide-react';
+import { Search, HelpCircle, Layout, Database, Shield, MessageCircle, Globe, ShoppingBag, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,136 +11,121 @@ const FAQ = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
 
   const categories = [
-    { id: 'orders', label: 'Orders & Shipping', icon: <Truck className="h-5 w-5" /> },
-    { id: 'payments', label: 'Payment & Pricing', icon: <CreditCard className="h-5 w-5" /> },
-    { id: 'returns', label: 'Returns & Refunds', icon: <RotateCcw className="h-5 w-5" /> },
-    { id: 'account', label: 'Account & Security', icon: <Shield className="h-5 w-5" /> }
+    { id: 'platform', label: 'Platform & CMS', icon: <Layout className="h-5 w-5" /> },
+    { id: 'domains', label: 'Domains & Branding', icon: <Globe className="h-5 w-5" /> },
+    { id: 'catalog', label: 'Catalog & Products', icon: <ShoppingBag className="h-5 w-5" /> },
+    { id: 'security', label: 'Security & Scaling', icon: <Shield className="h-5 w-5" /> }
   ];
 
   const faqs = {
-    orders: [
+    platform: [
       {
-        question: "How long does shipping take?",
-        answer: "Standard shipping typically takes 3-5 business days. Express shipping is available for 1-2 day delivery. International orders may take 7-14 business days depending on the destination."
+        question: "Do I need technical knowledge?",
+        answer: "No. Everything can be managed from the dashboard without writing code, managing servers, or having developer experience."
       },
       {
-        question: "How can I track my order?",
-        answer: "Once your order ships, you'll receive a tracking number via email. You can also track your order by logging into your account and visiting the 'My Orders' section."
+        question: "Can I manage website content?",
+        answer: "Yes. Full CMS access is included, letting you edit text, banners, images, blogs, FAQ lists, and specific landing pages from the back-office dashboard."
       },
       {
-        question: "Do you offer free shipping?",
-        answer: "Yes! We offer free standard shipping on all orders over $50. For orders under $50, a flat shipping fee of $5.99 applies."
+        question: "Is the website mobile-friendly?",
+        answer: "Yes. All frontend templates are fully responsive and optimized for mobile, tablet, and desktop screens."
       },
       {
-        question: "Can I change my shipping address after placing an order?",
-        answer: "You can change your shipping address within 1 hour of placing your order. Please contact our customer service immediately. Once the order is processed, we cannot modify the address."
-      },
-      {
-        question: "What if my package is lost or damaged?",
-        answer: "If your package is lost or arrives damaged, please contact us within 48 hours of the expected delivery date. We'll investigate and arrange a replacement or full refund."
+        question: "Can I customize the look of my store?",
+        answer: "Yes. You can select premium layouts, upload your custom logo, configure site-wide accent colors, and structure navigation directly from your back office."
       }
     ],
-    payments: [
+    domains: [
       {
-        question: "What payment methods do you accept?",
-        answer: "We accept all major credit cards (Visa, Mastercard, American Express), PayPal, Apple Pay, Google Pay, and Shop Pay. All transactions are secure and encrypted."
+        question: "Can I use my own domain?",
+        answer: "Yes. You can connect any custom domain you own. We provide simple DNS instructions, and our system automatically provisions an SSL certificate for your secure custom domain."
       },
       {
-        question: "Is it safe to use my credit card on your site?",
-        answer: "Absolutely! We use industry-standard SSL encryption to protect your payment information. We never store your complete credit card details on our servers."
+        question: "Is custom branding supported?",
+        answer: "Absolutely. All logos, footers, favicons, site names, and metadata can be customized so that visitors see only your brand."
       },
       {
-        question: "Do you offer price matching?",
-        answer: "Yes! If you find a lower price on an identical product within 7 days of purchase, we'll refund the difference. Terms and conditions apply."
-      },
-      {
-        question: "Can I use multiple discount codes?",
-        answer: "Only one discount code can be applied per order. If you have multiple codes, the system will automatically apply the one that gives you the best discount."
-      },
-      {
-        question: "When will I be charged for my order?",
-        answer: "Your payment method is charged when your order is processed and confirmed, which is typically within a few minutes of placing the order."
+        question: "How long does domain setup take?",
+        answer: "Domain resolution usually takes between 1 to 24 hours depending on your DNS provider. Once DNS propagation is complete, your store goes live immediately."
       }
     ],
-    returns: [
+    catalog: [
       {
-        question: "What is your return policy?",
-        answer: "We offer a 30-day return policy on most items. Products must be unused, in original packaging, and accompanied by proof of purchase. Some items like personalized products are not eligible for return."
+        question: "Can I add products and categories?",
+        answer: "Yes. Product and category management is fully available from the admin panel, allowing you to activate and catalog items according to your business needs."
       },
       {
-        question: "How do I start a return?",
-        answer: "Log into your account, go to 'My Orders', select the item you want to return, and click 'Return Item'. Follow the instructions to print your prepaid return label."
+        question: "What health & wellness categories are supported?",
+        answer: "Our catalog covers Weight Management, Beauty & Skincare, Men's Health, Women's Health, Hair Care, Fitness & Bodybuilding, General Wellness, Vitamins & Supplements, Anti-Aging, and Lifestyle products."
       },
       {
-        question: "When will I receive my refund?",
-        answer: "Refunds are processed within 5-7 business days after we receive your return. The refund will be issued to your original payment method. Please allow an additional 3-5 days for the funds to appear in your account."
-      },
-      {
-        question: "Do I have to pay for return shipping?",
-        answer: "Return shipping is free for defective items or wrong items shipped. For other returns, a flat return shipping fee of $6.99 will be deducted from your refund."
-      },
-      {
-        question: "Can I exchange an item instead of returning it?",
-        answer: "Yes! If you want a different size, color, or variation, you can initiate an exchange. The process is similar to returns, and we'll ship the replacement once we receive your original item."
+        question: "Can I edit descriptions and specifications?",
+        answer: "Yes. You can customize the title, full descriptions, highlights, benefits, ingredients, and pricing details of any product to fit your target market."
       }
     ],
-    account: [
+    security: [
       {
-        question: "How do I create an account?",
-        answer: "Click 'Sign Up' at the top of any page, enter your email and create a password. You can also sign up using your Google or Facebook account for faster registration."
+        question: "Is the system built on a secure architecture?",
+        answer: "Yes. We run a secure multi-tenant SaaS architecture where every store operates in secure database isolation, preventing any cross-tenant data leaks."
       },
       {
-        question: "I forgot my password. What should I do?",
-        answer: "Click 'Forgot Password' on the login page, enter your email address, and we'll send you a link to reset your password. The link is valid for 24 hours."
+        question: "Can I scale my business later?",
+        answer: "Absolutely. Our platform is built on a scalable and optimized infrastructure capable of handling high concurrent traffic and rapid order growth without slowdowns."
       },
       {
-        question: "How do I update my account information?",
-        answer: "Log into your account and go to 'Account Settings'. Here you can update your name, email, password, shipping addresses, and payment methods."
-      },
-      {
-        question: "Is my personal information secure?",
-        answer: "Yes! We take security seriously. Your data is encrypted, and we comply with GDPR and other data protection regulations. We never sell your personal information to third parties."
-      },
-      {
-        question: "How do I delete my account?",
-        answer: "To delete your account, go to Account Settings and click 'Delete Account'. Please note that this action is permanent and will remove all your order history and saved information."
+        question: "How is database connectivity maintained?",
+        answer: "We employ connection pooling and automatic query retries to ensure that transient database connectivity glitches never affect your customer storefronts."
       }
     ]
   };
 
   const quickHelp = [
     {
-      icon: <ShoppingCart className="h-8 w-8 text-blue-600" />,
-      title: "Place an Order",
-      description: "Step-by-step guide to shopping"
+      icon: <Layout className="h-8 w-8 text-blue-600" />,
+      title: "Configure Store",
+      description: "Customize your layout and styles"
     },
     {
-      icon: <Truck className="h-8 w-8 text-blue-600" />,
-      title: "Track Shipping",
-      description: "Monitor your delivery status"
+      icon: <Globe className="h-8 w-8 text-blue-600" />,
+      title: "Add Domain",
+      description: "Set up your branded web address"
     },
     {
-      icon: <RotateCcw className="h-8 w-8 text-blue-600" />,
-      title: "Process Return",
-      description: "Easy returns within 30 days"
+      icon: <Database className="h-8 w-8 text-blue-600" />,
+      title: "Import Catalog",
+      description: "Manage products & categories"
     },
     {
       icon: <MessageCircle className="h-8 w-8 text-blue-600" />,
       title: "Contact Support",
-      description: "We're here to help 24/7"
+      description: "We are here to help 24/7"
     }
   ];
 
+  // Filter FAQs based on search query
+  const filteredFaqs = {};
+  Object.entries(faqs).forEach(([categoryKey, questions]) => {
+    const matched = questions.filter(
+      (q) =>
+        q.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.answer.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    if (matched.length > 0) {
+      filteredFaqs[categoryKey] = matched;
+    }
+  });
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 font-sans text-slate-800">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-        <div className="container mx-auto px-4 py-16">
+      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 text-white">
+        <div className="container mx-auto px-4 py-16 md:py-24">
           <div className="text-center max-w-3xl mx-auto">
-            <HelpCircle className="h-16 w-16 mx-auto mb-4" />
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Frequently Asked Questions</h1>
-            <p className="text-xl text-blue-100 mb-8">
-              Find answers to common questions about shopping with ShopHub
+            <HelpCircle className="h-16 w-16 mx-auto mb-4 text-blue-400 animate-pulse" />
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">Frequently Asked Questions</h1>
+            <p className="text-xl text-blue-200 mb-8">
+              Find answers to common questions about launching and running your NutriProfits store
             </p>
             
             {/* Search Bar */}
@@ -149,7 +134,7 @@ const FAQ = () => {
               <Input
                 type="text"
                 placeholder="Search for answers..."
-                className="pl-12 py-6 text-lg bg-white text-gray-900"
+                className="pl-12 py-6 text-lg bg-white text-gray-900 rounded-xl border-slate-200 shadow-lg shadow-indigo-950/20"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -160,15 +145,15 @@ const FAQ = () => {
 
       {/* Quick Help Cards */}
       <div className="container mx-auto px-4 -mt-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
           {quickHelp.map((item, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer bg-white">
-              <CardHeader className="text-center">
+            <Card key={index} className="hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer bg-white border-slate-100 rounded-2xl p-4 text-center">
+              <CardHeader className="p-4">
                 <div className="flex justify-center mb-2">
                   {item.icon}
                 </div>
-                <CardTitle className="text-lg">{item.title}</CardTitle>
-                <CardDescription>{item.description}</CardDescription>
+                <CardTitle className="text-lg font-bold text-slate-900">{item.title}</CardTitle>
+                <CardDescription className="text-slate-500 text-xs mt-1">{item.description}</CardDescription>
               </CardHeader>
             </Card>
           ))}
@@ -177,65 +162,73 @@ const FAQ = () => {
 
       {/* FAQ Content */}
       <div className="container mx-auto px-4 py-16">
-        <Tabs defaultValue="orders" className="max-w-5xl mx-auto">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-8">
+        <Tabs defaultValue="platform" className="max-w-4xl mx-auto">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-8 gap-2 bg-slate-100/80 p-1.5 rounded-xl border border-slate-200/50">
             {categories.map((category) => (
-              <TabsTrigger key={category.id} value={category.id} className="flex items-center gap-2">
+              <TabsTrigger key={category.id} value={category.id} className="flex items-center justify-center gap-2 rounded-lg font-bold text-xs uppercase tracking-wider py-2">
                 {category.icon}
-                <span className="hidden sm:inline">{category.label}</span>
+                <span>{category.label}</span>
               </TabsTrigger>
             ))}
           </TabsList>
 
-          {Object.entries(faqs).map(([key, questions]) => (
-            <TabsContent key={key} value={key}>
-              <Card className="border-none shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-2xl flex items-center gap-2">
-                    {categories.find(c => c.id === key)?.icon}
-                    {categories.find(c => c.id === key)?.label}
-                  </CardTitle>
-                  <CardDescription>
-                    <Badge variant="secondary">{questions.length} Questions</Badge>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Accordion type="single" collapsible className="w-full">
-                    {questions.map((faq, index) => (
-                      <AccordionItem key={index} value={`item-${index}`}>
-                        <AccordionTrigger className="text-left text-lg font-medium hover:text-blue-600">
-                          {faq.question}
-                        </AccordionTrigger>
-                        <AccordionContent className="text-gray-600 text-base leading-relaxed">
-                          {faq.answer}
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          ))}
+          {categories.map((category) => {
+            const questions = filteredFaqs[category.id] || [];
+            return (
+              <TabsContent key={category.id} value={category.id}>
+                <Card className="border border-slate-100 shadow-xl shadow-slate-100/50 rounded-3xl overflow-hidden bg-white p-6 md:p-8">
+                  <CardHeader className="p-0 pb-6 border-b border-slate-100 flex flex-row items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-600 flex items-center justify-center">
+                        {category.icon}
+                      </div>
+                      <CardTitle className="text-xl font-bold text-slate-900">{category.label}</CardTitle>
+                    </div>
+                    <Badge variant="secondary" className="bg-slate-100 text-slate-600 font-bold">
+                      {questions.length} Questions
+                    </Badge>
+                  </CardHeader>
+                  <CardContent className="p-0 pt-6">
+                    {questions.length > 0 ? (
+                      <Accordion type="single" collapsible className="w-full">
+                        {questions.map((faq, index) => (
+                          <AccordionItem key={index} value={`item-${index}`} className="border-b border-slate-100 last:border-0 py-2">
+                            <AccordionTrigger className="text-left text-base md:text-lg font-semibold hover:text-blue-600 text-slate-800 transition-colors py-4">
+                              {faq.question}
+                            </AccordionTrigger>
+                            <AccordionContent className="text-slate-600 text-sm md:text-base leading-relaxed pb-4">
+                              {faq.answer}
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
+                    ) : (
+                      <div className="text-center py-12 text-slate-400">
+                        No answers found for "{searchQuery}". Try another keyword.
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            );
+          })}
         </Tabs>
       </div>
 
       {/* Still Need Help Section */}
-      <div className="bg-white py-16">
+      <div className="bg-slate-100/60 py-16 border-t border-slate-200/50">
         <div className="container mx-auto px-4">
-          <Card className="max-w-3xl mx-auto bg-gradient-to-r from-blue-600 to-blue-800 text-white border-none">
-            <CardContent className="text-center py-12">
-              <MessageCircle className="h-16 w-16 mx-auto mb-6" />
-              <h2 className="text-3xl font-bold mb-4">Still Need Help?</h2>
-              <p className="text-xl text-blue-100 mb-8">
-                Our customer support team is available 24/7 to assist you
+          <Card className="max-w-3xl mx-auto bg-gradient-to-br from-blue-600 via-indigo-700 to-indigo-900 text-white border-none shadow-2xl rounded-3xl overflow-hidden relative">
+            <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+            <CardContent className="text-center py-12 px-6 relative z-10 space-y-6">
+              <MessageCircle className="h-14 w-14 mx-auto mb-2 text-blue-300 animate-bounce" />
+              <h2 className="text-2xl md:text-3xl font-extrabold">Still Have Questions?</h2>
+              <p className="text-lg text-blue-100 max-w-xl mx-auto">
+                Our operations team is available 24/7 to assist you in setting up and launching your store.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                  <MessageCircle className="mr-2 h-5 w-5" />
-                  Live Chat
-                </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-                  Email Support
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
+                <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 font-bold py-5 px-8 rounded-xl shadow-lg">
+                  Submit Inquiry
                 </Button>
               </div>
             </CardContent>

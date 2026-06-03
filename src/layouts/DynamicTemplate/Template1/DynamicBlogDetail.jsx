@@ -1,6 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import { Calendar, User, ArrowLeft, Clock, Share2, BookOpen, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
+import { apiCall } from "../../../utils/domain";
 
 const DynamicBlogDetail = () => {
   const { blogSlug } = useParams();
@@ -8,7 +10,36 @@ const DynamicBlogDetail = () => {
   const blogs = backofficeData?.blogPosts || [];
   const storeName = backofficeData?.backoffice?.store_name || "Blog";
 
-  const blog = blogs.find((b) => b.slug === blogSlug);
+  const initialBlog = blogs.find((b) => b.slug === blogSlug);
+  const [blog, setBlog] = useState(initialBlog);
+  const [loadingDetail, setLoadingDetail] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const fetchDetail = async () => {
+      try {
+        setLoadingDetail(true);
+        const response = await apiCall(`/backoffice-public/blogs/slug/${blogSlug}`);
+        if (response.success && active) {
+          setBlog(response.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch blog details:", err);
+      } finally {
+        if (active) setLoadingDetail(false);
+      }
+    };
+    fetchDetail();
+    return () => {
+      active = false;
+    };
+  }, [blogSlug]);
+
+  useEffect(() => {
+    if (initialBlog && (!blog || blog.blog_id !== initialBlog.blog_id)) {
+      setBlog(initialBlog);
+    }
+  }, [initialBlog]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -38,6 +69,17 @@ const DynamicBlogDetail = () => {
   const relatedPosts = blogs
     .filter((b) => b.blog_id !== blog?.blog_id)
     .slice(0, 3);
+
+  if (loadingDetail && (!blog || !blog.content)) {
+    return (
+      <div className="min-h-screen bg-[#faf5e4] flex items-center justify-center pt-24">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2c786c] mx-auto"></div>
+          <p className="text-slate-500 font-medium">Loading article...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!blog) {
     return (

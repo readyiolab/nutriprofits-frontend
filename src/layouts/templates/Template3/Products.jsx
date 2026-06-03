@@ -179,28 +179,42 @@ const Template3Products = () => {
 
   return (
     <div className="bg-[#eeeeee] min-h-screen">
-      {/* HERO SECTION */}
-      <div className="relative h-[400px] sm:h-[500px] mb-12 sm:mb-16 overflow-hidden">
+      {/* HERO SECTION - MODERN LEFT ALIGNED */}
+      <div className="relative h-[500px] sm:h-[600px] mb-12 sm:mb-16 overflow-hidden border-b-[8px] border-[#d72323]">
         <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${pageContent.hero_image_url})` }}
+          className="absolute inset-0 bg-cover bg-center transform hover:scale-105 transition-transform duration-[15s]"
+          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&h=800&fit=crop')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0f1214]/80 to-[#0f1214]/40" />
-        <div className="absolute inset-0 flex items-center">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0f1214] via-[#0f1214]/80 to-transparent" />
+        
+        {/* Edgy accent elements */}
+        <div className="absolute top-0 left-12 w-[1px] h-full bg-white/10 z-0"></div>
+        <div className="absolute top-0 left-24 w-[1px] h-full bg-white/5 z-0"></div>
+
+        <div className="absolute inset-0 flex items-center z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
-            <div className="max-w-2xl">
-              <span className="inline-block text-sm font-semibold uppercase tracking-wider bg-[#d72323] px-4 py-1 rounded-full mb-4">
+            <div className="max-w-2xl bg-gradient-to-br from-[#0f1214]/90 to-[#303841]/80 backdrop-blur-md p-8 sm:p-12 border-l-[6px] border-[#d72323] shadow-2xl relative mt-20">
+              <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-[#d72323] opacity-30"></div>
+              <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-[#d72323] opacity-30"></div>
+              
+              <span className="inline-block text-xs font-bold uppercase tracking-[0.3em] text-[#d72323] mb-4 flex items-center gap-2">
+                <span className="w-8 h-[2px] bg-[#d72323]"></span>
                 {pageContent.hero_subtitle}
               </span>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-semibold mb-4 leading-tight">
+              
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 leading-[1.1] font-t3-heading text-white tracking-tight">
                 {pageContent.hero_title}
               </h1>
-              <p className="text-lg sm:text-xl mb-6 text-white/90">
+              
+              <p className="text-lg sm:text-xl mb-8 text-gray-300 font-light max-w-xl">
                 {pageContent.hero_description}
               </p>
-              <button className="px-8 py-4 bg-[#d72323] text-white font-semibold rounded-full hover:bg-[#303841] transition-all transform hover:scale-105 shadow-lg">
-                {pageContent.hero_button_text}
-              </button>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button className="px-8 py-4 bg-[#d72323] text-white font-bold text-sm uppercase tracking-widest hover:bg-white hover:text-[#303841] transition-all transform shadow-[5px_5px_0_0_#303841] hover:shadow-[2px_2px_0_0_#303841] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">
+                  {pageContent.hero_button_text}
+                </button>
+              </div>
             </div>
           </div>
         </div>

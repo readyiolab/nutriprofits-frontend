@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import { generateSlug } from "../../../utils/slug";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   ArrowRight,
   Search,
@@ -22,93 +21,44 @@ import {
   ShoppingBag,
   LayoutGrid,
   Zap,
+  Package,
 } from "lucide-react";
+import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
+import { getCategorySlug } from "../../../utils/slug";
 
-const Template2Categories = () => {
-  const navigate = useNavigate();
-  const { templateId } = useParams();
+const getCategoryIcon = (name) => {
+  const normalized = (name || "").toLowerCase();
+  if (normalized.includes("long")) return TrendingUp;
+  if (normalized.includes("urin")) return Droplets;
+  if (normalized.includes("appetite") || normalized.includes("weight")) return Flame;
+  if (normalized.includes("joint") || normalized.includes("bone")) return Activity;
+  if (normalized.includes("eye") || normalized.includes("vision")) return Eye;
+  if (normalized.includes("prenatal") || normalized.includes("libido") || normalized.includes("breast") || normalized.includes("heart") || normalized.includes("cholesterol")) return Heart;
+  if (normalized.includes("prostate") || normalized.includes("immun")) return Shield;
+  if (normalized.includes("hair") || normalized.includes("skin") || normalized.includes("acne") || normalized.includes("aging")) return Sparkles;
+  if (normalized.includes("breath")) return Wind;
+  if (normalized.includes("sugar")) return TrendingUp;
+  if (normalized.includes("menopause") || normalized.includes("hormone") || normalized.includes("testost")) return Sun;
+  if (normalized.includes("stress") || normalized.includes("sleep")) return Moon;
+  if (normalized.includes("male") || normalized.includes("energy")) return Zap;
+  if (normalized.includes("body") || normalized.includes("muscle") || normalized.includes("gym")) return Dumbbell;
+  if (normalized.includes("brain") || normalized.includes("focus") || normalized.includes("nootrop")) return Brain;
+  return Package;
+};
+
+const DynamicCategories = () => {
+  const backofficeData = useBackofficeData();
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
   const [hoveredId, setHoveredId] = useState(null);
-  const [pageContent, setPageContent] = useState({
-    hero_title: "EXPLORE OUR CATEGORIES",
-    hero_subtitle: "Find What You're Looking For",
-    hero_image_url: "https://plus.unsplash.com/premium_photo-1661515727122-787b38d2107f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzh8fGNhdGVnb3J5JTIwcHJvZHVjdHN8ZW58MHx8MHx8fDA%3D",
-    categories_title: "Browse by Category",
-    categories_description: "Discover our wide range of products organized by category.",
-    view_all_text: "View All Products",
-    view_all_link: "/products",
-    cta_title: "Can't Find What You're Looking For?",
-    cta_description: "Contact our team and we'll help you find the perfect product.",
-    cta_button_text: "Contact Support",
-    cta_button_link: "/contact",
-    cta_support_text: "Browse All Products",
-    cta_support_link: "/products"
-  });
 
-  const categories = [
-    { id: 1, name: "Longevity", description: "Premium longevity and anti-aging support products", image: "/assets/categories_icon/Longevity.png", color: "from-[#2c786c] to-[#004445]", icon: TrendingUp },
-    { id: 2, name: "Urinary Tract Support", description: "Comprehensive urinary tract health", image: "/assets/categories_icon/Urinary%20Tract%20Support.png", color: "from-[#f8b400] to-[#2c786c]", icon: Droplets },
-    { id: 3, name: "Appetite Suppressant", description: "Natural hunger control products", image: "/assets/categories_icon/Weight%20Loss.png", color: "from-[#004445] to-[#2c786c]", icon: Apple },
-    { id: 4, name: "Joint Health", description: "Advanced joint support supplements", image: "/assets/categories_icon/Joint%20Health.png", color: "from-[#2c786c] to-[#f8b400]", icon: Activity },
-    { id: 5, name: "Eye Health", description: "Premium vision support formulations", image: "/assets/categories_icon/Eye%20Health.png", color: "from-[#f8b400] to-[#004445]", icon: Eye },
-    { id: 6, name: "Weight Loss", description: "Powerful fat-burning supplements", image: "/assets/categories_icon/Weight%20Loss.png", color: "from-[#004445] to-[#f8b400]", icon: Flame },
-    { id: 7, name: "Prenatal Care", description: "Essential prenatal vitamins", image: "/assets/categories_icon/Prenatal%20Care.png", color: "from-[#2c786c] to-[#004445]", icon: Heart },
-    { id: 8, name: "Prostate", description: "Specialized prostate health support", image: "/assets/categories_icon/Prostate.png", color: "from-[#f8b400] to-[#2c786c]", icon: Shield },
-    { id: 9, name: "Hair Loss", description: "Advanced hair growth solutions", image: "/assets/categories_icon/Hair%20Loss.png", color: "from-[#004445] to-[#2c786c]", icon: Sparkles },
-    { id: 10, name: "Blood Sugar", description: "Natural glucose control", image: "/assets/categories_icon/Blood%20Sugar.png", color: "from-[#2c786c] to-[#f8b400]", icon: TrendingUp },
-    { id: 11, name: "Fresh Breath", description: "Oral health & fresh breath", image: "/assets/categories_icon/Fresh%20Breath.png", color: "from-[#f8b400] to-[#004445]", icon: Wind },
-    { id: 12, name: "Cholesterol", description: "Cholesterol management", image: "/assets/categories_icon/Cholesterol.png", color: "from-[#004445] to-[#f8b400]", icon: Heart },
-    { id: 13, name: "Menopause", description: "Menopause relief supplements", image: "/assets/categories_icon/Menopause.png", color: "from-[#2c786c] to-[#004445]", icon: Sun },
-    { id: 14, name: "Breast Enhancement", description: "Natural enhancement support", image: "/assets/categories_icon/Breast%20Enhancement.png", color: "from-[#f8b400] to-[#2c786c]", icon: Sparkles },
-    { id: 15, name: "Immunity", description: "Immune boosting supplements", image: "/assets/categories_icon/Immunity.png", color: "from-[#004445] to-[#2c786c]", icon: Shield },
-    { id: 16, name: "Stress", description: "Natural stress relief", image: "/assets/categories_icon/Stress.png", color: "from-[#2c786c] to-[#f8b400]", icon: Moon },
-    { id: 17, name: "Male Enhancement", description: "Vitality & performance", image: "/assets/categories_icon/Male%20Enhancement.png", color: "from-[#f8b400] to-[#004445]", icon: Zap },
-    { id: 18, name: "Bodybuilding", description: "Muscle growth supplements", image: "/assets/categories_icon/Bodybuilding.png", color: "from-[#004445] to-[#f8b400]", icon: Dumbbell },
-    { id: 19, name: "Acne", description: "Clear skin solutions", image: "/assets/categories_icon/Acne.png", color: "from-[#2c786c] to-[#004445]", icon: Pill },
-    { id: 20, name: "Nootropics", description: "Brain & focus enhancers", image: "/assets/categories_icon/Nootropics.png", color: "from-[#f8b400] to-[#2c786c]", icon: Brain },
-    { id: 21, name: "Anti-Aging", description: "Skin rejuvenation", image: "/assets/categories_icon/Anti-Aging.png", color: "from-[#004445] to-[#2c786c]", icon: Sparkles },
-    { id: 22, name: "Varicose Veins", description: "Circulation support", image: "/assets/categories_icon/Varicose%20Veins.png", color: "from-[#2c786c] to-[#f8b400]", icon: Activity },
-    { id: 23, name: "Thyroid", description: "Thyroid & metabolism", image: "/assets/categories_icon/Thyroid.png", color: "from-[#f8b400] to-[#004445]", icon: TrendingUp },
-    { id: 24, name: "Female Libido", description: "Intimate wellness", image: "/assets/categories_icon/Female%20Libido.png", color: "from-[#004445] to-[#f8b400]", icon: Heart },
-    { id: 25, name: "Testosterone", description: "Male hormone support", image: "/assets/categories_icon/Testosterone.png", color: "from-[#2c786c] to-[#004445]", icon: Flame },
-  ];
-
-  // Fetch page content from backend
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch page content
-        const contentResponse = await fetch('/api/category-page-content');
-        const contentData = await contentResponse.json();
-        if (contentData.success) {
-          setPageContent(contentData.data);
-        }
-        
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const categories = backofficeData?.backofficeCategories || [];
+  const categoryPageContent = backofficeData?.categoryPageContent || {};
+  const storeName = backofficeData?.backoffice?.store_name || "Our Store";
 
   const filteredCategories = categories.filter((cat) =>
-    cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+    (cat.category_name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (cat.category_description || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center pt-24">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
-          <p className="text-slate-500 font-medium">Loading categories...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-t2-body overflow-hidden">
@@ -137,7 +87,9 @@ const Template2Categories = () => {
               <div className="lg:col-span-7 text-left">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 mb-6 shadow-sm">
                   <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-xs font-bold tracking-wider uppercase">Premium Wellness Directory</span>
+                  <span className="text-xs font-bold tracking-wider uppercase">
+                    {categoryPageContent.hero_subtitle || `${categories.length}+ Specialist Sectors`}
+                  </span>
                 </div>
                 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-tight text-white font-t2-heading leading-tight">
@@ -145,7 +97,7 @@ const Template2Categories = () => {
                 </h1>
                 
                 <p className="text-base text-emerald-100/80 font-light leading-relaxed mb-8 max-w-xl">
-                  Discover targeted, science-backed solutions for every aspect of your health journey, organized by our specialist categories.
+                  {categoryPageContent.hero_description || "Discover targeted, science-backed solutions for every aspect of your health journey, organized by our specialist categories."}
                 </p>
 
                 {/* Refined Search Bar */}
@@ -185,10 +137,10 @@ const Template2Categories = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 px-4">
             <div className="max-w-2xl">
               <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4 font-t2-heading tracking-tight leading-tight">
-                {pageContent.categories_title}
+                {categoryPageContent.categories_title || "Browse by Category"}
               </h2>
               <p className="text-slate-500 text-lg font-light leading-relaxed">
-                {pageContent.categories_description}
+                {categoryPageContent.categories_description || "Discover our wide range of science-backed formulations curated to optimize your vitality and health."}
               </p>
             </div>
             <div className="flex items-center gap-3 text-slate-400 text-sm font-bold uppercase tracking-widest">
@@ -200,11 +152,12 @@ const Template2Categories = () => {
           {/* Categories Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredCategories.map((category) => {
-              const IconComp = category.icon || Sparkles;
+              const IconComp = getCategoryIcon(category.category_name);
+              const slug = getCategorySlug(category);
               return (
                 <Link
                   key={category.id}
-                  to={`/template/${templateId}/products?category=${generateSlug(category.name)}`}
+                  to={`/categories/${slug}`}
                   className="group relative block h-full transform transition-all duration-500 hover:-translate-y-2"
                   onMouseEnter={() => setHoveredId(category.id)}
                   onMouseLeave={() => setHoveredId(null)}
@@ -215,12 +168,15 @@ const Template2Categories = () => {
                       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                       
                       <div className="relative z-10 w-full h-full flex items-center justify-center transform group-hover:scale-110 transition-transform duration-700">
-                        <img
-                          src={category.image || 'https://via.placeholder.com/300'}
-                          alt={category.name}
-                          className="w-full h-full object-contain drop-shadow-2xl"
-                          onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&q=80"; }}
-                        />
+                        {category.category_image ? (
+                          <img
+                            src={category.category_image}
+                            alt={category.category_name}
+                            className="w-full h-full object-contain drop-shadow-2xl"
+                          />
+                        ) : (
+                          <IconComp className="w-16 h-16 text-slate-200 group-hover:text-emerald-600 transition-colors" />
+                        )}
                       </div>
 
                       {/* Icon Badge */}
@@ -232,11 +188,11 @@ const Template2Categories = () => {
                     {/* Content Area */}
                     <div className="p-8 flex flex-col flex-1">
                       <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors leading-tight font-t2-heading">
-                        {category.name}
+                        {category.category_name}
                       </h3>
                       
                       <p className="text-slate-500 text-[13px] leading-relaxed mb-8 line-clamp-2 font-light">
-                        {category.description || "Discover our premium selection of health and wellness products in this category."}
+                        {category.category_description || "Discover our premium selection of health and wellness products in this category."}
                       </p>
                       
                       <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
@@ -279,26 +235,26 @@ const Template2Categories = () => {
           <div className="relative rounded-[4rem] overflow-hidden bg-gradient-to-br from-emerald-50 via-teal-50/40 to-slate-50 border border-emerald-100/50 p-16 sm:p-24 text-center shadow-sm">
             <div className="max-w-3xl mx-auto">
               <h3 className="text-3xl sm:text-5xl font-bold mb-6 text-slate-900 tracking-tight font-t2-heading leading-tight">
-                {pageContent.cta_title}
+                {categoryPageContent.cta_title || "Can't Find What You're Looking For?"}
               </h3>
               
               <p className="text-base sm:text-lg text-slate-600 mb-10 font-light leading-relaxed">
-                {pageContent.cta_description}
+                {categoryPageContent.cta_description || `Contact our team and we'll help you find the perfect product to enhance your wellness journey with ${storeName}.`}
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link
-                  to={`/template/${templateId}${pageContent.cta_button_link}`}
+                  to={categoryPageContent.cta_button_link || "/contact"}
                   className="bg-emerald-600 text-white font-bold px-8 py-4 rounded-xl hover:bg-emerald-700 hover:shadow-sm transition-all duration-300 text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2"
                 >
                   <ShoppingBag className="w-4 h-4" />
-                  {pageContent.cta_button_text}
+                  {categoryPageContent.cta_button_text || "Contact Support"}
                 </Link>
                 <Link
-                  to={`/template/${templateId}${pageContent.cta_support_link}`}
+                  to={categoryPageContent.cta_support_link || "/"}
                   className="bg-white text-slate-700 border border-slate-200 font-bold px-8 py-4 rounded-xl hover:bg-slate-50 transition-all duration-300 text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2"
                 >
-                  {pageContent.cta_support_text}
+                  {categoryPageContent.cta_support_text || "Browse All Products"}
                 </Link>
               </div>
             </div>
@@ -309,4 +265,4 @@ const Template2Categories = () => {
   );
 };
 
-export default Template2Categories;
+export default DynamicCategories;

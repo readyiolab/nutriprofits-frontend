@@ -1,6 +1,6 @@
 import { Outlet, Link } from "react-router-dom";
 import { useState } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Mail, Phone, ArrowRight } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -30,122 +30,161 @@ const DynamicLayout = () => {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col justify-between font-t2-body">
-
-        {/* NAVBAR */}
-        <nav className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 transition-all duration-300">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-20">
-
-              {/* Brand Name / Logo */}
-              <div className="flex-shrink-0">
-                <Link to="/" className="flex items-center">
-                  {branding.logo_url ? (
-                    <img src={branding.logo_url} alt={branding.logo_alt_text || storeName} className="h-10 sm:h-12 w-auto object-contain" />
-                  ) : (
-                    <h1 className="text-2xl font-bold text-gray-900 tracking-tight font-t2-heading">
-                      {storeName}
-                    </h1>
-                  )}
+      <div className="min-h-screen flex flex-col justify-between font-t2-body bg-white">
+        {/* ENTERPRISE-GRADE LIGHT NAVBAR */}
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <nav className="bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.02)] transition-all duration-300">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
+              <div className="flex justify-between items-center h-20">
+                {/* Brand Name / Logo */}
+                <Link to="/" className="flex items-center gap-3 group">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-50 border border-slate-200 group-hover:border-emerald-500 transition-all duration-300 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-transparent"></div>
+                    {branding.logo_url ? (
+                      <img
+                        src={branding.logo_url}
+                        alt={branding.logo_alt_text || storeName}
+                        className="h-6 w-6 object-contain relative z-10"
+                      />
+                    ) : (
+                      <span className="text-emerald-600 font-bold text-lg font-t2-heading relative z-10">
+                        {storeName?.charAt(0)}
+                      </span>
+                    )}
+                  </div>
+                  <h1 className="text-xl font-bold text-slate-800 tracking-tight hidden sm:block font-t2-heading group-hover:text-emerald-600 transition-colors">
+                    {storeName}
+                  </h1>
                 </Link>
-              </div>
 
-              {/* Desktop Menu */}
-              <div className="hidden lg:flex items-center space-x-8 ml-auto">
-                {navLinks.map((link) => (
+                {/* Desktop Menu */}
+                <div className="hidden lg:flex items-center space-x-8">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      className="relative text-xs font-bold uppercase tracking-widest text-slate-600 hover:text-slate-900 transition-all duration-300 group py-2"
+                    >
+                      {link.label}
+                      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-emerald-600 group-hover:w-full transition-all duration-300"></span>
+                    </Link>
+                  ))}
+
+                  {/* Desktop Contact Button */}
                   <Link
-                    key={link.to}
-                    to={link.to}
-                    className="relative group py-2 text-sm font-medium uppercase tracking-wider text-gray-600 hover:text-fourth transition-colors duration-300"
+                    to="/contact"
+                    className="ml-4 px-6 py-2.5 bg-emerald-600 text-white text-xs font-bold uppercase tracking-widest hover:bg-emerald-700 transition-all duration-300 rounded-lg shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
                   >
-                    {link.label}
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-fourth transition-all duration-300 ease-out group-hover:w-full"></span>
+                    Contact Us
                   </Link>
-                ))}
-              </div>
+                </div>
 
-              {/* Mobile Menu Button */}
-              <div className="lg:hidden flex items-center">
-                <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                  <SheetTrigger asChild>
-                    <button className="text-gray-600 hover:text-fourth p-2 transition-colors">
-                      {isOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
-                    </button>
-                  </SheetTrigger>
-                  <SheetContent 
-                    side="right" 
-                    className="w-full sm:w-full border-none p-0 bg-white/95 backdrop-blur-xl"
-                  >
-                    <div className="flex flex-col h-full items-center justify-center relative">
-                      {/* Close Button specific for fullscreen */}
-                      <button 
-                         onClick={() => setIsOpen(false)}
-                         className="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-900 transition-colors"
-                      >
-                        <X className="h-8 w-8" />
+                {/* Mobile Menu Button */}
+                <div className="lg:hidden">
+                  <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                    <SheetTrigger asChild>
+                      <button className="text-slate-600 p-2 bg-slate-50 rounded-xl transition-all border border-slate-200 hover:border-slate-300">
+                        <Menu className="h-5 w-5" />
                       </button>
+                    </SheetTrigger>
+                    <SheetContent 
+                      side="right" 
+                      className="w-full sm:w-[350px] border-l border-slate-100 p-0 bg-white/98 backdrop-blur-2xl rounded-l-2xl shadow-2xl"
+                    >
+                      <div className="flex flex-col h-full p-8 relative">
+                        <div className="flex items-center gap-3 mb-10">
+                          <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
+                            <span className="text-emerald-600 font-bold text-lg font-t2-heading">{storeName?.charAt(0)}</span>
+                          </div>
+                          <h2 className="text-xl font-bold text-slate-800 font-t2-heading">{storeName}</h2>
+                        </div>
 
-                      <div className="flex flex-col space-y-8 text-center">
-                        {navLinks.map((link) => (
-                          <Link
-                            key={link.to}
-                            to={link.to}
-                            onClick={() => setIsOpen(false)}
-                            className="text-4xl md:text-5xl font-light text-gray-800 hover:text-fourth transition-all duration-300 transform hover:scale-105 font-t2-heading"
-                          >
-                            {link.label}
-                          </Link>
-                        ))}
-                        
-                        <div className="pt-8">
-                             <Link
-                            to="/contact"
-                            onClick={() => setIsOpen(false)}
-                            className="px-10 py-4 bg-fourth text-white text-lg font-medium tracking-wide first-letter:uppercase hover:bg-third transition-all duration-300 rounded-full shadow-xl"
-                          >
-                            Contact Us
-                          </Link>
+                        <div className="flex flex-col space-y-5 mt-4">
+                          {navLinks.map((link) => (
+                            <Link
+                              key={link.to}
+                              to={link.to}
+                              onClick={() => setIsOpen(false)}
+                              className="text-lg font-bold text-slate-600 hover:text-emerald-600 transition-all duration-300 font-t2-heading flex items-center justify-between group border-b border-slate-100 pb-3"
+                            >
+                              <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
+                              <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all text-emerald-600" />
+                            </Link>
+                          ))}
+                          
+                          <div className="pt-6">
+                            <Link
+                              to="/contact"
+                              onClick={() => setIsOpen(false)}
+                              className="w-full py-3 bg-emerald-600 text-white text-sm font-bold text-center tracking-wider hover:bg-emerald-700 transition-all duration-300 rounded-xl shadow-sm block uppercase"
+                            >
+                              Get in Touch
+                            </Link>
+                          </div>
+                        </div>
+
+                        <div className="mt-auto border-t border-slate-100 pt-6 text-slate-400 text-xs">
+                          <p>© 2026 {storeName}</p>
                         </div>
                       </div>
-                    </div>
-                  </SheetContent>
-                </Sheet>
+                    </SheetContent>
+                  </Sheet>
+                </div>
               </div>
             </div>
-          </div>
-        </nav>
+          </nav>
+        </div>
 
         {/* MAIN CONTENT */}
-        <main className="min-h-screen ">
-          <div >
-            <Outlet />
-          </div>
+        <main className="flex-grow pt-20">
+          <Outlet />
         </main>
 
-        {/* FOOTER */}
-        <footer className="bg-black text-first py-16 font-t2-body">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
-
-              {/* Company Info */}
+        {/* PREMIUM ENTERPRISE FOOTER */}
+        <footer className="bg-slate-50 text-slate-600 border-t border-slate-100 pt-20 pb-10 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+              {/* Brand Identity */}
               <div className="lg:col-span-1">
-                <h3 className="text-3xl font-medium mb-4 font-t2-heading">{storeName}</h3>
-                <p className="text-second text-base leading-relaxed">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+                    <span className="text-emerald-600 font-bold text-lg font-t2-heading">
+                      {storeName?.charAt(0)}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold font-t2-heading text-slate-800">{storeName}</h3>
+                </div>
+                <p className="text-slate-500 text-sm leading-relaxed mb-6 max-w-xs">
                   {footer.about_description || "Your trusted business partner for quality products and services."}
                 </p>
+                <div className="flex space-x-3">
+                  {["f", "𝕏", "in"].map((icon) => (
+                    <button
+                      key={icon}
+                      className="w-9 h-9 bg-white border border-slate-200 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:border-emerald-600 hover:text-white text-slate-400 transition-all duration-300 group"
+                    >
+                      <span className="font-bold text-sm group-hover:scale-110 transition-transform">
+                        {icon}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* Quick Links */}
-                <h4 className="text-xl font-medium mb-6 text-first font-t2-heading">Links</h4>
+              {/* Quick Navigation / Dynamic Footer Links */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 font-t2-heading">
+                  Explore
+                </h4>
                 {footer.footer_links ? (
-                  <div className="flex flex-col gap-6">
+                  <div className="flex flex-col gap-4">
                     {JSON.parse(typeof footer.footer_links === 'string' ? footer.footer_links : JSON.stringify(footer.footer_links)).map((section, idx) => (
                       <div key={idx}>
-                        <h5 className="text-[10px] uppercase tracking-[0.2em] text-third mb-3 opacity-70 font-bold">{section.section_title}</h5>
-                        <ul className="space-y-3 text-second">
+                        <h5 className="text-[10px] uppercase tracking-wider text-emerald-600 mb-2 font-bold">{section.section_title}</h5>
+                        <ul className="space-y-2 text-sm">
                           {section.links.map((link, lIdx) => (
                             <li key={lIdx}>
-                              <Link to={link.url} className="hover:text-third transition-colors">
+                              <Link to={link.url} className="text-slate-600 hover:text-emerald-600 transition-colors">
                                 {link.label}
                               </Link>
                             </li>
@@ -155,63 +194,73 @@ const DynamicLayout = () => {
                     ))}
                   </div>
                 ) : (
-                  <ul className="space-y-4 text-second">
+                  <ul className="space-y-3 text-sm">
                     {navLinks.map((link) => (
                       <li key={link.to}>
-                        <Link to={link.to} className="hover:text-third transition-colors">
+                        <Link to={link.to} className="text-slate-600 hover:text-emerald-600 transition-colors flex items-center gap-2 group">
+                          <span className="w-1 h-1 rounded-full bg-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                           {link.label}
                         </Link>
                       </li>
                     ))}
                   </ul>
                 )}
-
-              {/* Contact */}
-              <div>
-                <h4 className="text-xl font-medium mb-6 text-first font-t2-heading">Contact Us</h4>
-                <p className="text-second mb-2">{footer.contact_email || contact.email || "info@example.com"}</p>
-                <p className="text-second mb-2">{footer.contact_phone || contact.phone || "(123) 456-7890"}</p>
-                <p className="text-second">{footer.contact_address || contact.address || "Nature Valley, Green City"}</p>
               </div>
 
-              {/* Social */}
+              {/* Contact Details */}
               <div>
-                <h4 className="text-xl font-medium mb-6 text-first font-t2-heading">Follow Us</h4>
-                <div className="flex space-x-4">
-                  {footer.social_links ? (
-                    JSON.parse(typeof footer.social_links === 'string' ? footer.social_links : JSON.stringify(footer.social_links)).map((social, idx) => (
-                      <a
-                        key={idx}
-                        href={social.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer"
-                        title={social.platform}
-                      >
-                         <span className="text-fourth text-2xl font-bold font-t2-heading">{social.platform[0]}</span>
-                      </a>
-                    ))
-                  ) : (
-                    <>
-                      <div className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer">
-                        <span className="text-fourth text-2xl font-bold font-t2-heading">f</span>
-                      </div>
-                      <div className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer">
-                        <span className="text-fourth text-2xl font-bold font-t2-heading">X</span>
-                      </div>
-                      <div className="w-12 h-12 bg-first rounded-full flex items-center justify-center hover:bg-third transition cursor-pointer">
-                        <span className="text-fourth text-2xl font-bold font-t2-heading">in</span>
-                      </div>
-                    </>
-                  )}
+                <h4 className="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 font-t2-heading">
+                  Reach Out
+                </h4>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 group">
+                    <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 group-hover:text-emerald-600 transition-all">
+                      <Mail className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Email Us</p>
+                      <p className="text-slate-700 text-sm">{footer.contact_email || contact.email || "hello@example.com"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 group">
+                    <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 group-hover:text-emerald-600 transition-all">
+                      <Phone className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <div>
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Call Us</p>
+                      <p className="text-slate-700 text-sm">{footer.contact_phone || contact.phone || "(123) 456-7890"}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Updates / Newsletter */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-widest text-slate-900 mb-6 font-t2-heading">
+                  Updates
+                </h4>
+                <p className="text-slate-500 text-xs mb-4">Subscribe to get the latest health tips and product updates.</p>
+                <div className="flex gap-2">
+                  <input 
+                    type="email" 
+                    placeholder="Your email"
+                    className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 w-full text-slate-800"
+                  />
+                  <button className="bg-emerald-600 hover:bg-emerald-700 p-2 text-white rounded-lg transition-all flex items-center justify-center">
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-third/30 pt-8 text-center">
-                <p className="text-second text-sm">
-                  {footer.copyright_text || `© ${new Date().getFullYear()} ${storeName} • All rights reserved`}
-                </p>
+            <div className="border-t border-slate-200/60 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-slate-400 text-xs">
+                {footer.copyright_text || `© 2026 ${storeName}. All rights reserved.`}
+              </p>
+              <div className="flex gap-6 text-xs font-bold uppercase tracking-wider text-slate-400">
+                <a href="#" className="hover:text-emerald-600 transition-colors">Privacy Policy</a>
+                <a href="#" className="hover:text-emerald-600 transition-colors">Terms of Service</a>
+              </div>
             </div>
           </div>
         </footer>

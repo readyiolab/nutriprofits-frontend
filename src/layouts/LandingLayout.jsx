@@ -27,8 +27,8 @@ const LandingLayout = () => {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              
-              <span className="text-xl font-bold text-gray-900">LOGO</span>
+              <ShoppingBag className="h-6 w-6 text-blue-600" />
+              <span className="text-xl font-bold text-gray-900 tracking-tight">NutriProfits</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -98,10 +98,10 @@ const LandingLayout = () => {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <ShoppingBag className="h-6 w-6 text-blue-500" />
-                <span className="text-xl font-bold text-white">ShopHub</span>
+                <span className="text-xl font-bold text-white tracking-tight">NutriProfits</span>
               </div>
               <p className="text-sm text-gray-400 mb-4">
-                Your one-stop destination for quality products and exceptional service.
+                Start your own branded health & wellness eCommerce business with a ready-to-use website and powerful back-office management system.
               </p>
               <div className="flex space-x-4">
                 <a href="#" className="hover:text-blue-500 transition-colors">
@@ -123,21 +123,21 @@ const LandingLayout = () => {
             <div>
               <h3 className="text-white font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2">
-                <li><Link to="/products" className="text-sm hover:text-blue-500 transition-colors">Our Products</Link></li>
-                <li><Link to="/categories" className="text-sm hover:text-blue-500 transition-colors">Shop by Category</Link></li>
+                <li><Link to="/" className="text-sm hover:text-blue-500 transition-colors">Home</Link></li>
                 <li><Link to="/about" className="text-sm hover:text-blue-500 transition-colors">About Us</Link></li>
+                <li><Link to="/templates" className="text-sm hover:text-blue-500 transition-colors">Website Templates</Link></li>
                 <li><Link to="/faq" className="text-sm hover:text-blue-500 transition-colors">FAQ's</Link></li>
               </ul>
             </div>
 
             {/* Customer Service */}
             <div>
-              <h3 className="text-white font-semibold mb-4">Customer Service</h3>
+              <h3 className="text-white font-semibold mb-4">Resources</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="text-sm hover:text-blue-500 transition-colors">Shipping Information</a></li>
-                <li><a href="#" className="text-sm hover:text-blue-500 transition-colors">Returns & Exchanges</a></li>
+                <li><a href="#" className="text-sm hover:text-blue-500 transition-colors">Documentation</a></li>
+                <li><a href="#" className="text-sm hover:text-blue-500 transition-colors">API Reference</a></li>
                 <li><a href="#" className="text-sm hover:text-blue-500 transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-sm hover:text-blue-500 transition-colors">Terms & Conditions</a></li>
+                <li><a href="#" className="text-sm hover:text-blue-500 transition-colors">Terms of Service</a></li>
               </ul>
             </div>
 
@@ -155,7 +155,7 @@ const LandingLayout = () => {
                 </li>
                 <li className="flex items-center space-x-3">
                   <Mail className="h-5 w-5 text-blue-500" />
-                  <span className="text-sm">support@shophub.com</span>
+                  <span className="text-sm">support@nutriprofits.com</span>
                 </li>
               </ul>
             </div>
@@ -164,7 +164,7 @@ const LandingLayout = () => {
           {/* Copyright */}
           <div className="border-t border-gray-800 mt-8 pt-8 text-center">
             <p className="text-sm text-gray-400">
-              © {new Date().getFullYear()} ShopHub. All rights reserved.
+              © {new Date().getFullYear()} NutriProfits. All rights reserved.
             </p>
           </div>
         </div>

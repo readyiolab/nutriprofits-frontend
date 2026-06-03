@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Sparkles, ChevronDown, MessageCircle, Search } from "lucide-react";
 import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 
@@ -11,178 +12,189 @@ const DynamicFAQ = () => {
   const faqs = backofficeData?.faqItems || [];
 
   // Get unique categories
-  const categories = ["All", ...new Set(faqs.map(f => f.category))];
+  const categories = ["All", ...new Set(faqs.map(f => f.category).filter(Boolean))];
 
   // Filter FAQs
   const filteredFaqs = faqs
     .filter(faq => {
-      const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+      const question = (faq.question || "").toLowerCase();
+      const answer = (faq.answer || "").toLowerCase();
+      const matchesSearch = question.includes(searchQuery.toLowerCase()) ||
+                           answer.includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory === "All" || faq.category === selectedCategory;
       return matchesSearch && matchesCategory;
     })
     .sort((a, b) => a.display_order - b.display_order);
 
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      {/* Hero Section - Exact Same Style */}
-      <div className="relative overflow-hidden bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)] text-white">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Sparkles className="w-4 h-4 text-yellow-300" />
-              <span className="text-sm font-medium">Help Center</span>
-            </div>
-            <h1 className="text-5xl md:text-6xl font-medium mb-6 leading-tight">
-              {pageContent.hero_title}
-            </h1>
-            <p className="text-xl text-white/90 mb-6 max-w-2xl mx-auto">
-              {pageContent.hero_subtitle}
-            </p>
-            <p className="text-lg text-white/80 max-w-3xl mx-auto">
-              {pageContent.hero_description}
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-slate-50 font-t2-body overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-1/4 -right-40 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/3 -left-40 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Search + Category Filter */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          {/* Search Bar */}
-          <div className="mb-8">
-            <div className="relative max-w-xl mx-auto">
-              <input
-                type="text"
-                placeholder="Search questions..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-6 pr-14 py-4 rounded-full border-2 border-gray-300 focus:border-blue-600 focus:outline-none shadow-md text-base"
-              />
-              <Search className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+      <div className="relative z-10 pt-6">
+        {/* ENTERPRISE-GRADE LIGHT HERO */}
+        <section className="relative bg-white pt-24 pb-16 overflow-hidden border-b border-slate-100 shadow-sm min-h-[50vh] flex items-center">
+          {/* Subtle background image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-5"
+            style={{
+              backgroundImage: `url('https://images.unsplash.com/photo-1454165833767-027ffea9e77b?w=1600&q=80')`,
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/90"></div>
+
+          <div className="container mx-auto px-6 relative z-10 text-center">
+            <div className="max-w-3xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 mb-6 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-xs font-bold tracking-wider uppercase">Help Center</span>
+              </div>
+              
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 tracking-tight text-slate-900 font-t2-heading leading-tight">
+                {pageContent.hero_title || "Frequently Asked Questions"}
+              </h1>
+              
+              <p className="text-sm font-bold text-emerald-600 uppercase tracking-widest mb-4">
+                {pageContent.hero_subtitle}
+              </p>
+              
+              <p className="text-base text-slate-500 max-w-xl mx-auto font-light leading-relaxed mb-8">
+                {pageContent.hero_description}
+              </p>
+
+              {/* Light Search Bar */}
+              <div className="max-w-xl mx-auto relative group">
+                <div className="absolute -inset-0.5 bg-emerald-600/10 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+                <div className="relative flex items-center bg-white border border-slate-200 rounded-xl px-4 py-3.5 shadow-sm">
+                  <Search className="w-4 h-4 text-emerald-600 mr-3 flex-shrink-0" />
+                  <input 
+                    type="text" 
+                    placeholder="Search our help topics..." 
+                    value={searchQuery} 
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-transparent border-none focus:ring-0 text-slate-800 placeholder:text-slate-400 text-sm outline-none font-medium"
+                  />
+                </div>
+              </div>
             </div>
           </div>
+        </section>
 
-          {/* Category Pills */}
-          <div className="flex flex-wrap justify-center gap-3 mb-10">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-6 py-3 rounded-full font-medium transition-all ${
-                  selectedCategory === cat
-                    ? "bg-black text-white shadow-lg"
-                    : "bg-white text-gray-700 hover:bg-gray-100 shadow-md"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+        <section className="container mx-auto px-6 pb-20">
+          {/* Category Filters */}
+          {categories.length > 1 && (
+            <div className="flex flex-wrap justify-center gap-3 mb-10">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                    selectedCategory === cat
+                      ? "bg-emerald-600 text-white shadow-sm"
+                      : "bg-white text-slate-500 border border-slate-200 hover:border-emerald-300 hover:text-emerald-600"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* FAQ Accordion */}
-          <div className="space-y-5">
+          <div className="max-w-3xl mx-auto space-y-4">
             {filteredFaqs.length === 0 ? (
-              <div className="text-center py-20">
-                <Search className="w-16 h-16 mx-auto text-gray-400 mb-4 opacity-50" />
-                <p className="text-xl text-gray-600">No FAQs found matching your search.</p>
+              <div className="text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                <Search className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-slate-800 mb-1 font-t2-heading">No Results Found</h3>
+                <p className="text-slate-500 text-sm">Please try a different keyword search.</p>
               </div>
             ) : (
               filteredFaqs.map((faq, index) => (
                 <div
-                  key={index}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden border border-purple-100 hover:border-black transition-all"
+                  key={faq.faq_id || index}
+                  className={`group bg-white rounded-2xl overflow-hidden transition-all duration-300 border ${
+                    openIndex === index ? "border-emerald-500 shadow-sm" : "border-slate-200/80 shadow-[0_2px_15px_rgba(0,0,0,0.01)] hover:border-emerald-200"
+                  }`}
                 >
                   <button
                     onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                    className="w-full px-8 py-6 text-left flex justify-between items-center hover:bg-gray-50 transition"
+                    className="w-full px-6 py-5 text-left flex justify-between items-center transition-colors hover:bg-slate-50/50"
                   >
-                    <div className="flex items-start gap-4">
-                      <ChevronDown
-                        className={`w-6 h-6 mt-1 text-blue-600 transition-transform duration-300 ${
-                          openIndex === index ? "rotate-180" : ""
-                        }`}
-                      />
-                      <div>
-                        <span className="font-bold text-lg text-gray-800 block">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
+                        openIndex === index ? "bg-emerald-600 text-white" : "bg-slate-50 text-slate-400"
+                      }`}>
+                        <Sparkles className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className={`text-sm sm:text-base font-bold font-t2-heading transition-colors ${
+                          openIndex === index ? "text-slate-900" : "text-slate-700"
+                        }`}>
                           {faq.question}
                         </span>
                         {faq.category && (
-                          <span className="text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full mt-2 inline-block">
+                          <span className="block text-[8px] font-bold text-emerald-600 uppercase tracking-widest">
                             {faq.category}
                           </span>
                         )}
                       </div>
                     </div>
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-300 ${
+                        openIndex === index ? "rotate-180 text-emerald-600" : "text-slate-400"
+                      }`}
+                    />
                   </button>
 
-                  {openIndex === index && (
-                    <div className="px-8 pb-8 pt-2 border-t border-gray-100">
-                      <div className="ml-10 text-gray-700 leading-relaxed text-base">
+                  <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    openIndex === index ? "max-h-[300px] opacity-100 border-t border-slate-50" : "max-h-0 opacity-0"
+                  }`}>
+                    <div className="px-6 py-5 bg-slate-50/40">
+                      <p className="text-slate-500 text-xs sm:text-sm font-light leading-relaxed border-l-2 border-emerald-500 pl-4">
                         {faq.answer}
-                      </div>
+                      </p>
                     </div>
-                  )}
+                  </div>
                 </div>
               ))
             )}
           </div>
-        </div>
+        </section>
+
+        {/* Premium Light CTA Section */}
+        <section className="container mx-auto px-6 mb-20 max-w-5xl">
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-emerald-50 via-teal-50/40 to-slate-50 border border-emerald-100/50 p-12 md:p-16 text-center shadow-sm">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-4 text-slate-900 tracking-tight font-t2-heading leading-tight">
+              {pageContent.cta_title}
+            </h3>
+            
+            <p className="text-sm text-slate-600 mb-8 max-w-lg mx-auto font-light leading-relaxed">
+              {pageContent.cta_description}
+            </p>
+            
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <a
+                href={pageContent.cta_button_link || "/contact"}
+                className="bg-emerald-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider shadow-sm"
+              >
+                <MessageCircle className="w-4 h-4" />
+                {pageContent.cta_button_text || "Contact Support"}
+              </a>
+              {pageContent.cta_secondary_button_text && (
+                <a
+                  href={pageContent.cta_secondary_button_link || "#"}
+                  className="bg-white text-slate-700 border border-slate-200 font-bold px-6 py-3 rounded-lg hover:bg-slate-50 transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
+                >
+                  {pageContent.cta_secondary_button_text}
+                </a>
+              )}
+            </div>
+          </div>
+        </section>
       </div>
-
-      {/* CTA Section  */}
-      <div className="bg-[radial-gradient(circle_at_center,_#3b82f6,_#1e3a8a)]
-     py-12 sm:py-20 mb-10 mx-4 sm:mx-12 rounded-2xl sm:rounded-3xl 
-     shadow-2xl overflow-hidden">
-
-  <div className="container mx-auto px-3 sm:px-4 text-center text-white">
-
-    <h3 className="text-2xl sm:text-4xl font-semibold mb-3 sm:mb-4 leading-tigh">
-      {pageContent.cta_title}
-    </h3>
-
-    <p className="text-base sm:text-xl text-white/90 mb-8 sm:mb-12 
-                  max-w-xl sm:max-w-2xl mx-auto leading-relaxed">
-      {pageContent.cta_description}
-    </p>
-
-    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
-
-      {/* Primary button */}
-      <a
-        href={pageContent.cta_button_link}
-        className="bg-white text-black font-medium 
-                   px-6 py-3 sm:px-10 sm:py-5 rounded-full 
-                   hover:shadow-2xl transition 
-                   text-base sm:text-lg 
-                   flex items-center justify-center gap-3 
-                   w-full sm:w-auto"
-      >
-        {pageContent.cta_button_text} 
-        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-      </a>
-
-      {/* Secondary button */}
-      <a
-        href={pageContent.cta_secondary_button_link}
-        className="border-2 border-white text-white 
-                   px-6 py-3 sm:px-10 sm:py-5 rounded-full 
-                   hover:bg-white hover:text-black transition 
-                   font-medium text-base sm:text-lg 
-                   flex items-center justify-center gap-3 
-                   w-full sm:w-auto"
-      >
-        {pageContent.cta_secondary_button_text}
-      </a>
-    </div>
-  </div>
-</div>
-
     </div>
   );
 };

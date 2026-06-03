@@ -1,33 +1,34 @@
-import React from "react";
+import React, { lazy } from "react";
 import { useBackofficeData } from "./DynamicTemplateLoader";
 
 // Template1 pages
-import T1Products from "../layouts/DynamicTemplate/Template1/DynamicProducts";
-import T1ProductDetail from "../layouts/DynamicTemplate/Template1/DynamicProductDetail";
-import T1Categories from "../layouts/DynamicTemplate/Template1/DynamicCategories";
-import T1About from "../layouts/DynamicTemplate/Template1/DynamicAbout";
-import T1FAQ from "../layouts/DynamicTemplate/Template1/DynamicFAQ";
-import T1Contact from "../layouts/DynamicTemplate/Template1/DynamicContact";
-import T1BlogList from "../layouts/DynamicTemplate/Template1/DynamicBlogList";
-import T1BlogDetail from "../layouts/DynamicTemplate/Template1/DynamicBlogDetail";
+const T1Products = lazy(() => import("../layouts/DynamicTemplate/Template1/DynamicProducts"));
+const T1ProductDetail = lazy(() => import("../layouts/DynamicTemplate/Template1/DynamicProductDetail"));
+const T1Categories = lazy(() => import("../layouts/DynamicTemplate/Template1/DynamicCategories"));
+const T1About = lazy(() => import("../layouts/DynamicTemplate/Template1/DynamicAbout"));
+const T1FAQ = lazy(() => import("../layouts/DynamicTemplate/Template1/DynamicFAQ"));
+const T1Contact = lazy(() => import("../layouts/DynamicTemplate/Template1/DynamicContact"));
+const T1BlogList = lazy(() => import("../layouts/DynamicTemplate/Template1/DynamicBlogList"));
+const T1BlogDetail = lazy(() => import("../layouts/DynamicTemplate/Template1/DynamicBlogDetail"));
 
 // Template2 pages
-import T2About from "../layouts/DynamicTemplate/Template2/DynamicAbout";
-import T2FAQ from "../layouts/DynamicTemplate/Template2/DynamicFAQ";
-import T2Contact from "../layouts/DynamicTemplate/Template2/DynamicContact";
-import T2BlogList from "../layouts/DynamicTemplate/Template2/DynamicBlogList";
-import T2BlogDetail from "../layouts/DynamicTemplate/Template2/DynamicBlogDetail";
-import T2Products from "../layouts/DynamicTemplate/Template2/DynamicProducts";
-import T2ProductDetail from "../layouts/DynamicTemplate/Template2/DynamicProductDetail";
+const T2About = lazy(() => import("../layouts/DynamicTemplate/Template2/DynamicAbout"));
+const T2FAQ = lazy(() => import("../layouts/DynamicTemplate/Template2/DynamicFAQ"));
+const T2Contact = lazy(() => import("../layouts/DynamicTemplate/Template2/DynamicContact"));
+const T2BlogList = lazy(() => import("../layouts/DynamicTemplate/Template2/DynamicBlogList"));
+const T2BlogDetail = lazy(() => import("../layouts/DynamicTemplate/Template2/DynamicBlogDetail"));
+const T2Products = lazy(() => import("../layouts/DynamicTemplate/Template2/DynamicProducts"));
+const T2ProductDetail = lazy(() => import("../layouts/DynamicTemplate/Template2/DynamicProductDetail"));
+const T2Categories = lazy(() => import("../layouts/DynamicTemplate/Template2/DynamicCategories"));
 
 // Template3 pages
-import T3About from "../layouts/DynamicTemplate/Template3/DynamicAbout";
-import T3FAQ from "../layouts/DynamicTemplate/Template3/DynamicFAQ";
-import T3Contact from "../layouts/DynamicTemplate/Template3/DynamicContact";
-import T3BlogList from "../layouts/DynamicTemplate/Template3/DynamicBlogList";
-import T3BlogDetail from "../layouts/DynamicTemplate/Template3/DynamicBlogDetail";
-import T3Products from "../layouts/DynamicTemplate/Template3/DynamicProducts";
-import T3ProductDetail from "../layouts/DynamicTemplate/Template3/DynamicProductDetail";
+const T3About = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicAbout"));
+const T3FAQ = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicFAQ"));
+const T3Contact = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicContact"));
+const T3BlogList = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicBlogList"));
+const T3BlogDetail = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicBlogDetail"));
+const T3Products = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicProducts"));
+const T3ProductDetail = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicProductDetail"));
 
 /**
  * Maps template IDs to their page components.
@@ -48,7 +49,7 @@ const templatePages = {
   2: {
     products: T2Products,
     productDetail: T2ProductDetail,
-    categories: T1Categories,
+    categories: T2Categories,
     about: T2About,
     faq: T2FAQ,
     contact: T2Contact,
