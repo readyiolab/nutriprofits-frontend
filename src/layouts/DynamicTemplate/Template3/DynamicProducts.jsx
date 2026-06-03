@@ -145,7 +145,7 @@ const DynamicProducts = () => {
           </div>
         )}
 
-        <div className="flex gap-8 items-start">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
            
            {/* ─── SIDEBAR: TECH PANEL (Template 3 Unique) ─── */}
            {categories.length > 0 && (

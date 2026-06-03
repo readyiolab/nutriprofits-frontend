@@ -196,8 +196,7 @@ const Template1Products = () => {
         </div>
 
         {/* ═══ SIDEBAR + PRODUCTS LAYOUT ═══ */}
-        {/* ═══ SIDEBAR + PRODUCTS LAYOUT ═══ */}
-        <div className="flex gap-8 mb-16" ref={productsRef} style={{ scrollMarginTop: '120px' }}>
+        <div className="flex flex-col lg:flex-row gap-8 mb-16" ref={productsRef} style={{ scrollMarginTop: '120px' }}>
 
           {/* ── ENHANCED STICKY CATEGORY SIDEBAR (desktop only) ── */}
           {categories.length > 0 && (

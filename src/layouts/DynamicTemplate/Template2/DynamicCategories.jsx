@@ -212,7 +212,7 @@ const DynamicCategories = () => {
 
           {/* No Results */}
           {filteredCategories.length === 0 && (
-            <div className="bg-white rounded-[3rem] shadow-xl border border-slate-100 p-24 text-center max-w-2xl mx-auto mt-20">
+            <div className="bg-white rounded-[3rem] shadow-xl border border-slate-100 p-8 sm:p-16 md:p-24 text-center max-w-2xl mx-auto mt-20">
               <div className="w-24 h-24 bg-slate-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-inner">
                 <Search className="w-10 h-10 text-slate-200" />
               </div>
@@ -232,7 +232,7 @@ const DynamicCategories = () => {
 
         {/* Premium CTA Section */}
         <section className="container mx-auto px-4 lg:px-8 mb-32 max-w-5xl">
-          <div className="relative rounded-[4rem] overflow-hidden bg-gradient-to-br from-emerald-50 via-teal-50/40 to-slate-50 border border-emerald-100/50 p-16 sm:p-24 text-center shadow-sm">
+          <div className="relative rounded-[4rem] overflow-hidden bg-gradient-to-br from-emerald-50 via-teal-50/40 to-slate-50 border border-emerald-100/50 p-6 sm:p-16 md:p-24 text-center shadow-sm">
             <div className="max-w-3xl mx-auto">
               <h3 className="text-3xl sm:text-5xl font-bold mb-6 text-slate-900 tracking-tight font-t2-heading leading-tight">
                 {categoryPageContent.cta_title || "Can't Find What You're Looking For?"}

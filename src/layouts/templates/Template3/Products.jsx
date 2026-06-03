@@ -30,9 +30,6 @@ const Template3Products = () => {
     }
   }, [location.search]);
 
-  // Dummy products array (you can replace this with your actual products)
-  // Products data imported from central data file
-
   // Dynamic page content (will come from database)
   const pageContent = {
     hero_title: "Discover Our Products",
@@ -69,25 +66,26 @@ const Template3Products = () => {
     }, 100);
   };
 
-  const filteredProducts = products
-    .filter((product) => {
+  const filteredProducts = useMemo(() => {
+    let result = products.filter((product) => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.category.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory =
         selectedCategory === "all" || (product.category || "").trim() === selectedCategory;
       return matchesSearch && matchesCategory;
-    })
-    .slice(0, displayedCount);
+    });
 
-  const totalFiltered = products.filter((product) => {
-    const matchesSearch =
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || (product.category || "").trim() === selectedCategory;
-    return matchesSearch && matchesCategory;
-  }).length;
+    if (sortBy === "rating") {
+      result = [...result].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    }
+    return result;
+  }, [searchQuery, selectedCategory, sortBy]);
+
+  const totalFiltered = filteredProducts.length;
+  const displayedProducts = useMemo(() => {
+    return filteredProducts.slice(0, displayedCount);
+  }, [filteredProducts, displayedCount]);
 
   const hasMoreProducts = displayedCount < totalFiltered;
 
@@ -172,15 +170,14 @@ const Template3Products = () => {
             {product.description}
           </p>
         </div>
-
       </div>
     </div>
   );
 
   return (
-    <div className="bg-[#eeeeee] min-h-screen">
+    <div className="bg-[#eeeeee] min-h-screen font-mono">
       {/* HERO SECTION - MODERN LEFT ALIGNED */}
-      <div className="relative h-[500px] sm:h-[600px] mb-12 sm:mb-16 overflow-hidden border-b-[8px] border-[#d72323]">
+      <div className="relative min-h-[500px] lg:h-[600px] flex items-center mb-12 sm:mb-16 overflow-hidden border-b-[8px] border-[#d72323] py-16 lg:py-0">
         <div 
           className="absolute inset-0 bg-cover bg-center transform hover:scale-105 transition-transform duration-[15s]"
           style={{ backgroundImage: `url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&h=800&fit=crop')` }}
@@ -191,9 +188,9 @@ const Template3Products = () => {
         <div className="absolute top-0 left-12 w-[1px] h-full bg-white/10 z-0"></div>
         <div className="absolute top-0 left-24 w-[1px] h-full bg-white/5 z-0"></div>
 
-        <div className="absolute inset-0 flex items-center z-10">
+        <div className="relative z-10 w-full">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
-            <div className="max-w-2xl bg-gradient-to-br from-[#0f1214]/90 to-[#303841]/80 backdrop-blur-md p-8 sm:p-12 border-l-[6px] border-[#d72323] shadow-2xl relative mt-20">
+            <div className="max-w-2xl bg-gradient-to-br from-[#0f1214]/90 to-[#303841]/80 backdrop-blur-md p-6 sm:p-12 border-l-[6px] border-[#d72323] shadow-2xl relative mt-6 sm:mt-12 lg:mt-0">
               <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-[#d72323] opacity-30"></div>
               <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-[#d72323] opacity-30"></div>
               
@@ -251,11 +248,11 @@ const Template3Products = () => {
               </div>
 
               <div className="flex gap-3">
-                <div className="relative flex-1 sm:flex-none">
+                <div className="relative flex-1 sm:w-48">
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="appearance-none w-full sm:w-auto px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#d72323] focus:outline-none bg-white cursor-pointer pr-10 text-[#303841]"
+                    className="w-full pl-4 pr-10 py-3 border-2 border-gray-200 rounded-xl focus:border-[#d72323] focus:outline-none appearance-none bg-white text-[#303841] font-medium"
                   >
                     <option value="featured">Featured</option>
                     <option value="rating">Highest Rated</option>
@@ -308,10 +305,10 @@ const Template3Products = () => {
                 <button
                   key={cat.name}
                   onClick={() => handleCategorySelect(cat.name)}
-                  className={`flex-shrink-0 px-4 py-2.5 rounded-lg text-sm font-bold tracking-wide uppercase transition-all duration-300 ${
+                  className={`flex-shrink-0 px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 border-2 ${
                     selectedCategory === cat.name
-                      ? "bg-[#d72323] text-white shadow-lg shadow-[#d72323]/20"
-                      : "bg-white text-[#303841] border border-gray-200 hover:border-[#d72323] hover:text-[#d72323]"
+                      ? "bg-[#d72323] text-white border-[#d72323] shadow-lg shadow-[#d72323]/20"
+                      : "bg-white text-gray-500 border-gray-200 hover:border-[#d72323] hover:text-[#d72323]"
                   }`}
                 >
                   {cat.name}
@@ -322,7 +319,7 @@ const Template3Products = () => {
         )}
 
         {/* ═══ SIDEBAR + PRODUCTS LAYOUT ═══ */}
-        <div className="flex gap-8">
+        <div className="flex flex-col lg:flex-row gap-8">
 
           {/* ── STICKY CATEGORY SIDEBAR (desktop only) ── */}
           {categories.length > 0 && (
@@ -413,48 +410,48 @@ const Template3Products = () => {
               </div>
             )}
 
-        {/* PRODUCTS */}
-        {filteredProducts.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-2xl font-bold text-[#303841] mb-2">
-              No products found
-            </h3>
-            <p className="text-[#3a4750]">
-              {selectedCategory !== "all"
-                ? `No products found in ${selectedCategory}.`
-                : "Try adjusting your search or filters"}
-            </p>
-          </div>
-        ) : (
-          <>
-            {viewMode === "grid" ? (
-              <div className={`grid grid-cols-1 sm:grid-cols-2 ${categories.length > 0 ? "xl:grid-cols-3" : "lg:grid-cols-3 xl:grid-cols-4"} gap-4 sm:gap-6 mb-12`}>
-                {filteredProducts.map((product) => (
-                  <GridCard key={product.id} product={product} />
-                ))}
+            {/* PRODUCTS */}
+            {displayedProducts.length === 0 ? (
+              <div className="text-center py-20">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-2xl font-bold text-[#303841] mb-2">
+                  No products found
+                </h3>
+                <p className="text-[#3a4750]">
+                  {selectedCategory !== "all"
+                    ? `No products found in ${selectedCategory}.`
+                    : "Try adjusting your search or filters"}
+                </p>
               </div>
             ) : (
-              <div className="space-y-4 mb-12">
-                {filteredProducts.map((product) => (
-                  <ListCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
+              <>
+                {viewMode === "grid" ? (
+                  <div className={`grid grid-cols-1 sm:grid-cols-2 ${categories.length > 0 ? "xl:grid-cols-3" : "lg:grid-cols-3 xl:grid-cols-4"} gap-4 sm:gap-6 mb-12`}>
+                    {displayedProducts.map((product) => (
+                      <GridCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4 mb-12">
+                    {displayedProducts.map((product) => (
+                      <ListCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                )}
 
-            {/* LOAD MORE */}
-            {hasMoreProducts && (
-              <div className="flex justify-center">
-                <button
-                  onClick={() => setDisplayedCount((prev) => prev + 12)}
-                  className="px-10 py-4 bg-white border-2 border-[#303841] text-[#303841] font-semibold rounded-full hover:bg-[#303841] hover:text-white transition-all duration-300 transform  shadow-md"
-                >
-                  Load More Products
-                </button>
-              </div>
+                {/* LOAD MORE */}
+                {hasMoreProducts && (
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => setDisplayedCount((prev) => prev + 12)}
+                      className="px-10 py-4 bg-white border-2 border-[#303841] text-[#303841] font-semibold rounded-full hover:bg-[#303841] hover:text-white transition-all duration-300 transform shadow-md"
+                    >
+                      Load More Products
+                    </button>
+                  </div>
+                )}
+              </>
             )}
-          </>
-        )}
           </div>
         </div>
       </div>
@@ -469,7 +466,7 @@ const Template3Products = () => {
             <p className="text-lg text-white/80 mb-8">
               {pageContent.cta_description}
             </p>
-            <button className="px-8 py-4 bg-[#d72323] text-white font-semibold rounded-full hover:bg-white hover:text-[#303841] transition-all transform  shadow-lg">
+            <button className="px-8 py-4 bg-[#d72323] text-white font-semibold rounded-full hover:bg-white hover:text-[#303841] transition-all transform shadow-lg">
               {pageContent.cta_button_text}
             </button>
           </div>

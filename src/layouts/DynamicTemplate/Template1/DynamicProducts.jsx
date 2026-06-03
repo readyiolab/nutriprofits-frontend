@@ -18,7 +18,6 @@ const DynamicProducts = () => {
   // Smooth scroll when category changes
   useEffect(() => {
     if (productsRef.current) {
-      // Small delay to ensure DOM is ready if navigating
       setTimeout(() => {
         productsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
@@ -29,17 +28,14 @@ const DynamicProducts = () => {
   const categories = backofficeData?.backofficeCategories || [];
   const productPageContent = backofficeData?.productPageContent || {};
 
-  // Find active category if browsing by category
   const activeCategory = categorySlug
     ? findCategoryBySlug(categories, categorySlug)
     : null;
 
-  // Filter products by category if a category slug is in URL
   const categoryFilteredProducts = activeCategory
     ? allProducts.filter((p) => p.category_id === activeCategory.id)
     : allProducts;
 
-  // Filter by search query
   const filteredProducts = categoryFilteredProducts.filter((product) => {
     const name = (product.product_name || "").toLowerCase();
     const desc = (product.product_description || "").toLowerCase();
@@ -78,7 +74,7 @@ const DynamicProducts = () => {
                 ? activeCategory.category_name
                 : productPageContent.hero_title || "Elevate Your Health with Science-Backed Supplements"}
             </h1>
-            <p className="text-lg mb-6 text-[#faf5e4]/90 leading-relaxed">
+            <p className="text-lg mb-6 text-[#faf5e4]/95 leading-relaxed">
               {activeCategory
                 ? activeCategory.category_description || `Browse all ${activeCategory.category_name} products`
                 : productPageContent.hero_description || "Discover clinically formulated products trusted by thousands to support weight loss, energy, immunity, and total wellness."}
@@ -173,7 +169,7 @@ const DynamicProducts = () => {
         </div>
 
         {/* ═══ SIDEBAR + PRODUCTS LAYOUT ═══ */}
-        <div className="flex gap-8 mb-16" ref={productsRef} style={{ scrollMarginTop: '120px' }}>
+        <div className="flex flex-col lg:flex-row gap-8 mb-16" ref={productsRef} style={{ scrollMarginTop: '120px' }}>
 
           {/* ── ENHANCED STICKY CATEGORY SIDEBAR (desktop only) ── */}
           {categories.length > 0 && (
