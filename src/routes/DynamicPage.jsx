@@ -29,6 +29,7 @@ const T3BlogList = lazy(() => import("../layouts/DynamicTemplate/Template3/Dynam
 const T3BlogDetail = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicBlogDetail"));
 const T3Products = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicProducts"));
 const T3ProductDetail = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicProductDetail"));
+const T3Categories = lazy(() => import("../layouts/DynamicTemplate/Template3/DynamicCategories"));
 
 /**
  * Maps template IDs to their page components.
@@ -59,7 +60,7 @@ const templatePages = {
   3: {
     products: T3Products,
     productDetail: T3ProductDetail,
-    categories: T1Categories,
+    categories: T3Categories,
     about: T3About,
     faq: T3FAQ,
     contact: T3Contact,
