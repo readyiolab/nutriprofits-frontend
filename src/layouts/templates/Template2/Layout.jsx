@@ -1,6 +1,6 @@
-import { Outlet, Link, useParams } from "react-router-dom";
+import { Outlet, Link, useParams, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { Menu, Mail, Phone, ArrowRight } from "lucide-react";
+import { Menu, Mail, Phone, ArrowRight, Home, LayoutGrid, Info, BookOpen, HelpCircle } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -12,12 +12,13 @@ import { getTemplateById } from "../../../data/templates";
 
 const Template2Layout = () => {
   const { templateId } = useParams();
+  const location = useLocation();
   const template = getTemplateById(templateId);
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
     { to: `/template/${templateId}/products`, label: "Products" },
-    { to: `/template/${templateId}/categories`, label: "Category" },
+    { to: `/template/${templateId}/categories`, label: "Categories" },
     { to: `/template/${templateId}/about`, label: "About Us" },
     { to: `/template/${templateId}/blog`, label: "Blog" },
     { to: `/template/${templateId}/faq`, label: "FAQ's" },
@@ -58,7 +59,7 @@ const Template2Layout = () => {
                     <Link
                       key={link.to}
                       to={link.to}
-                      className="relative text-xs font-bold uppercase tracking-widest text-slate-600 hover:text-slate-900 transition-all duration-300 group py-2"
+                      className="relative text-xs font-bold uppercase tracking-widest text-slate-600 hover:text-slate-950 transition-all duration-300 group py-2"
                     >
                       {link.label}
                       <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-emerald-600 group-hover:w-full transition-all duration-300"></span>
@@ -94,18 +95,33 @@ const Template2Layout = () => {
                           <h2 className="text-xl font-bold text-slate-800 font-t2-heading">{template?.name}</h2>
                         </div>
 
-                        <div className="flex flex-col space-y-5 mt-4">
-                          {navLinks.map((link) => (
-                            <Link
-                              key={link.to}
-                              to={link.to}
-                              onClick={() => setIsOpen(false)}
-                              className="text-lg font-bold text-slate-600 hover:text-emerald-600 transition-all duration-300 font-t2-heading flex items-center justify-between group border-b border-slate-100 pb-3"
-                            >
-                              <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
-                              <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all text-emerald-600" />
-                            </Link>
-                          ))}
+                        <div className="flex flex-col space-y-4 mt-6 flex-1">
+                          {navLinks.map((link) => {
+                            const isActive = location.pathname === link.to;
+                            let Icon = Home;
+                            if (link.label.includes("Products")) Icon = Home;
+                            else if (link.label.includes("Category") || link.label.includes("Categories")) Icon = LayoutGrid;
+                            else if (link.label.includes("About")) Icon = Info;
+                            else if (link.label.includes("Blog")) Icon = BookOpen;
+                            else if (link.label.includes("FAQ")) Icon = HelpCircle;
+
+                            return (
+                              <Link
+                                key={link.to}
+                                to={link.to}
+                                onClick={() => setIsOpen(false)}
+                                className={`flex items-center gap-4 px-6 py-4 rounded-xl font-bold transition-all duration-300 font-t2-heading transform active:scale-95 border ${
+                                  isActive
+                                    ? "bg-slate-900 text-white border-slate-900 shadow-md"
+                                    : "bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100 hover:text-emerald-600"
+                                }`}
+                              >
+                                <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
+                                <span className="text-xs uppercase tracking-wider flex-1">{link.label}</span>
+                                <ArrowRight className={`w-4 h-4 transition-all ${isActive ? 'text-emerald-400 opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`} />
+                              </Link>
+                            );
+                          })}
                           
                           <div className="pt-6">
                             <Link

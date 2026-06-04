@@ -106,7 +106,7 @@ const DynamicCategories = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
           {filteredCategories.map((category) => {
             const slug = getCategorySlug(category);
             const Icon = Package;
@@ -117,9 +117,9 @@ const DynamicCategories = () => {
                 to={`/categories/${slug}`}
                 className="group cursor-pointer"
               >
-                <div className="relative bg-[#fcfcfc] rounded-[2.5rem] p-8 border border-gray-50 transition-all duration-500 hover:bg-white hover:shadow-[0_20px_50px_rgba(44,120,108,0.08)] hover:-translate-y-2 flex flex-col items-center h-full">
+                <div className="relative bg-[#fcfcfc] rounded-[1.5rem] sm:rounded-[2.5rem] p-4 sm:p-8 border border-gray-50 transition-all duration-500 hover:bg-white hover:shadow-[0_20px_50px_rgba(44,120,108,0.08)] hover:-translate-y-2 flex flex-col items-center h-full">
                   {/* Image Container - Floating style */}
-                  <div className="w-full aspect-square relative mb-8 flex items-center justify-center">
+                  <div className="w-full aspect-square relative mb-4 sm:mb-8 flex items-center justify-center">
                     <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-transparent rounded-full opacity-50 group-hover:scale-110 transition-transform duration-700"></div>
                     {category.category_image ? (
                       <img
@@ -134,17 +134,17 @@ const DynamicCategories = () => {
 
                   {/* Content */}
                   <div className="text-center w-full">
-                    <h3 className="text-xl font-semibold text-[#004445] mb-3 group-hover:text-[#2c786c] transition-colors">
+                    <h3 className="text-sm sm:text-xl font-semibold text-[#004445] mb-1 sm:mb-3 group-hover:text-[#2c786c] transition-colors line-clamp-1">
                       {category.category_name}
                     </h3>
-                    <p className="text-sm text-gray-400 font-light leading-relaxed line-clamp-2 px-2">
+                    <p className="text-[11px] sm:text-sm text-gray-400 font-light leading-relaxed line-clamp-2 px-1">
                       {category.category_description || category.category_name}
                     </p>
                   </div>
 
                   {/* Action Arrow */}
-                  <div className="mt-auto pt-6 flex justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-500">
-                     <span className="text-[10px] font-bold tracking-widest text-[#2c786c] uppercase">View Details →</span>
+                  <div className="mt-auto pt-4 flex justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-500">
+                     <span className="text-[8px] sm:text-[10px] font-bold tracking-widest text-[#2c786c] uppercase">View Details →</span>
                   </div>
                 </div>
               </Link>

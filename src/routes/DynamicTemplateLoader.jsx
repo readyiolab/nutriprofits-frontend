@@ -32,7 +32,7 @@ const DynamicTemplateLoader = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "Host": hostname,
+              "X-Tenant-Domain": hostname,
             },
           }
         );
@@ -47,12 +47,52 @@ const DynamicTemplateLoader = () => {
           throw new Error("Store not found. This subdomain may not be configured yet.");
         }
 
-        console.log(`✅ Backoffice data loaded:`, data.backoffice);
-        setBackofficeData(data);
+        console.log(`✅ Backoffice metadata loaded:`, data.backoffice);
+        
+        const backofficeId = data.backoffice.backoffice_id;
+
+        // Initialize backofficeData state immediately with metadata so shell can render!
+        // We set empty arrays for products, blogs, and faqs.
+        setBackofficeData({
+          ...data,
+          backofficeProducts: [],
+          blogPosts: [],
+          faqItems: [],
+          loadingDetails: true,
+        });
+        
+        // Stop main loading spinner so navigation and branding page renders instantly!
+        setLoading(false);
+
+        // Fetch dynamic content lazily in the background
+        console.log(`⏳ Lazy loading products, blogs, and FAQs for backoffice_id: ${backofficeId}`);
+        
+        const [productsRes, blogsRes, faqsRes] = await Promise.all([
+          fetch(`${apiBaseUrl}/api/backoffice-public/products/${backofficeId}`, {
+            headers: { "Content-Type": "application/json", "X-Tenant-Domain": hostname }
+          }).then(r => r.ok ? r.json() : null).catch(() => null),
+          
+          fetch(`${apiBaseUrl}/api/backoffice-public/blogs/${backofficeId}`, {
+            headers: { "Content-Type": "application/json", "X-Tenant-Domain": hostname }
+          }).then(r => r.ok ? r.json() : null).catch(() => null),
+          
+          fetch(`${apiBaseUrl}/api/backoffice-public/faqs/${backofficeId}`, {
+            headers: { "Content-Type": "application/json", "X-Tenant-Domain": hostname }
+          }).then(r => r.ok ? r.json() : null).catch(() => null),
+        ]);
+
+        setBackofficeData(prev => ({
+          ...prev,
+          backofficeProducts: productsRes?.success ? productsRes.data : [],
+          blogPosts: blogsRes?.success ? blogsRes.blogs : [],
+          faqItems: faqsRes?.success ? faqsRes.faqItems : [],
+          loadingDetails: false,
+        }));
+        
+        console.log("⚡ Lazy content loaded successfully!");
       } catch (err) {
         console.error("❌ Error fetching backoffice data:", err);
         setError(err.message || "Unable to load store data");
-      } finally {
         setLoading(false);
       }
     };

@@ -1,7 +1,7 @@
 import { Outlet, Link, useParams, useLocation } from "react-router-dom";
 import { getTemplateById } from "../../../data/templates";
 import React, { useEffect, useState } from "react";
-import { Menu, X, Home, ShoppingBag, Info, FileText, HelpCircle, Mail, Facebook, Twitter, Instagram } from "lucide-react";
+import { Menu, X, Home, ShoppingBag, Info, FileText, HelpCircle, Mail, Facebook, Twitter, Instagram, LayoutGrid } from "lucide-react";
 
 // Sidebar Navigation Component
 const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
@@ -115,36 +115,47 @@ const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
         </div>
 
         {/* Mobile Menu Dropdown */}
-        {mobileMenuOpen && (
-          <div
-            ref={mobileMenuRef}
-            className="md:hidden absolute top-full left-0 right-0 bg-[#303841] shadow-2xl border-t border-slate-700/50"
-          >
-            <div className="px-6 py-8 space-y-6">
-              <div className="flex flex-col space-y-4">
-                {navItems.map((item) => (
+        <div
+          ref={mobileMenuRef}
+          className={`md:hidden absolute top-full left-0 right-0 bg-[#303841]/95 backdrop-blur-lg border-t border-slate-700/50 transition-all duration-300 ease-out origin-top overflow-hidden shadow-2xl ${
+            mobileMenuOpen ? 'max-h-[500px] opacity-100 scale-y-100' : 'max-h-0 opacity-0 scale-y-0 pointer-events-none'
+          }`}
+        >
+          <div className="px-6 py-8 space-y-6">
+            <div className="flex flex-col space-y-3">
+              {navItems.map((item) => {
+                const active = isActive(item.path);
+                let Icon = Home;
+                if (item.label.includes("Products")) Icon = ShoppingBag;
+                else if (item.label.includes("Category") || item.label.includes("Categories")) Icon = LayoutGrid;
+                else if (item.label.includes("About")) Icon = Info;
+                else if (item.label.includes("Blog")) Icon = FileText;
+                else if (item.label.includes("FAQ")) Icon = HelpCircle;
+
+                return (
                   <Link
                     key={item.label}
                     to={item.path.replace(":id", templateId)}
-                    className={`block py-2.5 text-base font-bold tracking-wider transition-all duration-200 border-l-4 pl-4 font-mono uppercase ${
-                      isActive(item.path)
-                        ? "text-[#d72323] border-[#d72323] bg-white/5"
-                        : "text-gray-300 border-transparent hover:border-[#d72323] hover:text-white"
+                    className={`flex items-center gap-4 py-3 px-5 text-sm font-bold tracking-widest transition-all duration-300 font-mono uppercase rounded-xl border-l-[4px] ${
+                      active
+                        ? "text-[#d72323] border-[#d72323] bg-white/5 shadow-inner"
+                        : "text-gray-300 border-transparent bg-[#3a4450]/40 hover:bg-[#3a4450] hover:text-white"
                     }`}
                   >
-                    {item.label}
+                    <Icon className={`w-4.5 h-4.5 ${active ? 'text-[#d72323]' : 'text-gray-400'}`} />
+                    <span>{item.label}</span>
                   </Link>
-                ))}
-              </div>
-              <Link
-                to={`/template/${templateId}/contact`}
-                className="block w-full text-center py-4 bg-[#d72323] text-white text-sm font-bold uppercase tracking-widest hover:bg-white hover:text-[#303841] transition-all duration-300 font-mono"
-              >
-                Contact Us
-              </Link>
+                );
+              })}
             </div>
+            <Link
+              to={`/template/${templateId}/contact`}
+              className="block w-full text-center py-4 bg-[#d72323] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#b51d1d] active:scale-95 transition-all duration-200 font-mono rounded-xl shadow-lg shadow-[#d72323]/10"
+            >
+              Contact Us
+            </Link>
           </div>
-        )}
+        </div>
       </div>
     </nav>
   );

@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Home, LayoutGrid, Info, BookOpen, HelpCircle, Mail } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -97,21 +97,32 @@ const DynamicLayout = () => {
                       </SheetTitle>
                     </SheetHeader>
                     
-                    <div className="flex flex-col space-y-3 flex-1">
-                      {navigationLinks.map((link) => {
+                    <div className="flex flex-col space-y-3.5 flex-1">
+                      {navigationLinks.map((link, index) => {
                          const isActive = location.pathname === link.to;
+                         let Icon = Home;
+                         if (link.label.includes("Categories")) Icon = LayoutGrid;
+                         else if (link.label.includes("About")) Icon = Info;
+                         else if (link.label.includes("Blog")) Icon = BookOpen;
+                         else if (link.label.includes("FAQ")) Icon = HelpCircle;
+                         else if (link.label.includes("Contact")) Icon = Mail;
+
                          return (
                           <Link
                             key={link.to}
                             to={link.to}
                             onClick={() => setIsOpen(false)}
-                            className={`px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${
+                            className={`flex items-center gap-4 px-6 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 transform active:scale-95 shadow-sm border ${
                               isActive
-                                ? "bg-[#004445] text-[#faf5e4] shadow-md"
-                                : "bg-white text-[#004445] hover:bg-[#f8b400] hover:text-[#004445] shadow-sm border border-[#004445]/5"
+                                ? "bg-gradient-to-r from-[#004445] to-[#2c786c] text-[#faf5e4] border-[#004445]"
+                                : "bg-white text-[#004445] hover:bg-[#2c786c]/5 border-[#004445]/5"
                             }`}
+                            style={{
+                              animationDelay: `${index * 50}ms`
+                            }}
                           >
-                            {link.label}
+                            <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-[#f8b400]' : 'text-[#2c786c]'}`} />
+                            <span>{link.label}</span>
                           </Link>
                         );
                       })}
