@@ -324,37 +324,37 @@ const Template2Products = () => {
               </div>
 
               {/* PRODUCT GRID */}
-              <div className={`grid grid-cols-1 ${viewMode === 'list' ? 'gap-4' : 'sm:grid-cols-2 xl:grid-cols-3'} gap-6`}>
+              <div className={`grid ${viewMode === 'list' ? 'grid-cols-1 gap-4' : 'grid-cols-2 sm:grid-cols-2 xl:grid-cols-3'} gap-4 sm:gap-6`}>
                 {displayedProducts.map((product) => (
                   <div
                     key={product.id}
                     onClick={() => handleProductClick(product)}
-                    className={`group bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md hover:border-emerald-500/10 transition-all duration-300 cursor-pointer flex ${viewMode === 'list' ? 'flex-row items-center p-4 gap-4' : 'flex-col'}`}
+                    className={`group bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md hover:border-emerald-500/10 transition-all duration-300 cursor-pointer flex ${viewMode === 'list' ? 'flex-row items-center p-4 gap-4' : 'flex-col h-full'}`}
                   >
-                    <div className={`relative overflow-hidden flex items-center justify-center p-4 bg-slate-50/50 ${viewMode === 'list' ? 'w-36 h-36 rounded-xl flex-shrink-0' : 'aspect-square w-full'}`}>
+                    <div className={`relative overflow-hidden flex items-center justify-center p-3 sm:p-4 bg-slate-50/50 ${viewMode === 'list' ? 'w-36 h-36 rounded-xl flex-shrink-0' : 'aspect-square w-full'}`}>
                       <img
                         src={product.image}
                         alt={product.name}
                         className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500 drop-shadow-sm"
                         onError={(e) => { e.target.src = "https://via.placeholder.com/400?text=Product"; }}
                       />
-                      <div className="absolute top-2 left-2 bg-white/90 backdrop-blur text-[10px] font-bold text-emerald-600 px-2.5 py-1 rounded-full border border-slate-100 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-2 left-2 bg-white/90 backdrop-blur text-[8px] sm:text-[10px] font-bold text-emerald-600 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-slate-100 opacity-0 group-hover:opacity-100 transition-opacity">
                         View Product
                       </div>
                     </div>
                     
-                    <div className="p-5 flex flex-col flex-1">
-                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                    <div className="p-3 sm:p-5 flex flex-col flex-1">
+                      <div className="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
                         {product.category || "Collection"}
                       </div>
-                      <h3 className="text-base font-bold text-slate-800 mb-2 leading-snug group-hover:text-emerald-600 transition-colors line-clamp-2 font-t2-heading">
+                      <h3 className="text-xs sm:text-base font-bold text-slate-800 mb-1 sm:mb-2 leading-snug group-hover:text-emerald-600 transition-colors line-clamp-1 font-t2-heading">
                         {product.name}
                       </h3>
-                      <p className="text-slate-500 text-xs line-clamp-2 mb-4">
+                      <p className="text-slate-500 text-[11px] sm:text-xs line-clamp-2 mb-2 sm:mb-4">
                         {product.description}
                       </p>
                       
-                      <button className="w-full py-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold group-hover:bg-emerald-600 group-hover:border-emerald-600 group-hover:text-white transition-all flex items-center justify-center gap-1.5">
+                      <button className="w-full py-1.5 sm:py-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-[10px] sm:text-xs font-bold group-hover:bg-emerald-600 group-hover:border-emerald-600 group-hover:text-white transition-all flex items-center justify-center gap-1.5 mt-auto">
                         View Product <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                     </div>

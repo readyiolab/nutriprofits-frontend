@@ -313,52 +313,52 @@ const Template1Products = () => {
             )}
 
             {/* Products Grid — 3 cols when sidebar present, 4 cols when no categories */}
-            <div className={`grid grid-cols-1 sm:grid-cols-2 ${categories.length > 0 ? "xl:grid-cols-3" : "lg:grid-cols-3 xl:grid-cols-4"} gap-5`}>
-          {displayedProducts.map((product) => (
-            <div
-              key={product.id}
-              onClick={() =>
-                navigate(`/template/${templateId}/products/${product.id}`)
-              }
-              className="bg-white rounded-2xl cursor-pointer overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col border border-[#2c786c]/10 hover:border-[#2c786c]/25"
-            >
-              {/* Product Image */}
-              <div className="relative h-40 sm:h-48 overflow-hidden p-6 flex items-center justify-center">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
-                  onError={(e) => {
-                    e.target.src =
-                      "https://via.placeholder.com/400x400.png?text=Product";
-                  }}
-                />
-              </div>
-
-              {/* Product Info */}
-              <div className="p-4 sm:p-5 flex flex-col flex-1">
-                <div className="flex-1 mb-3 text-center">
-                  <h3 className="text-sm sm:text-base font-semibold text-[#004445] mb-1.5 line-clamp-2 group-hover:text-[#2c786c] transition-colors leading-snug">
-                    {product.name}
-                  </h3>
-                  <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
-                    {product.description}
-                  </p>
-                </div>
-
-                <button
+            <div className={`grid grid-cols-2 sm:grid-cols-2 ${categories.length > 0 ? "xl:grid-cols-3" : "lg:grid-cols-3 xl:grid-cols-4"} gap-4 sm:gap-5`}>
+              {displayedProducts.map((product) => (
+                <div
+                  key={product.id}
                   onClick={() =>
                     navigate(`/template/${templateId}/products/${product.id}`)
                   }
-                  className="w-full bg-gradient-to-r from-[#004445] to-[#2c786c] cursor-pointer text-white py-2.5 px-5 rounded-xl text-sm font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#004445]/15 flex items-center justify-center gap-1.5"
+                  className="bg-white rounded-xl sm:rounded-2xl cursor-pointer overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col border border-[#2c786c]/10 hover:border-[#2c786c]/25 h-full"
                 >
-                  <span>Learn More</span>
-                  <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </button>
-              </div>
+                  {/* Product Image */}
+                  <div className="relative h-28 sm:h-48 overflow-hidden p-3 sm:p-6 flex items-center justify-center">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
+                      onError={(e) => {
+                        e.target.src =
+                          "https://via.placeholder.com/400x400.png?text=Product";
+                      }}
+                    />
+                  </div>
+
+                  {/* Product Info */}
+                  <div className="p-3 sm:p-5 flex flex-col flex-1">
+                    <div className="flex-1 mb-3 text-center">
+                      <h3 className="text-xs sm:text-base font-semibold text-[#004445] mb-1 sm:mb-1.5 line-clamp-1 group-hover:text-[#2c786c] transition-colors leading-snug">
+                        {product.name}
+                      </h3>
+                      <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                        {product.description}
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() =>
+                        navigate(`/template/${templateId}/products/${product.id}`)
+                      }
+                      className="w-full bg-gradient-to-r from-[#004445] to-[#2c786c] cursor-pointer text-white py-1.5 sm:py-2.5 px-3 sm:px-5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 hover:shadow-lg hover:shadow-[#004445]/15 flex items-center justify-center gap-1.5"
+                    >
+                      <span>Learn More</span>
+                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
         {/* LOAD MORE BUTTON */}
         {hasMoreProducts && (

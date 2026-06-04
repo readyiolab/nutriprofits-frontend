@@ -129,14 +129,14 @@ const Template3Products = () => {
         />
       </div>
 
-      <div className="p-4 flex-1 flex flex-col">
-        <span className="text-[10px] font-bold text-[#d72323] uppercase tracking-widest mb-1.5">
+      <div className="p-3 sm:p-4 flex-1 flex flex-col">
+        <span className="text-[8px] sm:text-[10px] font-bold text-[#d72323] uppercase tracking-widest mb-1 sm:mb-1.5">
           {product.category}
         </span>
-        <h3 className="font-semibold text-sm text-[#303841] line-clamp-2 mb-1.5 group-hover:text-[#d72323] transition-colors leading-snug">
+        <h3 className="font-semibold text-xs sm:text-sm text-[#303841] line-clamp-1 mb-1 sm:mb-1.5 group-hover:text-[#d72323] transition-colors leading-snug">
           {product.name}
         </h3>
-        <p className="text-xs text-gray-400 line-clamp-2 mb-3 flex-1 leading-relaxed">
+        <p className="text-[10px] sm:text-xs text-gray-400 line-clamp-2 mb-2 sm:mb-3 flex-1 leading-relaxed">
           {product.description}
         </p>
       </div>
@@ -426,7 +426,7 @@ const Template3Products = () => {
             ) : (
               <>
                 {viewMode === "grid" ? (
-                  <div className={`grid grid-cols-1 sm:grid-cols-2 ${categories.length > 0 ? "xl:grid-cols-3" : "lg:grid-cols-3 xl:grid-cols-4"} gap-4 sm:gap-6 mb-12`}>
+                  <div className={`grid grid-cols-2 sm:grid-cols-2 ${categories.length > 0 ? "xl:grid-cols-3" : "lg:grid-cols-3 xl:grid-cols-4"} gap-4 sm:gap-6 mb-12`}>
                     {displayedProducts.map((product) => (
                       <GridCard key={product.id} product={product} />
                     ))}

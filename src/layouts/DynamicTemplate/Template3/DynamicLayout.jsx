@@ -9,6 +9,7 @@ const Navigation = ({ storeName, branding, mobileMenuOpen, setMobileMenuOpen }) 
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const mobileMenuRef = React.useRef(null);
+  const toggleButtonRef = React.useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,14 +22,22 @@ const Navigation = ({ storeName, branding, mobileMenuOpen, setMobileMenuOpen }) 
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+      if (
+        mobileMenuRef.current && 
+        !mobileMenuRef.current.contains(event.target) &&
+        (!toggleButtonRef.current || !toggleButtonRef.current.contains(event.target))
+      ) {
         setMobileMenuOpen(false);
       }
     };
     if (mobileMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, [mobileMenuOpen]);
 
   // Close menu on route change
@@ -96,6 +105,7 @@ const Navigation = ({ storeName, branding, mobileMenuOpen, setMobileMenuOpen }) 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center justify-end">
             <button
+              ref={toggleButtonRef}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 text-white hover:text-[#d72323] transition-colors"
               aria-label="Toggle menu"
@@ -115,7 +125,7 @@ const Navigation = ({ storeName, branding, mobileMenuOpen, setMobileMenuOpen }) 
         {/* Mobile Menu Dropdown */}
         <div
           ref={mobileMenuRef}
-          className={`md:hidden absolute top-full left-0 right-0 bg-[#303841]/95 backdrop-blur-lg border-t border-slate-700/50 transition-all duration-300 ease-out origin-top overflow-hidden shadow-2xl ${
+          className={`md:hidden absolute top-full left-0 right-0 bg-[#303841]/95 backdrop-blur-lg border-t border-slate-700/50 transform transition-all duration-300 ease-out origin-top overflow-hidden shadow-2xl ${
             mobileMenuOpen ? 'max-h-[500px] opacity-100 scale-y-100' : 'max-h-0 opacity-0 scale-y-0 pointer-events-none'
           }`}
         >

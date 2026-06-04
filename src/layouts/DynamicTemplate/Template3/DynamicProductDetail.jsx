@@ -174,9 +174,9 @@ const DynamicProductDetail = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20 items-start">
           {/* LEFT - Product Image */}
-          <div className="lg:sticky lg:top-24">
+          <div className="lg:sticky lg:top-24 w-full max-w-[320px] sm:max-w-md lg:max-w-none mx-auto">
             <div className="bg-white rounded-xl overflow-hidden shadow-sm border-l-4 border-[#d72323]">
-              <div className="aspect-square flex items-center justify-center p-10 lg:p-16">
+              <div className="aspect-square flex items-center justify-center p-6 sm:p-10 lg:p-16">
                 <img
                   src={product.product_image}
                   alt={product.product_name}

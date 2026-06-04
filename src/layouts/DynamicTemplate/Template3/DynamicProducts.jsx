@@ -195,7 +195,7 @@ const DynamicProducts = () => {
 
            {/* ─── GRID AREA ─── */}
            <div className="flex-1 min-w-0" ref={productsRef} style={{ scrollMarginTop: '120px' }}>
-              <div className={`grid grid-cols-1 sm:grid-cols-2 ${categories.length > 0 ? "xl:grid-cols-3" : "lg:grid-cols-3 xl:grid-cols-4"} gap-6`}>
+              <div className={`grid grid-cols-2 sm:grid-cols-2 ${categories.length > 0 ? "xl:grid-cols-3" : "lg:grid-cols-3 xl:grid-cols-4"} gap-4 sm:gap-6`}>
                  {displayedProducts.map((product) => {
                     const slug = getProductSlug(product);
                     const productLink = activeCategory
@@ -214,27 +214,27 @@ const DynamicProducts = () => {
                           <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-[#d72323] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                           <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-[#d72323] opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-                          <div className="h-64 p-6 relative overflow-hidden">
+                          <div className="h-36 sm:h-64 p-3 sm:p-6 relative overflow-hidden flex items-center justify-center">
                              <img 
                                 src={product.product_image} 
                                 alt={product.product_name}
                                 className="w-full h-full object-contain filter group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-105"
                                 onError={(e) => { e.target.src = "https://via.placeholder.com/400?text=NO_IMAGE"; }}
                              />
-                             <div className="absolute bottom-2 right-2 text-[10px] font-mono text-gray-400 opacity-50">ID: {product.id}</div>
+                             <div className="absolute bottom-2 right-2 text-[8px] sm:text-[10px] font-mono text-gray-400 opacity-50">ID: {product.id}</div>
                           </div>
                           
-                          <div className="p-6">
-                             <div className="text-[10px] uppercase tracking-widest font-bold text-[#d72323] mb-2">
+                          <div className="p-3 sm:p-6">
+                             <div className="text-[8px] sm:text-[10px] uppercase tracking-widest font-bold text-[#d72323] mb-1 sm:mb-2">
                                 {categories.find(c => c.id === product.category_id)?.category_name || "GENERAL"}
                              </div>
-                             <h3 className="text-xl font-bold text-[#303841] mb-2 uppercase leading-none group-hover:text-black">
+                             <h3 className="text-xs sm:text-xl font-bold text-[#303841] mb-1 sm:mb-2 uppercase leading-tight group-hover:text-black line-clamp-1">
                                 {product.product_name}
                              </h3>
-                             <p className="text-gray-500 text-sm line-clamp-2 mb-4 font-mono">
+                             <p className="text-[11px] sm:text-sm text-gray-500 line-clamp-2 mb-3 sm:mb-4 font-mono leading-relaxed">
                                 {product.product_description}
                              </p>
-                             <button className="w-full py-2 border-2 border-[#303841] text-[#303841] text-xs font-bold uppercase tracking-widest hover:bg-[#303841] hover:text-white transition-colors">
+                             <button className="w-full py-1.5 sm:py-2 border-2 border-[#303841] text-[#303841] text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:bg-[#303841] hover:text-white transition-colors">
                                 Learn More
                              </button>
                           </div>
