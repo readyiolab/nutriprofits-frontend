@@ -30,18 +30,18 @@ const Template3Products = () => {
     }
   }, [location.search]);
 
-  // Dynamic page content (will come from database)
+  // Dynamic page content
   const pageContent = {
-    hero_title: "Discover Our Products",
-    hero_subtitle: "Premium Quality",
-    hero_description: "Explore our wide range of high-quality products designed to meet your needs",
-    hero_button_text: "Shop Now",
-    hero_image_url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=600&fit=crop",
-    section_title: "Our Product Collection",
-    section_description: "Browse through our carefully curated selection",
-    cta_title: "Ready to Shop?",
-    cta_description: "Join thousands of satisfied customers today",
-    cta_button_text: "Start Shopping",
+    hero_title: "BIO-ACTIVE SUPPLEMENT DATABASE",
+    hero_subtitle: "Clinical Purity // Verified Potency",
+    hero_description: "Access our premium database of molecularly optimized health formulations, engineered to support cellular longevity and physical performance.",
+    hero_button_text: "EXPLORE FORMULATIONS",
+    hero_image_url: "https://images.unsplash.com/photo-1628771065518-0d82f1938462?w=1200&h=600&fit=crop",
+    section_title: "Active Supplement Catalog",
+    section_description: "Filter and deploy premium pharmacy-grade supplement modules",
+    cta_title: "Deploy Purity Protocols?",
+    cta_description: "Join thousands of wellness users optimizing their bio-stats",
+    cta_button_text: "START PROTOCOL",
   };
 
   const categories = useMemo(() => {
@@ -120,11 +120,11 @@ const Template3Products = () => {
       onClick={() => navigate(`/template/${templateId}/products/${product.id}`)}
       className="group cursor-pointer h-full flex flex-col bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#d72323]/30"
     >
-      <div className="relative overflow-hidden aspect-square">
+      <div className="relative overflow-hidden aspect-square p-4 flex items-center justify-center bg-slate-50/30">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
           onError={(e) => (e.target.src = "https://via.placeholder.com/400")}
         />
       </div>
@@ -149,11 +149,11 @@ const Template3Products = () => {
       onClick={() => navigate(`/template/${templateId}/products/${product.id}`)}
       className="flex flex-col sm:flex-row gap-4 sm:gap-5 p-4 sm:p-5 bg-white rounded-2xl hover:shadow-lg transition-all cursor-pointer group border border-gray-100 hover:border-[#d72323]/30"
     >
-      <div className="relative overflow-hidden rounded-xl w-full sm:w-40 h-40 flex-shrink-0">
+      <div className="relative overflow-hidden rounded-xl w-full sm:w-40 h-40 flex-shrink-0 p-4 flex items-center justify-center bg-slate-50/30">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
           onError={(e) => (e.target.src = "https://via.placeholder.com/400")}
         />
       </div>
@@ -176,41 +176,92 @@ const Template3Products = () => {
 
   return (
     <div className="bg-[#eeeeee] min-h-screen font-mono">
-      {/* HERO SECTION - MODERN LEFT ALIGNED */}
-      <div className="relative min-h-[500px] lg:h-[600px] flex items-center mb-12 sm:mb-16 overflow-hidden border-b-[8px] border-[#d72323] py-16 lg:py-0">
+      {/* HERO SECTION - HIGH-TECH APOTHECARY CONSOLE */}
+      <div className="relative min-h-[550px] lg:h-[650px] flex items-center mb-12 sm:mb-16 overflow-hidden border-b-[8px] border-[#d72323] py-16 lg:py-0">
         <div 
           className="absolute inset-0 bg-cover bg-center transform hover:scale-105 transition-transform duration-[15s]"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&h=800&fit=crop')` }}
+          style={{ backgroundImage: `url('${pageContent.hero_image_url}')` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0f1214] via-[#0f1214]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0f1214] via-[#0f1214]/90 to-[#0f1214]/40" />
         
         {/* Edgy accent elements */}
-        <div className="absolute top-0 left-12 w-[1px] h-full bg-white/10 z-0"></div>
+        <div className="absolute top-0 left-12 w-[1px] h-full bg-white/5 z-0"></div>
         <div className="absolute top-0 left-24 w-[1px] h-full bg-white/5 z-0"></div>
 
         <div className="relative z-10 w-full">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
-            <div className="max-w-2xl bg-gradient-to-br from-[#0f1214]/90 to-[#303841]/80 backdrop-blur-md p-6 sm:p-12 border-l-[6px] border-[#d72323] shadow-2xl relative mt-6 sm:mt-12 lg:mt-0">
-              <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-[#d72323] opacity-30"></div>
-              <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-[#d72323] opacity-30"></div>
-              
-              <span className="inline-block text-xs font-bold uppercase tracking-[0.3em] text-[#d72323] mb-4 flex items-center gap-2">
-                <span className="w-8 h-[2px] bg-[#d72323]"></span>
-                {pageContent.hero_subtitle}
-              </span>
-              
-              <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 leading-[1.1] font-t3-heading text-white tracking-tight">
-                {pageContent.hero_title}
-              </h1>
-              
-              <p className="text-lg sm:text-xl mb-8 text-gray-300 font-light max-w-xl">
-                {pageContent.hero_description}
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button className="px-8 py-4 bg-[#d72323] text-white font-bold text-sm uppercase tracking-widest hover:bg-white hover:text-[#303841] transition-all transform shadow-[5px_5px_0_0_#303841] hover:shadow-[2px_2px_0_0_#303841] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none">
-                  {pageContent.hero_button_text}
-                </button>
+            <div className="grid lg:grid-cols-12 gap-8 items-center">
+              {/* Left Column: Console Panel */}
+              <div className="lg:col-span-7 bg-gradient-to-br from-[#0f1214]/95 to-[#1c2227]/90 backdrop-blur-md p-6 sm:p-12 border-l-[6px] border-[#d72323] shadow-2xl relative">
+                {/* Tech corner accents */}
+                <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-[#d72323] opacity-55"></div>
+                <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-[#d72323] opacity-55"></div>
+                
+                <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-[#d72323] mb-4">
+                  <span className="w-8 h-[2px] bg-[#d72323]"></span>
+                  {pageContent.hero_subtitle}
+                </span>
+                
+                <h1 className="text-3xl sm:text-4xl md:text-6xl font-black mb-6 leading-none font-t3-heading text-white tracking-tight uppercase">
+                  {pageContent.hero_title}
+                </h1>
+                
+                <p className="text-sm sm:text-base mb-8 text-gray-400 font-mono leading-relaxed max-w-xl border-l border-gray-700 pl-4">
+                  {pageContent.hero_description}
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button 
+                    onClick={() => productsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                    className="px-8 py-4 bg-[#d72323] text-white font-bold text-xs uppercase tracking-widest hover:bg-white hover:text-[#303841] transition-all transform shadow-[5px_5px_0_0_#303841] hover:shadow-[2px_2px_0_0_#303841] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none font-mono"
+                  >
+                    {pageContent.hero_button_text}
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Column: Lab Diagnostics Console */}
+              <div className="lg:col-span-5 hidden lg:block">
+                <div className="bg-[#0f1214]/90 backdrop-blur-md border border-gray-800 p-6 rounded-sm shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-[#d72323]/5 rounded-full blur-2xl"></div>
+                  
+                  {/* Console Header */}
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-800 mb-4 font-mono text-[10px] text-gray-500">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                      SYSTEM_DIAGNOSTICS_V1.1
+                    </span>
+                    <span>SECURE_OUTLET</span>
+                  </div>
+
+                  {/* Tech Readout stats */}
+                  <div className="space-y-4 font-mono text-xs">
+                    <div>
+                      <div className="flex justify-between text-gray-400 mb-1">
+                        <span>POTENCY_INDEX</span>
+                        <span className="text-[#00adb5]">99.8% PASS</span>
+                      </div>
+                      <div className="w-full bg-gray-900 h-1.5 rounded-none overflow-hidden">
+                        <div className="bg-[#d72323] h-full" style={{ width: '99.8%' }}></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-gray-400 mb-1">
+                        <span>ORGANIC_BIO_MATCH</span>
+                        <span className="text-[#00adb5]">100% OK</span>
+                      </div>
+                      <div className="w-full bg-gray-900 h-1.5 rounded-none overflow-hidden">
+                        <div className="bg-[#00adb5] h-full" style={{ width: '100%' }}></div>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-3 border-t border-gray-800 space-y-2 text-gray-400 text-[11px]">
+                      <div className="flex justify-between"><span>GMP_CERTIFICATION:</span> <span className="text-white font-bold">VERIFIED_FDA</span></div>
+                      <div className="flex justify-between"><span>ACTIVE_COMPOUNDS:</span> <span className="text-white font-bold">NATURAL_EXCLUSIVES</span></div>
+                      <div className="flex justify-between"><span>DISTRIBUTION:</span> <span className="text-white font-bold">WORLDWIDE_EXPRESS</span></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

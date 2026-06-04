@@ -127,7 +127,7 @@ const Template3Categories = () => {
             <p className="text-[#3a4750]">Try searching for something else</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 mb-12 sm:mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 mb-12 sm:mb-16">
             {filteredCategories.map((category) => {
               const IconComponent = category.icon;
               return (
@@ -138,45 +138,54 @@ const Template3Categories = () => {
                   onMouseLeave={() => setHoveredId(null)}
                   onClick={() => navigate(`/template/${templateId}/products?category=${generateSlug(category.name)}`)}
                 >
-                  <div className="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer h-full flex flex-col border border-gray-100 hover:border-[#d72323]/30">
-                    {/* Image */}
-                    <div className="relative h-28 sm:h-48 overflow-hidden bg-gray-50">
+                  <div className="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer h-full flex flex-row items-center gap-4 p-4 sm:flex-col sm:items-stretch sm:p-0 border border-gray-100 hover:border-[#d72323]/30 relative">
+                    {/* Tech corners for styling */}
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#d72323] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#d72323] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                    {/* Image Area */}
+                    <div className="relative w-16 h-16 sm:w-full sm:h-48 overflow-hidden bg-gray-50 flex items-center justify-center rounded-xl sm:rounded-none flex-shrink-0">
                       <img
                         src={category.image}
                         alt={category.name}
-                        className="w-full h-full object-contain p-3 sm:p-5 group-hover:scale-105 transition-transform duration-500"
+                        className="w-4/5 h-4/5 sm:w-full sm:h-full object-contain p-1 sm:p-5 group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => (e.target.src = "https://via.placeholder.com/400x400?text=" + category.name)}
                       />
                       
                       {/* Icon Badge */}
-                      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white/95 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg shadow-sm">
+                      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white/95 backdrop-blur-sm p-1.5 sm:p-2 rounded-lg shadow-sm hidden sm:block">
                         <IconComponent className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-[#303841]" />
                       </div>
 
                       {/* Count Badge */}
-                      <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-white/95 backdrop-blur-sm px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md shadow-sm">
+                      <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-white/95 backdrop-blur-sm px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md shadow-sm hidden sm:block">
                         <span className="text-[9px] sm:text-xs font-semibold text-[#303841]">{category.count} Products</span>
                       </div>
                     </div>
 
                     {/* Content */}
-                    <div className="p-3 sm:p-4.5 flex flex-col flex-1">
+                    <div className="flex-1 sm:p-4.5 flex flex-col justify-center font-mono">
                       <div className="flex-1">
-                        <h3 className="text-xs sm:text-base font-semibold text-[#303841] mb-1.5 group-hover:text-[#d72323] transition-colors leading-snug line-clamp-1">
-                          {category.name}
+                        <h3 className="text-xs sm:text-base font-bold text-[#303841] mb-0.5 sm:mb-1.5 group-hover:text-[#d72323] transition-colors leading-snug line-clamp-1 uppercase">
+                          // {category.name}
                         </h3>
-                        <p className="text-[10px] sm:text-xs text-gray-400 line-clamp-2 mb-3 leading-relaxed">
+                        <p className="text-[10px] sm:text-xs text-gray-400 line-clamp-1 sm:line-clamp-2 mb-1 sm:mb-3 leading-relaxed">
                           {category.description}
                         </p>
                       </div>
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-100">
-                        <span className="text-[10px] sm:text-xs font-semibold text-[#d72323]">Explore</span>
+                      <div className="hidden sm:flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-100">
+                        <span className="text-[10px] sm:text-xs font-bold text-[#d72323]">MODULE_DEPLOY</span>
                         <button className="bg-[#303841] text-white p-1 sm:p-1.5 rounded-lg hover:bg-[#d72323] transition-all">
                           <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                         </button>
                       </div>
+                    </div>
+
+                    {/* Mobile Chevron */}
+                    <div className="sm:hidden flex items-center justify-center w-8 h-8 rounded-full bg-slate-50 text-slate-400 group-hover:bg-[#d72323] group-hover:text-white transition-all">
+                      <ChevronRight className="w-4 h-4" />
                     </div>
                   </div>
                 </div>

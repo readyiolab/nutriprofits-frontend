@@ -100,12 +100,12 @@ const Template2Products = () => {
         <section className="relative bg-gradient-to-br from-[#064e3b] via-[#043e2f] to-[#022e22] text-white pt-28 pb-20 overflow-hidden border-b border-[#064e3b]/80 shadow-md min-h-[55vh] flex items-center">
           {/* Subtle background overlay image */}
           <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10 mix-blend-overlay"
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15 mix-blend-overlay scale-105"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1600&q=80')`,
+              backgroundImage: `url('https://images.unsplash.com/photo-1607619056574-7b8d304a3734?w=1600&q=80')`,
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#043e2f]/90 via-[#043e2f]/50 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#043e2f]/95 via-[#043e2f]/70 to-transparent"></div>
           
           <div className="container mx-auto px-6 relative z-10 w-full">
             <div className="grid lg:grid-cols-12 gap-12 items-center">
@@ -113,15 +113,15 @@ const Template2Products = () => {
               <div className="lg:col-span-7 text-left">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 mb-6 shadow-sm">
                   <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-xs font-bold tracking-wider uppercase">Science-Backed Wellness</span>
+                  <span className="text-xs font-bold tracking-wider uppercase">Clinical-Grade Supplement Store</span>
                 </div>
                 
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-tight text-white font-t2-heading leading-tight">
-                  Premium Wellness for <span className="text-emerald-400 font-normal italic">Peak Performance</span>
+                  Premium Prescriptions & <span className="text-emerald-400 font-normal italic">Clinical Supplements</span>
                 </h1>
                 
                 <p className="text-base text-emerald-100/80 font-light leading-relaxed mb-8 max-w-xl">
-                  Discover our curated range of clean, high-potency supplements engineered to elevate your daily energy, focus, and overall vitality. Crafted with verified premium ingredients.
+                  Access our certified catalog of medical supplements, pure formulas, and doctor-approved compounds, manufactured under strict GMP compliance and verified laboratory standards.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
@@ -160,8 +160,8 @@ const Template2Products = () => {
               <div className="lg:col-span-5 hidden lg:flex flex-col items-center justify-center relative">
                 <div className="relative w-full max-w-[400px] aspect-square rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl p-2 bg-gradient-to-tr from-white/5 to-white/10 backdrop-blur-sm">
                   <img
-                    src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80"
-                    alt="Premium Wellness Visual"
+                    src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=800&q=80"
+                    alt="Clinical Supplement Mockup"
                     className="w-full h-full object-cover rounded-[1.8rem]"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#043e2f]/50 to-transparent"></div>
@@ -172,8 +172,8 @@ const Template2Products = () => {
                       <Sparkles className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-white text-xs font-bold font-t2-heading">Formulated by Experts</p>
-                      <p className="text-emerald-300 text-[10px] uppercase tracking-wider font-semibold">Quality Guaranteed</p>
+                      <p className="text-white text-xs font-bold font-t2-heading">Apothecary Approved</p>
+                      <p className="text-emerald-300 text-[10px] uppercase tracking-wider font-semibold">99.9% Purity Certified</p>
                     </div>
                   </div>
                 </div>

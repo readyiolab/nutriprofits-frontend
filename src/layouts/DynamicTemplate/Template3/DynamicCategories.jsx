@@ -123,7 +123,7 @@ const DynamicCategories = () => {
             <p className="text-gray-500 text-sm">Try running another directory scan parameter.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-16">
             {filteredCategories.map((category) => {
               const slug = getCategorySlug(category);
               const IconComponent = getIcon(category.category_name);
@@ -135,7 +135,7 @@ const DynamicCategories = () => {
                   to={`/categories/${slug}`}
                   className="group relative"
                 >
-                  <div className="bg-white border border-gray-300 hover:border-[#d72323]/50 hover:shadow-xl transition-all duration-300 cursor-pointer h-full flex flex-col">
+                  <div className="bg-white border border-gray-300 hover:border-[#d72323]/50 hover:shadow-xl transition-all duration-300 cursor-pointer h-full flex flex-row items-center gap-4 p-4 sm:flex-col sm:items-stretch sm:p-0 relative">
                     {/* Tech Corner Markers */}
                     <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-[#d72323] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-[#d72323] opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -143,47 +143,52 @@ const DynamicCategories = () => {
                     <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-[#d72323] opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                     {/* Image Area */}
-                    <div className="relative h-28 sm:h-48 overflow-hidden bg-gray-50/50 flex items-center justify-center p-4">
+                    <div className="relative w-16 h-16 sm:w-full sm:h-48 overflow-hidden bg-gray-50/50 flex items-center justify-center rounded-xl sm:rounded-none flex-shrink-0">
                       {category.category_image ? (
                         <img
                           src={category.category_image}
                           alt={category.category_name}
-                          className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+                          className="w-4/5 h-4/5 sm:w-full sm:h-full object-contain p-1 sm:p-2 group-hover:scale-105 transition-transform duration-500"
                           onError={(e) => { e.target.src = "https://via.placeholder.com/400x400?text=" + category.category_name; }}
                         />
                       ) : (
-                        <IconComponent className="w-12 h-12 text-gray-300 group-hover:text-[#d72323] transition-colors duration-300" />
+                        <IconComponent className="w-8 h-8 sm:w-12 sm:h-12 text-gray-300 group-hover:text-[#d72323] transition-colors duration-300" />
                       )}
                       
                       {/* Icon Badge */}
-                      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white border border-gray-200 p-1.5 rounded-sm shadow-sm">
+                      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white border border-gray-200 p-1.5 rounded-sm shadow-sm hidden sm:block">
                         <IconComponent className="w-3.5 h-3.5 text-[#303841]" />
                       </div>
 
                       {/* Count Badge */}
-                      <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-[#303841] text-white text-[8px] sm:text-[10px] font-mono px-2 py-0.5 rounded-sm shadow-sm">
+                      <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-[#303841] text-white text-[8px] sm:text-[10px] font-mono px-2 py-0.5 rounded-sm shadow-sm hidden sm:block">
                         {count} UNITS
                       </div>
                     </div>
 
                     {/* Content */}
-                    <div className="p-3 sm:p-5 flex flex-col flex-1 border-t border-gray-200">
+                    <div className="flex-1 sm:p-5 flex flex-col justify-center font-mono">
                       <div className="flex-1">
-                        <h3 className="text-xs sm:text-base font-bold text-[#303841] mb-1.5 uppercase leading-tight group-hover:text-black line-clamp-1">
+                        <h3 className="text-xs sm:text-base font-bold text-[#303841] mb-0.5 sm:mb-1.5 uppercase leading-tight group-hover:text-black line-clamp-1">
                           {category.category_name}
                         </h3>
-                        <p className="text-[10px] sm:text-xs text-gray-400 line-clamp-2 mb-3 leading-relaxed">
+                        <p className="text-[10px] sm:text-xs text-gray-400 line-clamp-1 sm:line-clamp-2 mb-1 sm:mb-3 leading-relaxed">
                           {category.category_description || category.category_name}
                         </p>
                       </div>
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between pt-2.5 sm:pt-3 border-t border-gray-100 mt-auto">
+                      <div className="hidden sm:flex items-center justify-between pt-2.5 sm:pt-3 border-t border-gray-200 mt-auto">
                         <span className="text-[10px] font-bold text-[#d72323] uppercase tracking-wider">Access Panel</span>
                         <button className="w-6 h-6 sm:w-8 sm:h-8 border border-gray-300 rounded-sm hover:bg-[#d72323] hover:text-white hover:border-[#d72323] flex items-center justify-center transition-colors">
                           <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
+                    </div>
+
+                    {/* Mobile Chevron */}
+                    <div className="sm:hidden flex items-center justify-center w-8 h-8 rounded-full bg-slate-50 text-slate-400 group-hover:bg-[#d72323] group-hover:text-white transition-all">
+                      <ChevronRight className="w-4 h-4" />
                     </div>
                   </div>
                 </Link>

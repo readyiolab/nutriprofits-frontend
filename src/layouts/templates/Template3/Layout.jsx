@@ -24,20 +24,19 @@ const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
       if (
         mobileMenuRef.current && 
         !mobileMenuRef.current.contains(event.target) &&
-        (!toggleButtonRef.current || !toggleButtonRef.current.contains(event.target))
+        toggleButtonRef.current &&
+        !toggleButtonRef.current.contains(event.target)
       ) {
         setMobileMenuOpen(false);
       }
     };
-    if (mobileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('touchstart', handleClickOutside);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, [mobileMenuOpen]);
+  }, [setMobileMenuOpen]);
 
   // Close menu on route change
   useEffect(() => {
@@ -58,9 +57,17 @@ const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
   };
 
   return (
-    <nav className={`sticky top-0 z-50 transition-all duration-300 border-t-[6px] border-[#d72323] ${
-      scrolled ? 'bg-[#303841]/95 backdrop-blur-md shadow-lg py-2' : 'bg-[#303841] py-4'
-    }`}>
+    <>
+      {/* High-Tech Status Ribbon */}
+      <div className="bg-[#0f1214] text-[9px] sm:text-[10px] font-mono py-2 text-center text-gray-400 border-b border-gray-800 tracking-widest relative z-50">
+        <span className="inline-flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+          SECURE ENCRYPTED CONSOLE // REGISTERED PHARMACEUTICAL OUTLET // ACTIVE LAB VERIFICATION STATS: ONLINE
+        </span>
+      </div>
+      <nav className={`sticky top-0 z-50 transition-all duration-300 border-t-[6px] border-[#d72323] ${
+        scrolled ? 'bg-[#303841]/95 backdrop-blur-md shadow-lg py-2' : 'bg-[#303841] py-4'
+      }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           
@@ -87,7 +94,7 @@ const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
                 }`}
               >
                 {item.label}
-                <span className={`absolute -bottom-1.5 left-0 h-[3px] bg-[#d72323] transition-all duration-300 ${
+                <span className={`absolute -bottom-1.5 left-0 h-[3px] bg-[#d72323] shadow-[0_0_8px_rgba(215,35,35,0.6)] transition-all duration-300 ${
                   isActive(item.path) ? "w-full" : "w-0 group-hover:w-full"
                 }`}></span>
               </Link>
@@ -98,7 +105,7 @@ const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
           <div className="hidden md:flex items-center justify-end flex-1">
             <Link
               to={`/template/${templateId}/contact`}
-              className="px-6 py-2.5 bg-[#d72323] text-white text-xs font-bold uppercase tracking-widest rounded-none hover:bg-white hover:text-[#303841] transition-all duration-300 shadow-md shadow-[#d72323]/20 font-mono"
+              className="px-6 py-2.5 bg-[#d72323] text-white text-xs font-bold uppercase tracking-widest rounded-none hover:bg-white hover:text-[#303841] transition-all duration-300 shadow-md shadow-[#d72323]/25 hover:shadow-[#d72323]/50 font-mono"
             >
               Contact
             </Link>
@@ -168,6 +175,7 @@ const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
         </div>
       </div>
     </nav>
+    </>
   );
 };
 

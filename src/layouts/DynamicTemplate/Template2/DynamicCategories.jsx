@@ -22,6 +22,7 @@ import {
   LayoutGrid,
   Zap,
   Package,
+  ChevronRight,
 } from "lucide-react";
 import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 import { getCategorySlug } from "../../../utils/slug";
@@ -150,7 +151,7 @@ const DynamicCategories = () => {
           </div>
 
           {/* Categories Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
             {filteredCategories.map((category) => {
               const IconComp = getCategoryIcon(category.category_name);
               const slug = getCategorySlug(category);
@@ -162,12 +163,12 @@ const DynamicCategories = () => {
                   onMouseEnter={() => setHoveredId(category.id)}
                   onMouseLeave={() => setHoveredId(null)}
                 >
-                  <div className="h-full bg-white rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] hover:border-emerald-100 transition-all duration-500 flex flex-col">
+                  <div className="h-full bg-white rounded-2xl sm:rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] hover:border-emerald-100 transition-all duration-500 flex flex-row items-center gap-4 p-4 sm:flex-col sm:items-stretch sm:p-0">
                     {/* Visual Area */}
-                    <div className="relative h-32 sm:h-56 bg-slate-50/50 overflow-hidden flex items-center justify-center p-4 sm:p-12">
-                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="relative w-16 h-16 sm:w-full sm:h-56 bg-slate-50/50 overflow-hidden flex items-center justify-center rounded-xl sm:rounded-none flex-shrink-0">
+                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden sm:block"></div>
                       
-                      <div className="relative z-10 w-full h-full flex items-center justify-center transform group-hover:scale-110 transition-transform duration-700">
+                      <div className="relative z-10 w-4/5 h-4/5 sm:w-full sm:h-full flex items-center justify-center transform group-hover:scale-105 transition-transform duration-75 sm:duration-700 p-1 sm:p-12">
                         {category.category_image ? (
                           <img
                             src={category.category_image}
@@ -180,22 +181,22 @@ const DynamicCategories = () => {
                       </div>
 
                       {/* Icon Badge */}
-                      <div className="absolute top-3 left-3 w-8 h-8 sm:w-12 sm:h-12 bg-white rounded-xl sm:rounded-2xl shadow-md sm:shadow-xl border border-slate-50 flex items-center justify-center transform -rotate-6 group-hover:rotate-0 group-hover:scale-110 transition-all duration-500">
-                        <IconComp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
+                      <div className="absolute top-3 left-3 w-12 h-12 bg-white rounded-2xl shadow-xl border border-slate-50 flex items-center justify-center transform -rotate-6 group-hover:rotate-0 group-hover:scale-110 transition-all duration-500 hidden sm:flex">
+                        <IconComp className="w-5 h-5 text-emerald-600" />
                       </div>
                     </div>
 
                     {/* Content Area */}
-                    <div className="p-4 sm:p-8 flex flex-col flex-1">
-                      <h3 className="text-sm sm:text-xl font-bold text-slate-900 mb-1 sm:mb-3 group-hover:text-emerald-600 transition-colors leading-tight font-t2-heading line-clamp-1">
+                    <div className="flex-1 sm:p-8 flex flex-col justify-center">
+                      <h3 className="text-sm sm:text-xl font-bold text-slate-900 mb-0.5 sm:mb-3 group-hover:text-emerald-600 transition-colors leading-tight font-t2-heading line-clamp-1">
                         {category.category_name}
                       </h3>
                       
-                      <p className="text-slate-500 text-[11px] sm:text-[13px] leading-relaxed mb-4 sm:mb-8 line-clamp-2 font-light">
+                      <p className="text-slate-500 text-[11px] sm:text-[13px] leading-relaxed mb-2 sm:mb-8 line-clamp-1 sm:line-clamp-2 font-light">
                         {category.category_description || "Discover our premium selection of health and wellness products in this category."}
                       </p>
                       
-                      <div className="mt-auto pt-4 sm:pt-6 border-t border-slate-50 flex items-center justify-between">
+                      <div className="hidden sm:flex mt-auto pt-4 sm:pt-6 border-t border-slate-50 items-center justify-between">
                         <span className="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                           Explore
                         </span>
@@ -203,6 +204,11 @@ const DynamicCategories = () => {
                           <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                         </div>
                       </div>
+                    </div>
+                    
+                    {/* Mobile Arrow */}
+                    <div className="sm:hidden flex items-center justify-center w-8 h-8 rounded-full bg-slate-50 text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-all">
+                      <ChevronRight className="w-4 h-4" />
                     </div>
                   </div>
                 </Link>

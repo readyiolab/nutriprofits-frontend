@@ -29,6 +29,17 @@ const Template2Layout = () => {
       <div className="min-h-screen flex flex-col bg-white font-t2-body">
         {/* ENTERPRISE-GRADE LIGHT NAVBAR */}
         <div className="fixed top-0 left-0 right-0 z-50">
+          {/* Pharmacy Info Ribbon */}
+          <div className="bg-[#043e2f] text-emerald-100 text-[10px] font-bold uppercase tracking-widest py-2 px-6 flex flex-col sm:flex-row justify-between items-center gap-1 sm:gap-0 border-b border-emerald-800/20">
+            <div className="flex items-center gap-4">
+              <span>Customer Care: (123) 456-7890</span>
+              <span className="hidden md:inline text-emerald-600">|</span>
+              <span className="hidden md:inline">Registered Supplement Outlet</span>
+            </div>
+            <div>
+              <span>FREE EXPRESS DELIVERY ON ORDERS OVER $50</span>
+            </div>
+          </div>
           <nav className="bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.02)] transition-all duration-300">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
               <div className="flex justify-between items-center h-20">
@@ -147,7 +158,7 @@ const Template2Layout = () => {
         </div>
 
         {/* MAIN CONTENT */}
-        <main className="flex-grow">
+        <main className="flex-grow pt-[34px] sm:pt-[34px]">
           <Outlet />
         </main>
 

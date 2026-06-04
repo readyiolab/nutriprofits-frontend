@@ -25,20 +25,19 @@ const Navigation = ({ storeName, branding, mobileMenuOpen, setMobileMenuOpen }) 
       if (
         mobileMenuRef.current && 
         !mobileMenuRef.current.contains(event.target) &&
-        (!toggleButtonRef.current || !toggleButtonRef.current.contains(event.target))
+        toggleButtonRef.current &&
+        !toggleButtonRef.current.contains(event.target)
       ) {
         setMobileMenuOpen(false);
       }
     };
-    if (mobileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('touchstart', handleClickOutside);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, [mobileMenuOpen]);
+  }, [setMobileMenuOpen]);
 
   // Close menu on route change
   useEffect(() => {
