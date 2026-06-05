@@ -98,55 +98,54 @@ const Template2Layout = () => {
                       side="right" 
                       className="w-full sm:w-[350px] border-l border-slate-100 p-0 bg-white/98 backdrop-blur-2xl rounded-l-2xl shadow-2xl"
                     >
-                      <div className="flex flex-col h-full p-8 relative">
-                        <div className="flex items-center gap-3 mb-10">
-                          <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
-                            <span className="text-emerald-600 font-bold text-lg font-t2-heading">{template?.name?.charAt(0)}</span>
+                      <div className="flex flex-col h-full justify-between p-8 relative">
+                        <div>
+                          <div className="flex items-center gap-3 mb-10">
+                            <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
+                              <span className="text-emerald-600 font-bold text-lg font-t2-heading">{template?.name?.charAt(0)}</span>
+                            </div>
+                            <h2 className="text-xl font-bold text-slate-800 font-t2-heading">{template?.name}</h2>
                           </div>
-                          <h2 className="text-xl font-bold text-slate-800 font-t2-heading">{template?.name}</h2>
-                        </div>
 
-                        <div className="flex flex-col space-y-4 mt-6 flex-1">
-                          {navLinks.map((link) => {
-                            const isActive = location.pathname === link.to;
-                            let Icon = Home;
-                            if (link.label.includes("Products")) Icon = Home;
-                            else if (link.label.includes("Category") || link.label.includes("Categories")) Icon = LayoutGrid;
-                            else if (link.label.includes("About")) Icon = Info;
-                            else if (link.label.includes("Blog")) Icon = BookOpen;
-                            else if (link.label.includes("FAQ")) Icon = HelpCircle;
+                          <div className="flex flex-col space-y-4 max-h-[55vh] overflow-y-auto pr-1">
+                            {navLinks.map((link) => {
+                              const isActive = location.pathname === link.to;
+                              let Icon = Home;
+                              if (link.label.includes("Products")) Icon = Home;
+                              else if (link.label.includes("Category") || link.label.includes("Categories")) Icon = LayoutGrid;
+                              else if (link.label.includes("About")) Icon = Info;
+                              else if (link.label.includes("Blog")) Icon = BookOpen;
+                              else if (link.label.includes("FAQ")) Icon = HelpCircle;
 
-                            return (
-                              <Link
-                                key={link.to}
-                                to={link.to}
-                                onClick={() => setIsOpen(false)}
-                                className={`flex items-center gap-4 px-6 py-4 rounded-xl font-bold transition-all duration-300 font-t2-heading transform active:scale-95 border ${
-                                  isActive
-                                    ? "bg-slate-900 text-white border-slate-900 shadow-md"
-                                    : "bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100 hover:text-emerald-600"
-                                }`}
-                              >
-                                <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
-                                <span className="text-xs uppercase tracking-wider flex-1">{link.label}</span>
-                                <ArrowRight className={`w-4 h-4 transition-all ${isActive ? 'text-emerald-400 opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`} />
-                              </Link>
-                            );
-                          })}
-                          
-                          <div className="pt-6">
-                            <Link
-                              to={`/template/${templateId}/contact`}
-                              onClick={() => setIsOpen(false)}
-                              className="w-full py-3 bg-emerald-600 text-white text-sm font-bold text-center tracking-wider hover:bg-emerald-700 transition-all duration-300 rounded-xl shadow-sm block uppercase"
-                            >
-                              Get in Touch
-                            </Link>
+                              return (
+                                <Link
+                                  key={link.to}
+                                  to={link.to}
+                                  onClick={() => setIsOpen(false)}
+                                  className={`flex items-center gap-4 px-6 py-4 rounded-xl font-bold transition-all duration-300 font-t2-heading transform active:scale-95 border ${
+                                    isActive
+                                      ? "bg-slate-900 text-white border-slate-900 shadow-md"
+                                      : "bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100 hover:text-emerald-600"
+                                  }`}
+                                >
+                                  <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
+                                  <span className="text-xs uppercase tracking-wider flex-1">{link.label}</span>
+                                  <ArrowRight className={`w-4 h-4 transition-all ${isActive ? 'text-emerald-400 opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`} />
+                                </Link>
+                              );
+                            })}
                           </div>
                         </div>
 
-                        <div className="mt-auto border-t border-slate-100 pt-6 text-slate-400 text-xs">
-                          <p>© 2026 {template?.name}</p>
+                        <div className="mt-auto border-t border-slate-100 pt-6 flex flex-col gap-4">
+                          <Link
+                            to={`/template/${templateId}/contact`}
+                            onClick={() => setIsOpen(false)}
+                            className="w-full py-4 bg-emerald-600 text-white text-xs font-bold text-center tracking-widest hover:bg-emerald-700 active:scale-[0.98] transition-all duration-300 rounded-xl shadow-md block uppercase"
+                          >
+                            Get in Touch
+                          </Link>
+                          <p className="text-slate-400 text-center text-[10px] uppercase tracking-wider">© {new Date().getFullYear()} {template?.name}</p>
                         </div>
                       </div>
                     </SheetContent>

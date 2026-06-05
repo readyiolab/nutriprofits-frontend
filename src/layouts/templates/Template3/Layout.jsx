@@ -1,14 +1,20 @@
 import { Outlet, Link, useParams, useLocation } from "react-router-dom";
 import { getTemplateById } from "../../../data/templates";
 import React, { useEffect, useState } from "react";
-import { Menu, X, Home, ShoppingBag, Info, FileText, HelpCircle, Mail, Facebook, Twitter, Instagram, LayoutGrid } from "lucide-react";
+import { Menu, Home, ShoppingBag, Info, FileText, HelpCircle, Mail, Facebook, Twitter, Instagram, LayoutGrid } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 // Sidebar Navigation Component
 const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
-  const mobileMenuRef = React.useRef(null);
-  const toggleButtonRef = React.useRef(null);
+  const template = getTemplateById(templateId);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,26 +23,6 @@ const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Close mobile menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        mobileMenuRef.current && 
-        !mobileMenuRef.current.contains(event.target) &&
-        toggleButtonRef.current &&
-        !toggleButtonRef.current.contains(event.target)
-      ) {
-        setMobileMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, [setMobileMenuOpen]);
 
   // Close menu on route change
   useEffect(() => {
@@ -113,64 +99,69 @@ const Navigation = ({ templateId, mobileMenuOpen, setMobileMenuOpen }) => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center justify-end flex-1">
-            <button
-              ref={toggleButtonRef}
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-white hover:text-[#d72323] transition-colors"
-              aria-label="Toggle menu"
-            >
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="square"
-                  strokeLinejoin="miter"
-                  strokeWidth={2}
-                  d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <button
+                  className="p-2 text-white hover:text-[#d72323] transition-colors"
+                  aria-label="Toggle menu"
+                >
+                  <Menu className="w-8 h-8" />
+                </button>
+              </SheetTrigger>
+              <SheetContent
+                side="right"
+                className="w-[300px] sm:w-[350px] border-l border-slate-800 p-0 bg-[#1e222b] text-white shadow-2xl"
+              >
+                <div className="flex flex-col h-full justify-between p-8 relative font-mono uppercase">
+                  <div>
+                    <div className="flex items-center gap-3 mb-10 border-b border-gray-800 pb-4">
+                      <div className="text-2xl font-black text-white tracking-tighter leading-none">
+                        T3 <span className="text-gray-400 text-xs tracking-widest font-bold ml-1 font-mono">STUDIO</span>
+                      </div>
+                    </div>
 
-        {/* Mobile Menu Dropdown */}
-        <div
-          ref={mobileMenuRef}
-          className={`md:hidden absolute top-full left-0 right-0 bg-[#303841]/95 backdrop-blur-lg border-t border-slate-700/50 transform transition-all duration-300 ease-out origin-top overflow-hidden shadow-2xl ${
-            mobileMenuOpen ? 'max-h-[500px] opacity-100 scale-y-100' : 'max-h-0 opacity-0 scale-y-0 pointer-events-none'
-          }`}
-        >
-          <div className="px-6 py-8 space-y-6">
-            <div className="flex flex-col space-y-3">
-              {navItems.map((item) => {
-                const active = isActive(item.path);
-                let Icon = Home;
-                if (item.label.includes("Products")) Icon = ShoppingBag;
-                else if (item.label.includes("Category") || item.label.includes("Categories")) Icon = LayoutGrid;
-                else if (item.label.includes("About")) Icon = Info;
-                else if (item.label.includes("Blog")) Icon = FileText;
-                else if (item.label.includes("FAQ")) Icon = HelpCircle;
+                    <div className="flex flex-col space-y-4 max-h-[55vh] overflow-y-auto pr-1">
+                      {navItems.map((item) => {
+                        const active = isActive(item.path);
+                        let Icon = Home;
+                        if (item.label.includes("Products")) Icon = ShoppingBag;
+                        else if (item.label.includes("Category") || item.label.includes("Categories")) Icon = LayoutGrid;
+                        else if (item.label.includes("About")) Icon = Info;
+                        else if (item.label.includes("Blog")) Icon = FileText;
+                        else if (item.label.includes("FAQ")) Icon = HelpCircle;
 
-                return (
-                  <Link
-                    key={item.label}
-                    to={item.path.replace(":id", templateId)}
-                    className={`flex items-center gap-4 py-3 px-5 text-sm font-bold tracking-widest transition-all duration-300 font-mono uppercase rounded-xl border-l-[4px] ${
-                      active
-                        ? "text-[#d72323] border-[#d72323] bg-white/5 shadow-inner"
-                        : "text-gray-300 border-transparent bg-[#3a4450]/40 hover:bg-[#3a4450] hover:text-white"
-                    }`}
-                  >
-                    <Icon className={`w-4.5 h-4.5 ${active ? 'text-[#d72323]' : 'text-gray-400'}`} />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-            <Link
-              to={`/template/${templateId}/contact`}
-              className="block w-full text-center py-4 bg-[#d72323] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#b51d1d] active:scale-95 transition-all duration-200 font-mono rounded-xl shadow-lg shadow-[#d72323]/10"
-            >
-              Contact Us
-            </Link>
+                        return (
+                          <Link
+                            key={item.label}
+                            to={item.path.replace(":id", templateId)}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={`flex items-center gap-4 py-3 px-5 text-sm font-bold tracking-widest transition-all duration-300 rounded-xl border-l-[4px] ${
+                              active
+                                ? "text-[#d72323] border-[#d72323] bg-white/5 shadow-inner"
+                                : "text-gray-300 border-transparent bg-[#3a4450]/40 hover:bg-[#3a4450] hover:text-white"
+                            }`}
+                          >
+                            <Icon className={`w-4.5 h-4.5 ${active ? 'text-[#d72323]' : 'text-gray-400'}`} />
+                            <span>{item.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="mt-auto border-t border-gray-800 pt-6 flex flex-col gap-4">
+                    <Link
+                      to={`/template/${templateId}/contact`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block w-full text-center py-4 bg-[#d72323] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#b51d1d] active:scale-[0.98] transition-all duration-200 rounded-xl shadow-lg shadow-[#d72323]/10"
+                    >
+                      Contact Us
+                    </Link>
+                    <p className="text-gray-500 text-center text-[9px] tracking-widest">© {new Date().getFullYear()} {template?.name || "STUDIO"}</p>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>

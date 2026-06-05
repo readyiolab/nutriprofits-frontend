@@ -88,56 +88,54 @@ const DynamicLayout = () => {
                 </SheetTrigger>
                 <SheetContent 
                   side="right" 
-                  className="w-[300px] sm:w-[350px] bg-[#faf5e4] border-l border-[#2c786c]/20 p-0 rounded-tl-[50px] shadow-2xl"
+                  className="w-[300px] sm:w-[350px] bg-[#faf5e4] border-l border-[#2c786c]/20 p-0 rounded-tl-[40px] shadow-2xl"
                 >
-                  <div className="h-full flex flex-col p-6">
-                    <SheetHeader className="mb-8 px-2">
-                       <SheetTitle className="text-2xl font-bold text-[#004445] text-left font-t1-heading">
-                        {storeName}
-                      </SheetTitle>
-                    </SheetHeader>
-                    
-                    <div className="flex flex-col space-y-3.5 flex-1">
-                      {navigationLinks.map((link, index) => {
-                         const isActive = location.pathname === link.to;
-                         let Icon = Home;
-                         if (link.label.includes("Categories")) Icon = LayoutGrid;
-                         else if (link.label.includes("About")) Icon = Info;
-                         else if (link.label.includes("Blog")) Icon = BookOpen;
-                         else if (link.label.includes("FAQ")) Icon = HelpCircle;
-                         else if (link.label.includes("Contact")) Icon = Mail;
-
-                         return (
-                          <Link
-                            key={link.to}
-                            to={link.to}
-                            onClick={() => setIsOpen(false)}
-                            className={`flex items-center gap-4 px-6 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 transform active:scale-95 shadow-sm border ${
-                              isActive
-                                ? "bg-gradient-to-r from-[#004445] to-[#2c786c] text-[#faf5e4] border-[#004445]"
-                                : "bg-white text-[#004445] hover:bg-[#2c786c]/5 border-[#004445]/5"
-                            }`}
-                            style={{
-                              animationDelay: `${index * 50}ms`
-                            }}
-                          >
-                            <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-[#f8b400]' : 'text-[#2c786c]'}`} />
-                            <span>{link.label}</span>
-                          </Link>
-                        );
-                      })}
+                  <div className="h-full flex flex-col justify-between p-6">
+                    <div>
+                      <SheetHeader className="mb-8 px-2">
+                         <SheetTitle className="text-2xl font-bold text-[#004445] text-left font-t1-heading">
+                          {storeName}
+                        </SheetTitle>
+                      </SheetHeader>
                       
+                      <div className="flex flex-col space-y-3.5 max-h-[60vh] overflow-y-auto pr-1">
+                        {navigationLinks.map((link, index) => {
+                           const isActive = location.pathname === link.to;
+                           let Icon = Home;
+                           if (link.label.includes("Categories")) Icon = LayoutGrid;
+                           else if (link.label.includes("About")) Icon = Info;
+                           else if (link.label.includes("Blog")) Icon = BookOpen;
+                           else if (link.label.includes("FAQ")) Icon = HelpCircle;
+                           else if (link.label.includes("Contact")) Icon = Mail;
+
+                           return (
+                            <Link
+                              key={link.to}
+                              to={link.to}
+                              onClick={() => setIsOpen(false)}
+                              className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl font-semibold text-sm transition-all duration-300 transform active:scale-95 shadow-sm border ${
+                                isActive
+                                  ? "bg-[#004445] text-[#faf5e4] border-[#004445] shadow-md"
+                                  : "bg-white text-[#004445] hover:bg-[#2c786c]/5 border-[#004445]/5"
+                              }`}
+                            >
+                              <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-[#f8b400]' : 'text-[#2c786c]'}`} />
+                              <span>{link.label}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="mt-auto pt-6 border-t border-[#2c786c]/20 flex flex-col gap-4">
                       <Link
                         to="/"
                         onClick={() => setIsOpen(false)}
-                        className="mt-6 bg-[#f8b400] text-[#004445] px-6 py-4 rounded-full font-bold text-sm hover:bg-[#2c786c] hover:text-[#faf5e4] transition-all uppercase shadow-lg transform hover:-translate-y-1 text-center font-t1-heading tracking-wide"
+                        className="w-full bg-[#f8b400] text-[#004445] py-4 rounded-full font-bold text-sm hover:bg-[#2c786c] hover:text-[#faf5e4] active:scale-[0.98] transition-all uppercase shadow-md hover:shadow-lg font-t1-heading tracking-wide text-center"
                       >
                         Get Started
                       </Link>
-                    </div>
-
-                    <div className="mt-auto pt-8 border-t border-[#004445]/10 text-center">
-                       <p className="text-xs text-[#004445]/60">© 2025 {storeName}</p>
+                      <p className="text-center text-xs text-[#004445]/60">© {new Date().getFullYear()} {storeName}. All rights reserved.</p>
                     </div>
                   </div>
                 </SheetContent>
