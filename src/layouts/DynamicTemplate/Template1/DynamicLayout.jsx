@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { Menu, Home, LayoutGrid, Info, BookOpen, HelpCircle, Mail } from "lucide-react";
+import { Menu, Home, LayoutGrid, Info, BookOpen, HelpCircle, Mail, ArrowRight } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -109,20 +109,21 @@ const DynamicLayout = () => {
                            else if (link.label.includes("Contact")) Icon = Mail;
 
                            return (
-                            <Link
-                              key={link.to}
-                              to={link.to}
-                              onClick={() => setIsOpen(false)}
-                              className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl font-semibold text-sm transition-all duration-300 transform active:scale-95 shadow-sm border ${
-                                isActive
-                                  ? "bg-[#004445] text-[#faf5e4] border-[#004445] shadow-md"
-                                  : "bg-white text-[#004445] hover:bg-[#2c786c]/5 border-[#004445]/5"
-                              }`}
-                            >
-                              <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-[#f8b400]' : 'text-[#2c786c]'}`} />
-                              <span>{link.label}</span>
-                            </Link>
-                          );
+                             <Link
+                               key={link.to}
+                               to={link.to}
+                               onClick={() => setIsOpen(false)}
+                               className={`flex items-center gap-4 px-6 py-4 rounded-xl font-bold transition-all duration-300 font-t1-heading transform active:scale-95 border ${
+                                 isActive
+                                   ? "bg-[#004445] text-white border-[#004445] shadow-md"
+                                   : "bg-white text-[#004445] border-[#2c786c]/20 hover:bg-[#2c786c]/5 hover:text-[#004445]"
+                               }`}
+                             >
+                               <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-[#f8b400]' : 'text-[#2c786c]'}`} />
+                               <span className="text-xs uppercase tracking-wider flex-1">{link.label}</span>
+                               <ArrowRight className={`w-4 h-4 transition-all ${isActive ? 'text-[#f8b400] opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 text-[#2c786c]'}`} />
+                             </Link>
+                           );
                         })}
                       </div>
                     </div>

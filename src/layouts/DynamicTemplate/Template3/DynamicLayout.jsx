@@ -2,7 +2,7 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 import { useState } from "react";
 import React, { useEffect } from "react";
-import { Menu, Home, ShoppingBag, Info, FileText, HelpCircle, Mail, Facebook, Twitter, Instagram, LayoutGrid } from "lucide-react";
+import { Menu, Home, ShoppingBag, Info, FileText, HelpCircle, Mail, Facebook, Twitter, Instagram, LayoutGrid, ArrowRight } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -123,14 +123,15 @@ const Navigation = ({ storeName, branding, mobileMenuOpen, setMobileMenuOpen }) 
                             key={item.label}
                             to={item.path}
                             onClick={() => setMobileMenuOpen(false)}
-                            className={`flex items-center gap-4 py-3 px-5 text-sm font-bold tracking-widest transition-all duration-300 rounded-xl border-l-[4px] ${
+                            className={`flex items-center gap-4 px-6 py-4 rounded-xl font-bold transition-all duration-300 font-mono transform active:scale-95 border uppercase ${
                               active
-                                ? "text-[#d72323] border-[#d72323] bg-white/5 shadow-inner"
-                                : "text-gray-300 border-transparent bg-[#3a4450]/40 hover:bg-[#3a4450] hover:text-white"
+                                ? "bg-white/5 text-[#d72323] border-[#d72323] shadow-inner"
+                                : "bg-[#3a4450]/40 text-gray-300 border-transparent hover:bg-[#3a4450] hover:text-white"
                             }`}
                           >
                             <Icon className={`w-4.5 h-4.5 ${active ? 'text-[#d72323]' : 'text-gray-400'}`} />
-                            <span>{item.label}</span>
+                            <span className="text-xs tracking-wider flex-1">{item.label}</span>
+                            <ArrowRight className={`w-4 h-4 transition-all ${active ? 'text-[#d72323] opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 text-gray-400'}`} />
                           </Link>
                         );
                       })}
