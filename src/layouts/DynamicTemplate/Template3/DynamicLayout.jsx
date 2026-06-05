@@ -2,14 +2,7 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import { useBackofficeData } from "../../../routes/DynamicTemplateLoader";
 import { useState } from "react";
 import React, { useEffect } from "react";
-import { Menu, Home, ShoppingBag, Info, FileText, HelpCircle, Mail, Facebook, Twitter, Instagram, LayoutGrid, ArrowRight } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Menu, X, Home, ShoppingBag, Info, FileText, HelpCircle, Mail, Facebook, Twitter, Instagram, LayoutGrid, ArrowRight } from "lucide-react";
 
 // Navigation Component
 const Navigation = ({ storeName, branding, mobileMenuOpen, setMobileMenuOpen }) => {
@@ -28,6 +21,18 @@ const Navigation = ({ storeName, branding, mobileMenuOpen, setMobileMenuOpen }) 
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   const navItems = [
     { label: "Home", path: "/" },
@@ -88,69 +93,83 @@ const Navigation = ({ storeName, branding, mobileMenuOpen, setMobileMenuOpen }) 
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center justify-end">
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <button
-                  className="p-2 text-white hover:text-[#d72323] transition-colors"
-                  aria-label="Toggle menu"
-                >
-                  <Menu className="w-8 h-8" />
-                </button>
-              </SheetTrigger>
-              <SheetContent
-                side="right"
-                className="w-[300px] sm:w-[350px] border-l border-slate-800 p-0 bg-[#1e222b] text-white shadow-2xl"
-              >
-                <div className="flex flex-col h-full justify-between p-8 relative font-mono uppercase">
-                  <div>
-                    <div className="flex items-center gap-3 mb-10 border-b border-gray-800 pb-4">
-                      <div className="text-2xl font-black text-white tracking-tighter leading-none">
-                        {storeName}
-                      </div>
-                    </div>
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2 text-white hover:text-[#d72323] transition-colors"
+              aria-label="Open menu"
+            >
+              <Menu className="w-8 h-8" />
+            </button>
 
-                    <div className="flex flex-col space-y-4 max-h-[55vh] overflow-y-auto pr-1">
-                      {navItems.map((item) => {
-                        const active = isActive(item.path);
-                        let Icon = Home;
-                        if (item.label.includes("Category")) Icon = ShoppingBag;
-                        else if (item.label.includes("About")) Icon = Info;
-                        else if (item.label.includes("Blog")) Icon = FileText;
-                        else if (item.label.includes("FAQ")) Icon = HelpCircle;
-
-                        return (
-                          <Link
-                            key={item.label}
-                            to={item.path}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className={`flex items-center gap-4 px-6 py-4 rounded-xl font-bold transition-all duration-300 font-mono transform active:scale-95 border uppercase ${
-                              active
-                                ? "bg-white/5 text-[#d72323] border-[#d72323] shadow-inner"
-                                : "bg-[#3a4450]/40 text-gray-300 border-transparent hover:bg-[#3a4450] hover:text-white"
-                            }`}
-                          >
-                            <Icon className={`w-4.5 h-4.5 ${active ? 'text-[#d72323]' : 'text-gray-400'}`} />
-                            <span className="text-xs tracking-wider flex-1">{item.label}</span>
-                            <ArrowRight className={`w-4 h-4 transition-all ${active ? 'text-[#d72323] opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 text-gray-400'}`} />
-                          </Link>
-                        );
-                      })}
-                    </div>
+            {/* Full-Screen Mobile Menu Overlay */}
+            {mobileMenuOpen && (
+              <div className="fixed inset-0 z-[100] bg-[#0f1214] flex flex-col justify-between p-6 sm:p-8 overflow-y-auto animate-in fade-in slide-in-from-top duration-300 font-mono text-white">
+                {/* Menu Header */}
+                <div className="flex justify-between items-center py-4 border-b border-gray-800">
+                  <div className="text-xl font-black text-white tracking-tighter leading-none">
+                    {storeName}
                   </div>
+                  <button 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-white p-2 hover:bg-[#d72323]/20 hover:text-[#d72323] border border-gray-800 hover:border-[#d72323] transition-all duration-200"
+                    aria-label="Close menu"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
 
-                  <div className="mt-auto border-t border-gray-800 pt-6 flex flex-col gap-4">
-                    <Link
-                      to="/contact"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block w-full text-center py-4 bg-[#d72323] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#b51d1d] active:scale-[0.98] transition-all duration-200 rounded-xl shadow-lg shadow-[#d72323]/10"
-                    >
-                      Contact
-                    </Link>
-                    <p className="text-gray-500 text-center text-[9px] tracking-widest">© {new Date().getFullYear()} {storeName}</p>
+                {/* High-Tech Menu Links */}
+                <div className="flex flex-col justify-center my-auto py-8 space-y-6">
+                  {navItems.map((item, index) => {
+                    const active = isActive(item.path);
+                    const displayNum = String(index + 1).padStart(2, '0');
+                    let techLabel = "";
+                    if (item.label.includes("Home") || item.label.includes("Products")) techLabel = "DATABASE_ACCESS";
+                    else if (item.label.includes("Category") || item.label.includes("Categories")) techLabel = "FILTER_SCAN";
+                    else if (item.label.includes("About")) techLabel = "MISSION_BRIEF";
+                    else if (item.label.includes("Blog")) techLabel = "DATA_REPORTS";
+                    else if (item.label.includes("FAQ")) techLabel = "HELPER_BOT";
+
+                    return (
+                      <Link
+                        key={item.label}
+                        to={item.path}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="group flex flex-col justify-start text-left focus:outline-none"
+                      >
+                        <span className={`text-2xl sm:text-3xl font-extrabold tracking-widest uppercase transition-colors duration-200 flex items-center gap-2 ${
+                          active ? "text-[#d72323]" : "text-gray-300 group-hover:text-white"
+                        }`}>
+                          <span className="text-[#d72323]/60 text-base font-bold mr-1">[{displayNum}]</span>
+                          {item.label}
+                          <ArrowRight className={`w-5 h-5 transition-transform duration-300 ${active ? 'translate-x-1 opacity-100 text-[#d72323]' : 'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-1 text-white'}`} />
+                        </span>
+                        <span className="text-[9px] text-gray-500 mt-1 uppercase tracking-widest flex items-center gap-2">
+                          <span>// TYPE: {techLabel}</span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-500/85 animate-pulse"></span>
+                          <span className="text-green-500/85">ONLINE</span>
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                {/* Menu Footer */}
+                <div className="border-t border-gray-800 pt-6 flex flex-col gap-4">
+                  <Link
+                    to="/contact"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block w-full text-center py-4 bg-[#d72323] text-white text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-[#0f1214] transition-all duration-200 border border-transparent hover:border-[#d72323] shadow-lg shadow-[#d72323]/10"
+                  >
+                    Contact
+                  </Link>
+                  <div className="flex justify-between items-center text-[9px] text-gray-500 tracking-widest uppercase">
+                    <span>CONSOLE: SECURE</span>
+                    <span>© {new Date().getFullYear()} {storeName}</span>
                   </div>
                 </div>
-              </SheetContent>
-            </Sheet>
+              </div>
+            )}
           </div>
         </div>
       </div>

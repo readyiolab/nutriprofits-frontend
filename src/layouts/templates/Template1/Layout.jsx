@@ -1,13 +1,6 @@
 import { Outlet, Link, useParams, useLocation } from "react-router-dom";
-import { useState } from "react";
-import { Menu, Home, LayoutGrid, Info, BookOpen, HelpCircle, Mail, ArrowRight } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { useState, useEffect } from "react";
+import { Menu, X, Home, LayoutGrid, Info, BookOpen, HelpCircle, Mail, ArrowRight } from "lucide-react";
 import { getTemplateById } from "../../../data/templates";
 
 const Template1Layout = () => {
@@ -15,6 +8,18 @@ const Template1Layout = () => {
   const location = useLocation();
   const template = getTemplateById(templateId);
   const [isOpen, setIsOpen] = useState(false);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   const navigationLinks = [
     { to: `/template/${templateId}/products`, label: "Products" },
@@ -75,68 +80,75 @@ const Template1Layout = () => {
 
             {/* Mobile Menu Button */}
             <div className="lg:hidden">
-              <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetTrigger asChild>
-                  <button className="text-[#004445] p-2 hover:bg-[#2c786c]/10 rounded-full transition-colors">
-                    <Menu className="h-6 w-6" />
-                  </button>
-                </SheetTrigger>
-                <SheetContent 
-                  side="right" 
-                  className="w-[300px] sm:w-[350px] bg-[#faf5e4] border-l border-[#2c786c]/20 p-0 rounded-tl-[40px] shadow-2xl"
-                >
-                  <div className="h-full flex flex-col justify-between p-6">
-                    <div>
-                      <SheetHeader className="mb-8 px-2">
-                         <SheetTitle className="text-2xl font-bold text-[#004445] text-left font-t1-heading">
-                          {template?.name}
-                        </SheetTitle>
-                      </SheetHeader>
-                      
-                      <div className="flex flex-col space-y-3.5 max-h-[60vh] overflow-y-auto pr-1">
-                        {navigationLinks.map((link, index) => {
-                           const isActive = location.pathname === link.to;
-                           let Icon = Home;
-                           if (link.label.includes("Products")) Icon = Home;
-                           else if (link.label.includes("Category") || link.label.includes("Categories")) Icon = LayoutGrid;
-                           else if (link.label.includes("About")) Icon = Info;
-                           else if (link.label.includes("Blog")) Icon = BookOpen;
-                           else if (link.label.includes("FAQ")) Icon = HelpCircle;
-                           else if (link.label.includes("Contact")) Icon = Mail;
+              <button 
+                onClick={() => setIsOpen(true)}
+                className="text-[#004445] p-2 hover:bg-[#2c786c]/10 rounded-full transition-colors"
+                aria-label="Open menu"
+              >
+                <Menu className="h-6 w-6" />
+              </button>
 
-                           return (
-                             <Link
-                               key={link.to}
-                               to={link.to}
-                               onClick={() => setIsOpen(false)}
-                               className={`flex items-center gap-4 px-6 py-4 rounded-xl font-bold transition-all duration-300 font-t1-heading transform active:scale-95 border ${
-                                 isActive
-                                   ? "bg-[#004445] text-white border-[#004445] shadow-md"
-                                   : "bg-white text-[#004445] border-[#2c786c]/20 hover:bg-[#2c786c]/5 hover:text-[#004445]"
-                               }`}
-                             >
-                               <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-[#f8b400]' : 'text-[#2c786c]'}`} />
-                               <span className="text-xs uppercase tracking-wider flex-1">{link.label}</span>
-                               <ArrowRight className={`w-4 h-4 transition-all ${isActive ? 'text-[#f8b400] opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 text-[#2c786c]'}`} />
-                             </Link>
-                           );
-                        })}
-                      </div>
-                    </div>
-
-                    <div className="mt-auto pt-6 border-t border-[#2c786c]/20 flex flex-col gap-4">
-                      <button
-                        onClick={() => setIsOpen(false)}
-                        className="w-full bg-[#f8b400] text-[#004445] py-4 rounded-full font-bold text-sm hover:bg-[#2c786c] hover:text-[#faf5e4] active:scale-[0.98] transition-all uppercase shadow-md hover:shadow-lg font-t1-heading tracking-wide text-center"
-                      >
-                        Get Started
-                      </button>
-                      <p className="text-center text-xs text-[#004445]/60">© {new Date().getFullYear()} {template?.name}. All rights reserved.</p>
-                    </div>
+              {/* Full-Screen Mobile Menu Overlay */}
+              {isOpen && (
+                <div className="fixed inset-0 z-[100] bg-[#faf5e4] flex flex-col justify-between p-6 sm:p-8 overflow-y-auto animate-in fade-in slide-in-from-top duration-300">
+                  {/* Menu Header */}
+                  <div className="flex justify-between items-center py-2 border-b border-[#2c786c]/15">
+                    <span className="text-xl font-bold text-[#004445] font-t1-heading">
+                      {template?.name}
+                    </span>
+                    <button 
+                      onClick={() => setIsOpen(false)}
+                      className="text-[#004445] p-2 hover:bg-[#2c786c]/10 rounded-full transition-all duration-200 transform hover:rotate-90"
+                      aria-label="Close menu"
+                    >
+                      <X className="h-6 w-6" />
+                    </button>
                   </div>
-                </SheetContent>
-              </Sheet>
-            </div>
+
+                  {/* Menu Links (Centered/Beautiful) */}
+                  <div className="flex flex-col justify-center my-auto py-8 space-y-6">
+                    {navigationLinks.map((link) => {
+                      const isActive = location.pathname === link.to;
+                      let desc = "";
+                      if (link.label.includes("Products")) desc = "Explore our premium organic supplements";
+                      else if (link.label.includes("Category") || link.label.includes("Categories")) desc = "Shop products tailored to your goals";
+                      else if (link.label.includes("About")) desc = "Read our health philosophy and mission";
+                      else if (link.label.includes("Blog")) desc = "Tips and advice from certified nutritionists";
+                      else if (link.label.includes("FAQ")) desc = "Find answers to popular questions";
+                      else if (link.label.includes("Contact")) desc = "Get in touch with our support team";
+
+                      return (
+                        <Link
+                          key={link.to}
+                          to={link.to}
+                          onClick={() => setIsOpen(false)}
+                          className="group flex flex-col justify-start text-left focus:outline-none"
+                        >
+                          <span className={`text-2xl sm:text-3xl font-extrabold tracking-tight font-t1-heading transition-colors duration-200 flex items-center gap-2 ${
+                            isActive ? "text-[#f8b400]" : "text-[#004445] group-hover:text-[#2c786c]"
+                          }`}>
+                            {link.label}
+                            <ArrowRight className={`w-5 h-5 transition-transform duration-300 ${isActive ? 'translate-x-1 opacity-100 text-[#f8b400]' : 'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-1 text-[#2c786c]'}`} />
+                          </span>
+                          {desc && <span className="text-xs text-[#2c786c]/70 mt-1 font-t1-body max-w-sm">{desc}</span>}
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  {/* Menu Footer */}
+                  <div className="border-t border-[#2c786c]/15 pt-6 flex flex-col gap-4">
+                    <button
+                      onClick={() => setIsOpen(false)}
+                      className="w-full bg-[#f8b400] text-[#004445] py-4 rounded-full font-bold text-sm hover:bg-[#2c786c] hover:text-[#faf5e4] active:scale-[0.98] transition-all uppercase shadow-md hover:shadow-lg font-t1-heading tracking-wide text-center"
+                    >
+                      Get Started
+                    </button>
+                    <p className="text-center text-xs text-[#004445]/60">© {new Date().getFullYear()} {template?.name}. All rights reserved.</p>
+                  </div>
+                </div>
+              )}
+            </div>>
           </div>
         </div>
       </nav>
